@@ -1,8 +1,8 @@
 module module_fv3gfs_ncio
 ! module for reading/writing netcdf global lat/lon grid files output by FV3GFS.
 ! assumes netcdf classic data model, nf90_format_netcdf4_classic format.
-! handles 32 and 64 bit real variables, 16 and 32 bit integer
-! variabes.
+! handles 32 and 64 bit real variables, 8, 16 and 32 bit integer
+! variables and char variables. Variabes can have 1 - 5 dimensions.
 ! jeff whitaker <jeffrey.s.whitaker@noaa.gov>  201910
 
   use netcdf
@@ -54,7 +54,11 @@ module module_fv3gfs_ncio
       read_vardata_1d_int, read_vardata_2d_int, &
       read_vardata_3d_int, read_vardata_4d_int, read_vardata_5d_int, &
       read_vardata_1d_short, read_vardata_2d_short, &
-      read_vardata_3d_short, read_vardata_4d_short, read_vardata_5d_short 
+      read_vardata_3d_short, read_vardata_4d_short, read_vardata_5d_short , &
+      read_vardata_1d_byte, read_vardata_2d_byte, &
+      read_vardata_3d_byte, read_vardata_4d_byte, read_vardata_5d_byte, &
+      read_vardata_1d_char, read_vardata_2d_char, &
+      read_vardata_3d_char, read_vardata_4d_char, read_vardata_5d_char 
   end interface
 
   interface write_vardata
@@ -64,21 +68,27 @@ module module_fv3gfs_ncio
       write_vardata_3d_int, write_vardata_4d_int, &
       write_vardata_5d_int, write_vardata_5d_r4, write_vardata_5d_r8, &
       write_vardata_1d_short, write_vardata_2d_short, write_vardata_3d_short, &
-      write_vardata_4d_short, write_vardata_5d_short
+      write_vardata_4d_short, write_vardata_5d_short, &
+      write_vardata_1d_byte, write_vardata_2d_byte, write_vardata_3d_byte, &
+      write_vardata_4d_byte, write_vardata_5d_byte, &
+      write_vardata_1d_char, write_vardata_2d_char, write_vardata_3d_char, &
+      write_vardata_4d_char, write_vardata_5d_char
   end interface
 
   interface read_attribute
       module procedure read_attribute_r4_scalar, read_attribute_int_scalar,&
       read_attribute_r8_scalar, read_attribute_r4_1d,&
       read_attribute_int_1d, read_attribute_r8_1d, read_attribute_char, &
-      read_attribute_short_scalar, read_attribute_short_1d
+      read_attribute_short_scalar, read_attribute_short_1d, &
+      read_attribute_byte_scalar, read_attribute_byte_1d
   end interface
 
   interface write_attribute
       module procedure write_attribute_r4_scalar, write_attribute_int_scalar,&
       write_attribute_r8_scalar, write_attribute_r4_1d,&
       write_attribute_int_1d, write_attribute_r8_1d, write_attribute_char, &
-      write_attribute_short_scalar, write_attribute_short_1d
+      write_attribute_short_scalar, write_attribute_short_1d, &
+      write_attribute_byte_scalar, write_attribute_byte_1d
   end interface
 
   interface quantize_data
@@ -360,6 +370,11 @@ module module_fv3gfs_ncio
     integer, allocatable, dimension(:,:,:) :: ivalues_3d
     integer, allocatable, dimension(:,:,:,:) :: ivalues_4d
     integer, allocatable, dimension(:,:,:,:,:) :: ivalues_5d
+    character, allocatable, dimension(:) :: cvalues_1d
+    character, allocatable, dimension(:,:) :: cvalues_2d
+    character, allocatable, dimension(:,:,:) :: cvalues_3d
+    character, allocatable, dimension(:,:,:,:) :: cvalues_4d
+    character, allocatable, dimension(:,:,:,:,:) :: cvalues_5d
     logical return_errcode
     if(present(errcode)) then
        return_errcode=.true.
@@ -566,6 +581,7 @@ module module_fv3gfs_ncio
           endif
        ! integer var
        elseif (dsetin%variables(nvar)%dtype == NF90_INT .or.&
+               dsetin%variables(nvar)%dtype == NF90_BYTE .or.&
                dsetin%variables(nvar)%dtype == NF90_SHORT) then
           if (dsetin%variables(nvar)%ndims == 1) then
              call read_vardata(dsetin, varname, ivalues_1d)
@@ -582,6 +598,23 @@ module module_fv3gfs_ncio
           else if (dsetin%variables(nvar)%ndims == 5) then
              call read_vardata(dsetin, varname, ivalues_5d)
              call write_vardata(dset, varname, ivalues_5d)
+          endif
+       elseif (dsetin%variables(nvar)%dtype == NF90_CHAR) then
+          if (dsetin%variables(nvar)%ndims == 1) then
+             call read_vardata(dsetin, varname, cvalues_1d)
+             call write_vardata(dset, varname, cvalues_1d)
+          else if (dsetin%variables(nvar)%ndims == 2) then
+             call read_vardata(dsetin, varname, cvalues_2d)
+             call write_vardata(dset, varname, cvalues_2d)
+          else if (dsetin%variables(nvar)%ndims == 3) then
+             call read_vardata(dsetin, varname, cvalues_3d)
+             call write_vardata(dset, varname, cvalues_3d)
+          else if (dsetin%variables(nvar)%ndims == 4) then
+             call read_vardata(dsetin, varname, cvalues_4d)
+             call write_vardata(dset, varname, cvalues_4d)
+          else if (dsetin%variables(nvar)%ndims == 5) then
+             call read_vardata(dsetin, varname, cvalues_5d)
+             call write_vardata(dset, varname, cvalues_5d)
           endif
        else
           print *,'not copying variable ',trim(adjustl(varname)),&
@@ -760,6 +793,56 @@ module module_fv3gfs_ncio
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_short
 
+  subroutine read_vardata_1d_byte(dset, varname, values, nslice, errcode)
+    integer(1), allocatable, dimension(:), intent(inout) :: values
+    include "read_vardata_code_1d.f90"
+  end subroutine read_vardata_1d_byte
+
+  subroutine read_vardata_2d_byte(dset, varname, values, nslice, errcode)
+    integer(1), allocatable, dimension(:,:), intent(inout) :: values
+    include "read_vardata_code_2d.f90"
+  end subroutine read_vardata_2d_byte
+
+  subroutine read_vardata_3d_byte(dset, varname, values, nslice, errcode)
+    integer(1), allocatable, dimension(:,:,:), intent(inout) :: values
+    include "read_vardata_code_3d.f90"
+  end subroutine read_vardata_3d_byte
+
+  subroutine read_vardata_4d_byte(dset, varname, values, nslice, errcode)
+    integer(1), allocatable, dimension(:,:,:,:), intent(inout) :: values
+    include "read_vardata_code_4d.f90"
+  end subroutine read_vardata_4d_byte
+
+  subroutine read_vardata_5d_byte(dset, varname, values, errcode)
+    integer(1), allocatable, dimension(:,:,:,:,:), intent(inout) :: values
+    include "read_vardata_code_5d.f90"
+  end subroutine read_vardata_5d_byte
+
+  subroutine read_vardata_1d_char(dset, varname, values, nslice, errcode)
+    character, allocatable, dimension(:), intent(inout) :: values
+    include "read_vardata_code_1d.f90"
+  end subroutine read_vardata_1d_char
+
+  subroutine read_vardata_2d_char(dset, varname, values, nslice, errcode)
+    character, allocatable, dimension(:,:), intent(inout) :: values
+    include "read_vardata_code_2d.f90"
+  end subroutine read_vardata_2d_char
+
+  subroutine read_vardata_3d_char(dset, varname, values, nslice, errcode)
+    character, allocatable, dimension(:,:,:), intent(inout) :: values
+    include "read_vardata_code_3d.f90"
+  end subroutine read_vardata_3d_char
+
+  subroutine read_vardata_4d_char(dset, varname, values, nslice, errcode)
+    character, allocatable, dimension(:,:,:,:), intent(inout) :: values
+    include "read_vardata_code_4d.f90"
+  end subroutine read_vardata_4d_char
+
+  subroutine read_vardata_5d_char(dset, varname, values, errcode)
+    character, allocatable, dimension(:,:,:,:,:), intent(inout) :: values
+    include "read_vardata_code_5d.f90"
+  end subroutine read_vardata_5d_char
+
   subroutine write_vardata_1d_r4(dset, varname, values, nslice, errcode)
     real(4),  dimension(:), intent(in) :: values
     include "write_vardata_code.f90"
@@ -860,6 +943,56 @@ module module_fv3gfs_ncio
     include "write_vardata_code.f90"
   end subroutine write_vardata_5d_short
 
+  subroutine write_vardata_1d_byte(dset, varname, values, nslice, errcode)
+    integer(1),  dimension(:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_1d_byte
+
+  subroutine write_vardata_2d_byte(dset, varname, values, nslice, errcode)
+    integer(1),  dimension(:,:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_2d_byte
+
+  subroutine write_vardata_3d_byte(dset, varname, values, nslice, errcode)
+    integer(1),  dimension(:,:,:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_3d_byte
+
+  subroutine write_vardata_4d_byte(dset, varname, values, nslice, errcode)
+    integer(1),  dimension(:,:,:,:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_4d_byte
+
+  subroutine write_vardata_5d_byte(dset, varname, values, nslice, errcode)
+    integer(1),  dimension(:,:,:,:,:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_5d_byte
+
+  subroutine write_vardata_1d_char(dset, varname, values, nslice, errcode)
+    character,  dimension(:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_1d_char
+
+  subroutine write_vardata_2d_char(dset, varname, values, nslice, errcode)
+    character,  dimension(:,:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_2d_char
+
+  subroutine write_vardata_3d_char(dset, varname, values, nslice, errcode)
+    character,  dimension(:,:,:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_3d_char
+
+  subroutine write_vardata_4d_char(dset, varname, values, nslice, errcode)
+    character,  dimension(:,:,:,:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_4d_char
+
+  subroutine write_vardata_5d_char(dset, varname, values, nslice, errcode)
+    character,  dimension(:,:,:,:,:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_5d_char
+
   subroutine read_attribute_int_scalar(dset, attname, values, varname, errcode)
     integer, intent(inout) :: values
     include "read_scalar_attribute_code.f90"
@@ -869,6 +1002,11 @@ module module_fv3gfs_ncio
     integer(2), intent(inout) :: values
     include "read_scalar_attribute_code.f90"
   end subroutine read_attribute_short_scalar
+
+  subroutine read_attribute_byte_scalar(dset, attname, values, varname, errcode)
+    integer(1), intent(inout) :: values
+    include "read_scalar_attribute_code.f90"
+  end subroutine read_attribute_byte_scalar
 
   subroutine read_attribute_r4_scalar(dset, attname, values, varname, errcode)
     real(4), intent(inout) :: values
@@ -900,6 +1038,11 @@ module module_fv3gfs_ncio
     include "read_attribute_code.f90"
   end subroutine read_attribute_short_1d
 
+  subroutine read_attribute_byte_1d(dset, attname, values, varname, errcode)
+    integer(1), intent(inout), allocatable, dimension(:) :: values
+    include "read_attribute_code.f90"
+  end subroutine read_attribute_byte_1d
+
   subroutine read_attribute_char(dset, attname, values, varname, errcode)
     character(len=*), intent(inout) :: values
     include "read_scalar_attribute_code.f90"
@@ -914,6 +1057,11 @@ module module_fv3gfs_ncio
     integer(2), intent(in) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_short_scalar
+
+  subroutine write_attribute_byte_scalar(dset, attname, values, varname, errcode)
+    integer(1), intent(in) :: values
+    include "write_attribute_code.f90"
+  end subroutine write_attribute_byte_scalar
 
   subroutine write_attribute_r4_scalar(dset, attname, values, varname, errcode)
     real(4), intent(in) :: values
@@ -944,6 +1092,11 @@ module module_fv3gfs_ncio
     integer(2), intent(in), allocatable, dimension(:) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_short_1d
+
+  subroutine write_attribute_byte_1d(dset, attname, values, varname, errcode)
+    integer(1), intent(in), allocatable, dimension(:) :: values
+    include "write_attribute_code.f90"
+  end subroutine write_attribute_byte_1d
 
   subroutine write_attribute_char(dset, attname, values, varname, errcode)
     character(len=*), intent(in) :: values
