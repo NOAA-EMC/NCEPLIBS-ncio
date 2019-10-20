@@ -2,7 +2,7 @@ module module_fv3gfs_ncio
 ! module for reading/writing netcdf global lat/lon grid files output by FV3GFS.
 ! assumes netcdf classic data model, nf90_format_netcdf4_classic format.
 ! handles 32 and 64 bit real variables, 8, 16 and 32 bit integer
-! variables and char variables. Variabes can have 1 - 5 dimensions.
+! variables and char variables. Variables can have 1 - 5 dimensions.
 ! jeff whitaker <jeffrey.s.whitaker@noaa.gov>  201910
 
   use netcdf
