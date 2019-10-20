@@ -1,5 +1,8 @@
 module module_fv3gfs_ncio
-! module for reading/writing netcdf global lat/lon grid files output by FV3GFS
+! module for reading/writing netcdf global lat/lon grid files output by FV3GFS.
+! assumes netcdf classic data model, nf90_format_netcdf4_classic format.
+! handles 32 and 64 bit real variables, 16 and 32 bit integer
+! variabes.
 ! jeff whitaker <jeffrey.s.whitaker@noaa.gov>  201910
 
   use netcdf
@@ -45,10 +48,13 @@ module module_fv3gfs_ncio
 
   interface read_vardata
       module procedure read_vardata_1d_r4, read_vardata_2d_r4, read_vardata_3d_r4,&
-      read_vardata_4d_r4, read_vardata_1d_r8, read_vardata_2d_r8, read_vardata_3d_r8,&
-      read_vardata_4d_r8, read_vardata_1d_int, read_vardata_2d_int, &
-      read_vardata_3d_int, read_vardata_4d_int,&
-      read_vardata_5d_r4, read_vardata_5d_r8, read_vardata_5d_int 
+      read_vardata_4d_r4, read_vardata_5d_r4, &
+      read_vardata_1d_r8, read_vardata_2d_r8, read_vardata_3d_r8,&
+      read_vardata_4d_r8, read_vardata_5d_r8, & 
+      read_vardata_1d_int, read_vardata_2d_int, &
+      read_vardata_3d_int, read_vardata_4d_int, read_vardata_5d_int, &
+      read_vardata_1d_short, read_vardata_2d_short, &
+      read_vardata_3d_short, read_vardata_4d_short, read_vardata_5d_short 
   end interface
 
   interface write_vardata
@@ -56,19 +62,23 @@ module module_fv3gfs_ncio
       write_vardata_4d_r4, write_vardata_1d_r8, write_vardata_2d_r8, write_vardata_3d_r8,&
       write_vardata_4d_r8, write_vardata_1d_int, write_vardata_2d_int, &
       write_vardata_3d_int, write_vardata_4d_int, &
-      write_vardata_5d_int, write_vardata_5d_r4, write_vardata_5d_r8
+      write_vardata_5d_int, write_vardata_5d_r4, write_vardata_5d_r8, &
+      write_vardata_1d_short, write_vardata_2d_short, write_vardata_3d_short, &
+      write_vardata_4d_short, write_vardata_5d_short
   end interface
 
   interface read_attribute
       module procedure read_attribute_r4_scalar, read_attribute_int_scalar,&
       read_attribute_r8_scalar, read_attribute_r4_1d,&
-      read_attribute_int_1d, read_attribute_r8_1d, read_attribute_char
+      read_attribute_int_1d, read_attribute_r8_1d, read_attribute_char, &
+      read_attribute_short_scalar, read_attribute_short_1d
   end interface
 
   interface write_attribute
       module procedure write_attribute_r4_scalar, write_attribute_int_scalar,&
       write_attribute_r8_scalar, write_attribute_r4_1d,&
-      write_attribute_int_1d, write_attribute_r8_1d, write_attribute_char
+      write_attribute_int_1d, write_attribute_r8_1d, write_attribute_char, &
+      write_attribute_short_scalar, write_attribute_short_1d
   end interface
 
   interface quantize_data
@@ -232,8 +242,7 @@ module module_fv3gfs_ncio
     character(len=*), intent(in) :: filename
     type(Dataset) :: dset
     integer, intent(out), optional :: errcode
-    integer ncerr,nunlimdim
-    integer ndim,nvar,n
+    integer ncerr,nunlimdim,ndim,nvar,n
     logical return_errcode
     if(present(errcode)) then
        return_errcode=.true.
@@ -339,8 +348,7 @@ module module_fv3gfs_ncio
     type(Dataset) :: dset
     type(Dataset), intent(in) :: dsetin
     integer, intent(out), optional :: errcode
-    integer ncerr
-    integer ndim,nvar,n,ishuffle,natt
+    integer ncerr,ndim,nvar,n,ishuffle,natt
     logical copyd, coordvar
     real(8), allocatable, dimension(:) :: values_1d
     real(8), allocatable, dimension(:,:) :: values_2d
@@ -727,6 +735,31 @@ module module_fv3gfs_ncio
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_int
 
+  subroutine read_vardata_1d_short(dset, varname, values, nslice, errcode)
+    integer(2), allocatable, dimension(:), intent(inout) :: values
+    include "read_vardata_code_1d.f90"
+  end subroutine read_vardata_1d_short
+
+  subroutine read_vardata_2d_short(dset, varname, values, nslice, errcode)
+    integer(2), allocatable, dimension(:,:), intent(inout) :: values
+    include "read_vardata_code_2d.f90"
+  end subroutine read_vardata_2d_short
+
+  subroutine read_vardata_3d_short(dset, varname, values, nslice, errcode)
+    integer(2), allocatable, dimension(:,:,:), intent(inout) :: values
+    include "read_vardata_code_3d.f90"
+  end subroutine read_vardata_3d_short
+
+  subroutine read_vardata_4d_short(dset, varname, values, nslice, errcode)
+    integer(2), allocatable, dimension(:,:,:,:), intent(inout) :: values
+    include "read_vardata_code_4d.f90"
+  end subroutine read_vardata_4d_short
+
+  subroutine read_vardata_5d_short(dset, varname, values, errcode)
+    integer(2), allocatable, dimension(:,:,:,:,:), intent(inout) :: values
+    include "read_vardata_code_5d.f90"
+  end subroutine read_vardata_5d_short
+
   subroutine write_vardata_1d_r4(dset, varname, values, nslice, errcode)
     real(4),  dimension(:), intent(in) :: values
     include "write_vardata_code.f90"
@@ -802,10 +835,40 @@ module module_fv3gfs_ncio
     include "write_vardata_code.f90"
   end subroutine write_vardata_5d_int
 
+  subroutine write_vardata_1d_short(dset, varname, values, nslice, errcode)
+    integer(2),  dimension(:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_1d_short
+
+  subroutine write_vardata_2d_short(dset, varname, values, nslice, errcode)
+    integer(2),  dimension(:,:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_2d_short
+
+  subroutine write_vardata_3d_short(dset, varname, values, nslice, errcode)
+    integer(2),  dimension(:,:,:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_3d_short
+
+  subroutine write_vardata_4d_short(dset, varname, values, nslice, errcode)
+    integer(2),  dimension(:,:,:,:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_4d_short
+
+  subroutine write_vardata_5d_short(dset, varname, values, nslice, errcode)
+    integer(2),  dimension(:,:,:,:,:), intent(in) :: values
+    include "write_vardata_code.f90"
+  end subroutine write_vardata_5d_short
+
   subroutine read_attribute_int_scalar(dset, attname, values, varname, errcode)
     integer, intent(inout) :: values
     include "read_scalar_attribute_code.f90"
   end subroutine read_attribute_int_scalar
+
+  subroutine read_attribute_short_scalar(dset, attname, values, varname, errcode)
+    integer(2), intent(inout) :: values
+    include "read_scalar_attribute_code.f90"
+  end subroutine read_attribute_short_scalar
 
   subroutine read_attribute_r4_scalar(dset, attname, values, varname, errcode)
     real(4), intent(inout) :: values
@@ -832,6 +895,11 @@ module module_fv3gfs_ncio
     include "read_attribute_code.f90"
   end subroutine read_attribute_int_1d
 
+  subroutine read_attribute_short_1d(dset, attname, values, varname, errcode)
+    integer(2), intent(inout), allocatable, dimension(:) :: values
+    include "read_attribute_code.f90"
+  end subroutine read_attribute_short_1d
+
   subroutine read_attribute_char(dset, attname, values, varname, errcode)
     character(len=*), intent(inout) :: values
     include "read_scalar_attribute_code.f90"
@@ -841,6 +909,11 @@ module module_fv3gfs_ncio
     integer, intent(in) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_int_scalar
+
+  subroutine write_attribute_short_scalar(dset, attname, values, varname, errcode)
+    integer(2), intent(in) :: values
+    include "write_attribute_code.f90"
+  end subroutine write_attribute_short_scalar
 
   subroutine write_attribute_r4_scalar(dset, attname, values, varname, errcode)
     real(4), intent(in) :: values
@@ -866,6 +939,11 @@ module module_fv3gfs_ncio
     integer, intent(in), allocatable, dimension(:) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_int_1d
+
+  subroutine write_attribute_short_1d(dset, attname, values, varname, errcode)
+    integer(2), intent(in), allocatable, dimension(:) :: values
+    include "write_attribute_code.f90"
+  end subroutine write_attribute_short_1d
 
   subroutine write_attribute_char(dset, attname, values, varname, errcode)
     character(len=*), intent(in) :: values
