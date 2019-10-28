@@ -102,4 +102,3 @@ dim = get_dim(ds, 'time')
 ```fortran
 call close_dataset(ds)
 call close_dataset(dso)
-
