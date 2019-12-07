@@ -1,25 +1,6 @@
-NCEPLIBS-ncio Library
+# NCEPLIBS-ncio library
 
 module for reading/writing FV3 netcdf lat/lon data.
-
-
-==============Add cmake for comipling=================
-10/25/2019  Hang Lei            NOAA/EMC
-
-The Cmake is tested on NOAA WCOSS and Hera need to set up 
-compiler options and library path for sepcific machine.
-
-e.g. on Hera:
-cmake -DCMAKE_C_COMPILER=icc -DCMAKE_CXX_COMPILER=icpc -DCMAKE_Fortran_COMPILER=ifort -DMPI_LIBRARIES=/apps/intel/compilers_and_libraries_2018/linux/mpi/intel64/lib -DMPI_INCLUDES=/apps/intel/compilers_and_libraries_2018/linux/mpi/intel64/include -DNETCDF_LIBRARY=/apps/netcdf/4.6.1/intel/16.1.150/lib -DNETCDF_INCLUDE=/apps/netcdf/4.6.1/intel/16.1.150/include .
-
-cmake --build .
-
-==============Initial Development of NCIO LIB===========
-10/18/2019  Dr. Jeff Whitaker   NOAA/ESRL
-
-# NCEPLIBS-ncio
-module for reading/writing FV3 netcdf lat/lon data.
-
 
 * open a Dataset.
 ```fortran
