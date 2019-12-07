@@ -1,10 +1,11 @@
 Change history:
 
 * 20191207: Jeff Whitaker (ESRL/PSD):  preserve chunksize information in
-create_dataset, allow for NF90_FORMAT_64BIT (non-HDF5) formatted files.
+create_dataset, allow for NF90_FORMAT_64BIT (non-HDF5) formatted files (PR
+#2)
 
 * 20191028: Jeff Whitaker (ESRL/PSD):  add has_var, has_attr functions.
-Add short, byte, char variables.
+Add short, byte, char variables (PR #1).
 
 * 20191025: Hang Lei (NCEP/EMC): Cmake build system.  Need to set compiler
 options for specific machine.  For example, on Hera:
@@ -18,4 +19,4 @@ cmake -DCMAKE_C_COMPILER=icc -DCMAKE_CXX_COMPILER=icpc \
 
 cmake --build .
 
-* 20191018: Jeff Whitaker (ESRL/PSD):  initial version.
+* 20191018: Jeff Whitaker (ESRL/PSD):  Initial version.
