@@ -1,0 +1,10 @@
+
+*.[aox]
+*.mod
+
+build*/
+install*/
+
+*.nc*
+
+.*.sw[a-p]
