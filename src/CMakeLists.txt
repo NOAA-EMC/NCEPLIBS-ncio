@@ -2,7 +2,7 @@
 # an NCEP library for reading and writing netCDF data files.
 #
 list(APPEND fortran_src
-  module_fv3gfs_ncio.f90
+  module__ncio.f90
 )
 
 if(APPLE)

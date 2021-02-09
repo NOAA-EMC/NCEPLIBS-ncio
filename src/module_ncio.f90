@@ -4,7 +4,7 @@
 !! Handles 32 and 64 bit real variables, 8, 16 and 32 bit integer
 !! variables and char variables. Variables can have up to 5 dimensions.
 !! @author jeff whitaker <jeffrey.s.whitaker@noaa.gov> @date 201910
-module module_fv3gfs_ncio
+module module_ncio
 
   use netcdf
   use mpi
@@ -1335,4 +1335,4 @@ contains
     include "quantize_data_code.f90"
   end subroutine quantize_data_4d
 
-end module module_fv3gfs_ncio
+end module module_ncio
