@@ -1,5 +1,6 @@
 !> @file
-!! Module for reading/writing netcdf files such as thel lat/lon grid history files output by the GFS.
+!! Module for reading/writing netcdf files such as the lat/lon grid history files output by the GFS.
+!! writing requires a template file.
 !! Handles 32 and 64 bit real variables, 8, 16 and 32 bit integer
 !! variables and char variables. Variables can have up to 5 dimensions.
 !! @author jeff whitaker <jeffrey.s.whitaker@noaa.gov> @date 201910
