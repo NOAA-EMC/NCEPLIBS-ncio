@@ -15,15 +15,13 @@ jobs:
         sudo apt-get update
         sudo apt-get install libmpich-dev
         sudo apt-get install libnetcdf-dev libnetcdff-dev netcdf-bin pkg-config
-        sudo apt-get install libpng-dev
-        sudo apt-get install libjpeg-dev
-        sudo apt-get install wget
+        sudo apt-get install doxygen
        
     - name: build
       run: |
         pwd && ls -l
         mkdir build && cd build
-        cmake .. -DCMAKE_PREFIX_PATH=~
+        cmake .. -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH=~
         make -j2
 
 

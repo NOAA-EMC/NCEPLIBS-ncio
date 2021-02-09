@@ -1,9 +1,10 @@
+!> @file
+!! Module for reading/writing netcdf global lat/lon grid files output by FV3GFS.
+!! Assumes netcdf classic data model, nf90_format_netcdf4_classic format.
+!! Handles 32 and 64 bit real variables, 8, 16 and 32 bit integer
+!! variables and char variables. Variables can have up to 5 dimensions.
+!! @author jeff whitaker <jeffrey.s.whitaker@noaa.gov> @date 201910
 module module_fv3gfs_ncio
-! module for reading/writing netcdf global lat/lon grid files output by FV3GFS.
-! assumes netcdf classic data model, nf90_format_netcdf4_classic format.
-! handles 32 and 64 bit real variables, 8, 16 and 32 bit integer
-! variables and char variables. Variables can have up to 5 dimensions.
-! jeff whitaker <jeffrey.s.whitaker@noaa.gov>  201910
 
   use netcdf
   use mpi
@@ -22,14 +23,14 @@ module module_fv3gfs_ncio
      character(len=nf90_max_name) :: name ! variable name
      integer, allocatable, dimension(:) :: dimids ! netCDF dimension IDs
      ! indices into Dataset%dimensions for associated dimensions.
-     integer, allocatable, dimension(:) :: dimindxs 
+     integer, allocatable, dimension(:) :: dimindxs
      ! names of associated dimensions.
-     character(len=nf90_max_name), allocatable, dimension(:) :: dimnames 
+     character(len=nf90_max_name), allocatable, dimension(:) :: dimnames
      ! current dimension lengths (updated after every write_vardata call)
      integer, allocatable, dimension(:) :: dimlens
      integer, allocatable, dimension(:) :: chunksizes
-  end type Variable   
-  type Dimension 
+  end type Variable
+  type Dimension
      integer dimid ! netCDF dimension ID
      integer len ! dimension length (updated after every write_vardata call)
      logical isunlimited ! unlimited?
@@ -51,60 +52,60 @@ module module_fv3gfs_ncio
   end type Dataset
 
   interface read_vardata
-      module procedure read_vardata_1d_r4, read_vardata_2d_r4, read_vardata_3d_r4,&
-      read_vardata_4d_r4, read_vardata_5d_r4, &
-      read_vardata_1d_r8, read_vardata_2d_r8, read_vardata_3d_r8,&
-      read_vardata_4d_r8, read_vardata_5d_r8, & 
-      read_vardata_1d_int, read_vardata_2d_int, &
-      read_vardata_3d_int, read_vardata_4d_int, read_vardata_5d_int, &
-      read_vardata_1d_short, read_vardata_2d_short, &
-      read_vardata_3d_short, read_vardata_4d_short, read_vardata_5d_short , &
-      read_vardata_1d_byte, read_vardata_2d_byte, &
-      read_vardata_3d_byte, read_vardata_4d_byte, read_vardata_5d_byte, &
-      read_vardata_1d_char, read_vardata_2d_char, &
-      read_vardata_3d_char, read_vardata_4d_char, read_vardata_5d_char 
-  end interface
+     module procedure read_vardata_1d_r4, read_vardata_2d_r4, read_vardata_3d_r4,&
+          read_vardata_4d_r4, read_vardata_5d_r4, &
+          read_vardata_1d_r8, read_vardata_2d_r8, read_vardata_3d_r8,&
+          read_vardata_4d_r8, read_vardata_5d_r8, &
+          read_vardata_1d_int, read_vardata_2d_int, &
+          read_vardata_3d_int, read_vardata_4d_int, read_vardata_5d_int, &
+          read_vardata_1d_short, read_vardata_2d_short, &
+          read_vardata_3d_short, read_vardata_4d_short, read_vardata_5d_short , &
+          read_vardata_1d_byte, read_vardata_2d_byte, &
+          read_vardata_3d_byte, read_vardata_4d_byte, read_vardata_5d_byte, &
+          read_vardata_1d_char, read_vardata_2d_char, &
+          read_vardata_3d_char, read_vardata_4d_char, read_vardata_5d_char
+  end interface read_vardata
 
   interface write_vardata
-      module procedure write_vardata_1d_r4, write_vardata_2d_r4, write_vardata_3d_r4,&
-      write_vardata_4d_r4, write_vardata_1d_r8, write_vardata_2d_r8, write_vardata_3d_r8,&
-      write_vardata_4d_r8, write_vardata_1d_int, write_vardata_2d_int, &
-      write_vardata_3d_int, write_vardata_4d_int, &
-      write_vardata_5d_int, write_vardata_5d_r4, write_vardata_5d_r8, &
-      write_vardata_1d_short, write_vardata_2d_short, write_vardata_3d_short, &
-      write_vardata_4d_short, write_vardata_5d_short, &
-      write_vardata_1d_byte, write_vardata_2d_byte, write_vardata_3d_byte, &
-      write_vardata_4d_byte, write_vardata_5d_byte, &
-      write_vardata_1d_char, write_vardata_2d_char, write_vardata_3d_char, &
-      write_vardata_4d_char, write_vardata_5d_char
-  end interface
+     module procedure write_vardata_1d_r4, write_vardata_2d_r4, write_vardata_3d_r4,&
+          write_vardata_4d_r4, write_vardata_1d_r8, write_vardata_2d_r8, write_vardata_3d_r8,&
+          write_vardata_4d_r8, write_vardata_1d_int, write_vardata_2d_int, &
+          write_vardata_3d_int, write_vardata_4d_int, &
+          write_vardata_5d_int, write_vardata_5d_r4, write_vardata_5d_r8, &
+          write_vardata_1d_short, write_vardata_2d_short, write_vardata_3d_short, &
+          write_vardata_4d_short, write_vardata_5d_short, &
+          write_vardata_1d_byte, write_vardata_2d_byte, write_vardata_3d_byte, &
+          write_vardata_4d_byte, write_vardata_5d_byte, &
+          write_vardata_1d_char, write_vardata_2d_char, write_vardata_3d_char, &
+          write_vardata_4d_char, write_vardata_5d_char
+  end interface write_vardata
 
   interface read_attribute
-      module procedure read_attribute_r4_scalar, read_attribute_int_scalar,&
-      read_attribute_r8_scalar, read_attribute_r4_1d,&
-      read_attribute_int_1d, read_attribute_r8_1d, read_attribute_char, &
-      read_attribute_short_scalar, read_attribute_short_1d, &
-      read_attribute_byte_scalar, read_attribute_byte_1d
-  end interface
+     module procedure read_attribute_r4_scalar, read_attribute_int_scalar,&
+          read_attribute_r8_scalar, read_attribute_r4_1d,&
+          read_attribute_int_1d, read_attribute_r8_1d, read_attribute_char, &
+          read_attribute_short_scalar, read_attribute_short_1d, &
+          read_attribute_byte_scalar, read_attribute_byte_1d
+  end interface read_attribute
 
   interface write_attribute
-      module procedure write_attribute_r4_scalar, write_attribute_int_scalar,&
-      write_attribute_r8_scalar, write_attribute_r4_1d,&
-      write_attribute_int_1d, write_attribute_r8_1d, write_attribute_char, &
-      write_attribute_short_scalar, write_attribute_short_1d, &
-      write_attribute_byte_scalar, write_attribute_byte_1d
-  end interface
+     module procedure write_attribute_r4_scalar, write_attribute_int_scalar,&
+          write_attribute_r8_scalar, write_attribute_r4_1d,&
+          write_attribute_int_1d, write_attribute_r8_1d, write_attribute_char, &
+          write_attribute_short_scalar, write_attribute_short_1d, &
+          write_attribute_byte_scalar, write_attribute_byte_1d
+  end interface write_attribute
 
   interface quantize_data
-      module procedure quantize_data_2d, quantize_data_3d, quantize_data_4d
-  end interface
+     module procedure quantize_data_2d, quantize_data_3d, quantize_data_4d
+  end interface quantize_data
 
   public :: open_dataset, create_dataset, close_dataset, Dataset, Variable, Dimension, &
-  read_vardata, read_attribute, write_vardata, write_attribute, get_ndim, &
-  get_nvar, get_var, get_dim, get_idate_from_time_units, &
-  get_time_units_from_idate, quantize_data, has_var, has_attr
+       read_vardata, read_attribute, write_vardata, write_attribute, get_ndim, &
+       get_nvar, get_var, get_dim, get_idate_from_time_units, &
+       get_time_units_from_idate, quantize_data, has_var, has_attr
 
-  contains
+contains
 
   subroutine nccheck(status,halt,fname)
     ! check return code, print error message
@@ -119,11 +120,11 @@ module module_fv3gfs_ncio
        stopit = .true.
     endif
     if (status /= nf90_noerr) then
-      write(0,*) status, trim(nf90_strerror(status))
-      if (present(fname)) then
-         write(0,*) trim(fname)
-      end if
-      if (stopit) stop 99
+       write(0,*) status, trim(nf90_strerror(status))
+       if (present(fname)) then
+          write(0,*) trim(fname)
+       end if
+       if (stopit) stop 99
     end if
   end subroutine nccheck
 
@@ -143,7 +144,7 @@ module module_fv3gfs_ncio
     integer ndim
     get_ndim = -1
     do ndim=1,dset%ndims
-       if (trim(dset%dimensions(ndim)%name) == trim(dimname)) then 
+       if (trim(dset%dimensions(ndim)%name) == trim(dimname)) then
           get_ndim = ndim
           exit
        endif
@@ -181,14 +182,14 @@ module module_fv3gfs_ncio
     integer nvar, varid, ncerr
     nvar = get_nvar(dset, varname)
     if(present(varname))then
-        nvar = get_nvar(dset,varname)
-        if (nvar < 0) then
-           has_attr = .false.
-           return
-        endif
-        varid = dset%variables(nvar)%varid
+       nvar = get_nvar(dset,varname)
+       if (nvar < 0) then
+          has_attr = .false.
+          return
+       endif
+       varid = dset%variables(nvar)%varid
     else
-        varid = NF90_GLOBAL
+       varid = NF90_GLOBAL
     endif
     ncerr = nf90_inquire_attribute(dset%ncid, varid, attname)
     if (ncerr /= 0) then
@@ -205,7 +206,7 @@ module module_fv3gfs_ncio
     integer nvar
     get_nvar = -1
     do nvar=1,dset%nvars
-       if (trim(dset%variables(nvar)%name) == trim(varname)) then 
+       if (trim(dset%variables(nvar)%name) == trim(varname)) then
           get_nvar = nvar
           exit
        endif
@@ -235,8 +236,8 @@ module module_fv3gfs_ncio
              ! if this dim is unlimited, update dimlens entry
              if (dset%dimensions(n)%isunlimited) then
                 ncerr = nf90_inquire_dimension(dset%ncid,&
-                                               dset%dimensions(n)%dimid, &
-                                               len=dset%variables(nvar)%dimlens(ndim))
+                     dset%dimensions(n)%dimid, &
+                     len=dset%variables(nvar)%dimlens(ndim))
                 if (return_errcode) then
                    call nccheck(ncerr,halt=.false.)
                    errcode=ncerr
@@ -251,9 +252,9 @@ module module_fv3gfs_ncio
        endif
     enddo
   end subroutine set_varunlimdimlens_
- 
+
   function open_dataset(filename,errcode,paropen, mpicomm) result(dset)
-    ! open existing dataset, create dataset object for reading netcdf file 
+    ! open existing dataset, create dataset object for reading netcdf file
     ! if optional error return code errcode is not specified,
     ! program will stop if a nonzero error code returned by the netcdf lib.
     implicit none
@@ -272,24 +273,24 @@ module module_fv3gfs_ncio
     endif
     if (present(paropen)) then
        if (paropen) then
-         dset%isparallel = .true.
+          dset%isparallel = .true.
        else
-         dset%isparallel = .false.
+          dset%isparallel = .false.
        end if
     else
-      dset%isparallel = .false.
+       dset%isparallel = .false.
     end if
     ! open netcdf file, get info, populate Dataset object.
     if (dset%isparallel) then
-      if (present(mpicomm)) then
-         ncerr = nf90_open(trim(filename), ior(NF90_NOWRITE, NF90_MPIIO), &
-                           comm=mpicomm, info = mpi_info_null, ncid=dset%ncid)
-      else
-         ncerr = nf90_open(trim(filename), ior(NF90_NOWRITE, NF90_MPIIO), &
-                           comm=mpi_comm_world, info = mpi_info_null, ncid=dset%ncid)
-      end if
+       if (present(mpicomm)) then
+          ncerr = nf90_open(trim(filename), ior(NF90_NOWRITE, NF90_MPIIO), &
+               comm=mpicomm, info = mpi_info_null, ncid=dset%ncid)
+       else
+          ncerr = nf90_open(trim(filename), ior(NF90_NOWRITE, NF90_MPIIO), &
+               comm=mpi_comm_world, info = mpi_info_null, ncid=dset%ncid)
+       end if
     else
-      ncerr = nf90_open(trim(filename), NF90_NOWRITE, ncid=dset%ncid)
+       ncerr = nf90_open(trim(filename), NF90_NOWRITE, ncid=dset%ncid)
     end if
     if (return_errcode) then
        call nccheck(ncerr,halt=.false.,fname=filename)
@@ -317,7 +318,7 @@ module module_fv3gfs_ncio
     do ndim=1,dset%ndims
        dset%dimensions(ndim)%dimid = ndim
        ncerr = nf90_inquire_dimension(dset%ncid, ndim, name=dset%dimensions(ndim)%name, &
-                                      len=dset%dimensions(ndim)%len)
+            len=dset%dimensions(ndim)%len)
        if (return_errcode) then
           errcode=ncerr
           call nccheck(ncerr,halt=.false.,fname=filename)
@@ -335,10 +336,10 @@ module module_fv3gfs_ncio
        dset%variables(nvar)%hasunlim = .false.
        dset%variables(nvar)%varid = nvar
        ncerr = nf90_inquire_variable(dset%ncid, nvar,&
-                                     name=dset%variables(nvar)%name,&
-                                     natts=dset%variables(nvar)%natts,&
-                                     xtype=dset%variables(nvar)%dtype,&
-                                     ndims=dset%variables(nvar)%ndims)
+            name=dset%variables(nvar)%name,&
+            natts=dset%variables(nvar)%natts,&
+            xtype=dset%variables(nvar)%dtype,&
+            ndims=dset%variables(nvar)%ndims)
        if (return_errcode) then
           errcode=ncerr
           call nccheck(ncerr,halt=.false.,fname=filename)
@@ -352,14 +353,14 @@ module module_fv3gfs_ncio
        allocate(dset%variables(nvar)%chunksizes(dset%variables(nvar)%ndims))
        allocate(dset%variables(nvar)%dimnames(dset%variables(nvar)%ndims))
        if (dset%ishdf5) then
-       ncerr = nf90_inquire_variable(dset%ncid, nvar,&
-                                     dimids=dset%variables(nvar)%dimids,&
-                                     deflate_level=dset%variables(nvar)%deflate_level,&
-                                     chunksizes=dset%variables(nvar)%chunksizes,&
-                                     shuffle=dset%variables(nvar)%shuffle)
+          ncerr = nf90_inquire_variable(dset%ncid, nvar,&
+               dimids=dset%variables(nvar)%dimids,&
+               deflate_level=dset%variables(nvar)%deflate_level,&
+               chunksizes=dset%variables(nvar)%chunksizes,&
+               shuffle=dset%variables(nvar)%shuffle)
        else
-       ncerr = nf90_inquire_variable(dset%ncid, nvar,&
-                                     dimids=dset%variables(nvar)%dimids)
+          ncerr = nf90_inquire_variable(dset%ncid, nvar,&
+               dimids=dset%variables(nvar)%dimids)
        endif
        if (return_errcode) then
           errcode=ncerr
@@ -370,9 +371,9 @@ module module_fv3gfs_ncio
        endif
        do ndim=1,dset%variables(nvar)%ndims
           do n=1,dset%ndims
-            if (dset%variables(nvar)%dimids(ndim) == dset%dimensions(n)%dimid) then
-               exit
-            endif
+             if (dset%variables(nvar)%dimids(ndim) == dset%dimensions(n)%dimid) then
+                exit
+             endif
           enddo
           dset%variables(nvar)%dimindxs(ndim) = n
           dset%variables(nvar)%dimlens(ndim) = dset%dimensions(n)%len
@@ -434,42 +435,42 @@ module module_fv3gfs_ncio
     endif
     if (present(paropen)) then
        if (paropen) then
-         dset%isparallel = .true.
+          dset%isparallel = .true.
        else
-         dset%isparallel = .false.
+          dset%isparallel = .false.
        end if
     else
-      dset%isparallel = .false.
+       dset%isparallel = .false.
     end if
     compress = .true.
     if (present(nocompress)) then
-      if (nocompress) then
-        compress = .false.
-      end if
-    end if 
+       if (nocompress) then
+          compress = .false.
+       end if
+    end if
     ! create netcdf file
     if (dsetin%ishdf5) then
        if (dset%isparallel) then
           if (present(mpicomm)) then
              ncerr = nf90_create(trim(filename), &
-                     cmode=IOR(NF90_CLOBBER,NF90_NETCDF4), ncid=dset%ncid, &
-                     comm = mpicomm, info = mpi_info_null)
+                  cmode=IOR(NF90_CLOBBER,NF90_NETCDF4), ncid=dset%ncid, &
+                  comm = mpicomm, info = mpi_info_null)
           else
              ncerr = nf90_create(trim(filename), &
-                     cmode=IOR(NF90_CLOBBER,NF90_NETCDF4), ncid=dset%ncid, &
-                     comm = mpi_comm_world, info = mpi_info_null)
+                  cmode=IOR(NF90_CLOBBER,NF90_NETCDF4), ncid=dset%ncid, &
+                  comm = mpi_comm_world, info = mpi_info_null)
           end if
        else
           ncerr = nf90_create(trim(filename), &
-                  cmode=IOR(IOR(NF90_CLOBBER,NF90_NETCDF4),NF90_CLASSIC_MODEL), &
-                  !cmode=IOR(NF90_CLOBBER,NF90_NETCDF4), &
-                  ncid=dset%ncid)
+               cmode=IOR(IOR(NF90_CLOBBER,NF90_NETCDF4),NF90_CLASSIC_MODEL), &
+                                !cmode=IOR(NF90_CLOBBER,NF90_NETCDF4), &
+               ncid=dset%ncid)
        end if
        dset%ishdf5 = .true.
     else
        ncerr = nf90_create(trim(filename), &
-               cmode=IOR(IOR(NF90_CLOBBER,NF90_64BIT_OFFSET),NF90_SHARE), &
-               ncid=dset%ncid)
+            cmode=IOR(IOR(NF90_CLOBBER,NF90_64BIT_OFFSET),NF90_SHARE), &
+            ncid=dset%ncid)
        dset%ishdf5 = .false.
     endif
     if (return_errcode) then
@@ -508,8 +509,8 @@ module module_fv3gfs_ncio
     do ndim=1,dsetin%ndims
        if (dsetin%dimensions(ndim)%isunlimited) then
           ncerr = nf90_def_dim(dset%ncid, trim(dsetin%dimensions(ndim)%name), &
-                  NF90_UNLIMITED, &
-                  dset%dimensions(ndim)%dimid)
+               NF90_UNLIMITED, &
+               dset%dimensions(ndim)%dimid)
           if (return_errcode) then
              errcode=ncerr
              call nccheck(ncerr,halt=.false.)
@@ -523,8 +524,8 @@ module module_fv3gfs_ncio
           dset%dimensions(ndim)%name = trim(dsetin%dimensions(ndim)%name)
        else
           ncerr = nf90_def_dim(dset%ncid, trim(dsetin%dimensions(ndim)%name),&
-                  dsetin%dimensions(ndim)%len, &
-                  dset%dimensions(ndim)%dimid)
+               dsetin%dimensions(ndim)%len, &
+               dset%dimensions(ndim)%dimid)
           if (return_errcode) then
              errcode=ncerr
              call nccheck(ncerr,halt=.false.)
@@ -549,10 +550,10 @@ module module_fv3gfs_ncio
        dset%variables(nvar)%chunksizes = dsetin%variables(nvar)%chunksizes
        do ndim=1,dset%variables(nvar)%ndims
           do n=1,dset%ndims
-            if (trim(dsetin%variables(nvar)%dimnames(ndim)) == &
-                trim(dset%dimensions(n)%name)) then
-               exit
-            endif
+             if (trim(dsetin%variables(nvar)%dimnames(ndim)) == &
+                  trim(dset%dimensions(n)%name)) then
+                exit
+             endif
           enddo
           dset%variables(nvar)%dimindxs(ndim) = n
           dset%variables(nvar)%dimids(ndim) = dset%dimensions(n)%dimid
@@ -568,17 +569,17 @@ module module_fv3gfs_ncio
           ! workaround for older versions of netcdf-fortran that don't
           ! like zero chunksize to be specified.
           ncerr = nf90_def_var(dset%ncid, &
-                               trim(dset%variables(nvar)%name),&
-                               dset%variables(nvar)%dtype, &
-                               dset%variables(nvar)%dimids, &
-                               dset%variables(nvar)%varid, &
-                               chunksizes=dset%variables(nvar)%chunksizes)
+               trim(dset%variables(nvar)%name),&
+               dset%variables(nvar)%dtype, &
+               dset%variables(nvar)%dimids, &
+               dset%variables(nvar)%varid, &
+               chunksizes=dset%variables(nvar)%chunksizes)
        else
           ncerr = nf90_def_var(dset%ncid, &
-                               trim(dset%variables(nvar)%name),&
-                               dset%variables(nvar)%dtype, &
-                               dset%variables(nvar)%dimids, &
-                               dset%variables(nvar)%varid)
+               trim(dset%variables(nvar)%name),&
+               dset%variables(nvar)%dtype, &
+               dset%variables(nvar)%dimids, &
+               dset%variables(nvar)%varid)
        endif
        if (return_errcode) then
           errcode=ncerr
@@ -589,12 +590,12 @@ module module_fv3gfs_ncio
        endif
        if (dsetin%variables(nvar)%deflate_level > 0 .and. dset%ishdf5 .and. compress) then
           if (dsetin%variables(nvar)%shuffle) then
-            ishuffle=1
+             ishuffle=1
           else
-            ishuffle=0
+             ishuffle=0
           endif
           ncerr = nf90_def_var_deflate(dset%ncid, dset%variables(nvar)%varid,&
-                  ishuffle,1,dsetin%variables(nvar)%deflate_level)
+               ishuffle,1,dsetin%variables(nvar)%deflate_level)
           if (return_errcode) then
              errcode=ncerr
              call nccheck(ncerr,halt=.false.)
@@ -604,7 +605,7 @@ module module_fv3gfs_ncio
           endif
           dset%variables(nvar)%shuffle = dsetin%variables(nvar)%shuffle
           dset%variables(nvar)%deflate_level = &
-          dsetin%variables(nvar)%deflate_level
+               dsetin%variables(nvar)%deflate_level
        endif
        ! copy variable attributes
        do natt=1,dsetin%variables(nvar)%natts
@@ -618,7 +619,7 @@ module module_fv3gfs_ncio
           endif
           if (.not. compress) then
              if (trim(attname) == 'max_abs_compression_error' &
-                .or. trim(attname) == 'nbits') then
+                  .or. trim(attname) == 'nbits') then
                 cycle
              end if
           end if
@@ -640,14 +641,14 @@ module module_fv3gfs_ncio
     else
        call nccheck(ncerr)
     endif
-    ! copy variable data 
+    ! copy variable data
     ! assumes data is real (32 or 64 bit), or integer (16 or 32 bit) and 1-4d.
     do nvar=1,dsetin%nvars
        varname = trim(dsetin%variables(nvar)%name)
        ! is this variable a coordinate variable?
        coordvar = .false.
        if (trim(varname) == 'lats' .or. trim(varname) == 'lons' .or. &
-           trim(varname) == 'lat'  .or. trim(varname) == 'lon') then
+            trim(varname) == 'lat'  .or. trim(varname) == 'lon') then
           coordvar = .true.
        else
           do ndim=1,dset%ndims
@@ -661,7 +662,7 @@ module module_fv3gfs_ncio
        if (.not. coordvar .and. .not. copyd) cycle
        ! real variable
        if (dsetin%variables(nvar)%dtype == NF90_FLOAT .or.&
-           dsetin%variables(nvar)%dtype == NF90_DOUBLE) then
+            dsetin%variables(nvar)%dtype == NF90_DOUBLE) then
           if (dsetin%variables(nvar)%ndims == 1) then
              call read_vardata(dsetin, varname, values_1d)
              call write_vardata(dset, varname, values_1d)
@@ -678,10 +679,10 @@ module module_fv3gfs_ncio
              call read_vardata(dsetin, varname, values_5d)
              call write_vardata(dset, varname, values_5d)
           endif
-       ! integer var
+          ! integer var
        elseif (dsetin%variables(nvar)%dtype == NF90_INT .or.&
-               dsetin%variables(nvar)%dtype == NF90_BYTE .or.&
-               dsetin%variables(nvar)%dtype == NF90_SHORT) then
+            dsetin%variables(nvar)%dtype == NF90_BYTE .or.&
+            dsetin%variables(nvar)%dtype == NF90_SHORT) then
           if (dsetin%variables(nvar)%ndims == 1) then
              call read_vardata(dsetin, varname, ivalues_1d)
              call write_vardata(dset, varname, ivalues_1d)
@@ -717,11 +718,11 @@ module module_fv3gfs_ncio
           endif
        else
           print *,'not copying variable ',trim(adjustl(varname)),&
-                  ' (unsupported data type or rank)'
+               ' (unsupported data type or rank)'
        endif
     enddo
   end function create_dataset
- 
+
   subroutine close_dataset(dset,errcode)
     ! close netcdf file, deallocate members of dataset object.
     ! if optional error return code errcode is not specified,
@@ -753,17 +754,17 @@ module module_fv3gfs_ncio
     enddo
     deallocate(dset%variables,dset%dimensions)
   end subroutine close_dataset
- 
+
   !subroutine read_vardata(dset,varname,values,nslice,slicedim,errcode)
   ! read data from variable varname in dataset dset, return in it array values.
   ! dset:    Input dataset instance returned by open_dataset/create_dataset.
   ! varname: Input string name of variable.
   ! values:  Array to hold variable data.  Must be
-  !          an allocatable array with same rank 
+  !          an allocatable array with same rank
   !          as variable varname (or 1 dimension less).
-  ! nslice:  optional index along dimension slicedim 
+  ! nslice:  optional index along dimension slicedim
   ! slicedim: optional, if nslice is set, index of which dimension to slice with
-  !          nslice, default is ndims 
+  !          nslice, default is ndims
   ! ncstart: optional, if ncstart and nccount are set, manually specify the
   !          start and count of netCDF read
   ! nccount: optional, if ncstart and nccount are set, manually specify the
@@ -777,13 +778,13 @@ module module_fv3gfs_ncio
   ! dset:    Input dataset instance returned by open_dataset/create_dataset.
   ! varname: Input string name of variable.
   ! values:  Array with variable data.  Must be
-  !          an allocatable array with same rank 
+  !          an allocatable array with same rank
   !          as variable varname (or 1 dimension less).
-  ! nslice:  optional index along dimension slicedim 
+  ! nslice:  optional index along dimension slicedim
   ! slicedim: optional, if nslice is set, index of which dimension to slice with
-  !          nslice, default is ndims 
+  !          nslice, default is ndims
   ! ncstart: optional, if ncstart and nccount are set, manually specify the
-  !          start and count of netCDF write 
+  !          start and count of netCDF write
   ! nccount: optional, if ncstart and nccount are set, manually specify the
   !          start and count of netCDF write
   ! errcode: optional error return code.  If not specified,
@@ -1272,49 +1273,49 @@ module module_fv3gfs_ncio
   end subroutine write_attribute_char
 
   function get_idate_from_time_units(dset) result(idate)
-      ! return integer array with year,month,day,hour,minute,second
-      ! parsed from time units attribute.
-      type(Dataset), intent(in) :: dset
-      integer idate(6)
-      character(len=nf90_max_name) :: time_units
-      integer ipos1,ipos2
-      call read_attribute(dset, 'units', time_units, 'time')
-      ipos1 = scan(time_units,"since",back=.true.)+1
-      ipos2 = scan(time_units,"-",back=.false.)-1
-      read(time_units(ipos1:ipos2),*) idate(1)
-      ipos1 = ipos2+2; ipos2=ipos1+1
-      read(time_units(ipos1:ipos2),*) idate(2)
-      ipos1 = ipos2+2; ipos2=ipos1+1
-      read(time_units(ipos1:ipos2),*) idate(3)
-      ipos1 = scan(time_units,":")-2
-      ipos2 = ipos1+1
-      read(time_units(ipos1:ipos2),*) idate(4)
-      ipos1 = ipos2+2
-      ipos2 = ipos1+1
-      read(time_units(ipos1:ipos2),*) idate(5)
-      ipos1 = ipos2+2
-      ipos2 = ipos1+1
-      read(time_units(ipos1:ipos2),*) idate(6)
+    ! return integer array with year,month,day,hour,minute,second
+    ! parsed from time units attribute.
+    type(Dataset), intent(in) :: dset
+    integer idate(6)
+    character(len=nf90_max_name) :: time_units
+    integer ipos1,ipos2
+    call read_attribute(dset, 'units', time_units, 'time')
+    ipos1 = scan(time_units,"since",back=.true.)+1
+    ipos2 = scan(time_units,"-",back=.false.)-1
+    read(time_units(ipos1:ipos2),*) idate(1)
+    ipos1 = ipos2+2; ipos2=ipos1+1
+    read(time_units(ipos1:ipos2),*) idate(2)
+    ipos1 = ipos2+2; ipos2=ipos1+1
+    read(time_units(ipos1:ipos2),*) idate(3)
+    ipos1 = scan(time_units,":")-2
+    ipos2 = ipos1+1
+    read(time_units(ipos1:ipos2),*) idate(4)
+    ipos1 = ipos2+2
+    ipos2 = ipos1+1
+    read(time_units(ipos1:ipos2),*) idate(5)
+    ipos1 = ipos2+2
+    ipos2 = ipos1+1
+    read(time_units(ipos1:ipos2),*) idate(6)
   end function get_idate_from_time_units
-  
+
   function get_time_units_from_idate(idate, time_measure) result(time_units)
-      ! create time units attribute of form 'hours since YYYY-MM-DD HH:MM:SS'
-      ! from integer array with year,month,day,hour,minute,second
-      ! optional argument 'time_measure' can be used to change 'hours' to
-      ! 'days', 'minutes', 'seconds' etc.
-      character(len=*), intent(in), optional :: time_measure
-      integer, intent(in) ::  idate(6)
-      character(len=12) :: timechar
-      character(len=nf90_max_name) :: time_units
-      if (present(time_measure)) then
-         timechar = trim(time_measure)
-      else
-         timechar = 'hours'
-      endif
-      write(time_units,101) idate
-101   format(' since ',i4.4,'-',i2.2,'-',i2.2,' ',&
-      i2.2,':',i2.2,':',i2.2)
-      time_units = trim(adjustl(timechar))//time_units
+    ! create time units attribute of form 'hours since YYYY-MM-DD HH:MM:SS'
+    ! from integer array with year,month,day,hour,minute,second
+    ! optional argument 'time_measure' can be used to change 'hours' to
+    ! 'days', 'minutes', 'seconds' etc.
+    character(len=*), intent(in), optional :: time_measure
+    integer, intent(in) ::  idate(6)
+    character(len=12) :: timechar
+    character(len=nf90_max_name) :: time_units
+    if (present(time_measure)) then
+       timechar = trim(time_measure)
+    else
+       timechar = 'hours'
+    endif
+    write(time_units,101) idate
+101 format(' since ',i4.4,'-',i2.2,'-',i2.2,' ',&
+         i2.2,':',i2.2,':',i2.2)
+    time_units = trim(adjustl(timechar))//time_units
   end function get_time_units_from_idate
 
   subroutine quantize_data_2d(dataIn, dataOut, nbits, compress_err)
