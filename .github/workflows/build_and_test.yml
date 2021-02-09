@@ -1,0 +1,33 @@
+name: Build and Test
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    env:
+      FC: gfortran-9
+      CC: gcc-9
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: install-dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install libmpich-dev
+        sudo apt-get install libnetcdf-dev libnetcdff-dev netcdf-bin pkg-config
+        sudo apt-get install libpng-dev
+        sudo apt-get install libjpeg-dev
+        sudo apt-get install wget
+       
+    - name: build
+      run: |
+        pwd && ls -l
+        mkdir build && cd build
+        cmake .. -DCMAKE_PREFIX_PATH=~
+        make -j2
+
+
+    
+        
+   
+
