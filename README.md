@@ -6,7 +6,7 @@ the [NCEPLIBS](https://github.com/NOAA-EMC/NCEPLIBS) project.
 
 ## Authors
 
-Jeff Whitaker, Rahul Mahajan
+Jeff Whitaker, Cory Martin
 
 Code manager: Edward Hartnett
 
