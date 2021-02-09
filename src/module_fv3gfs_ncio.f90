@@ -453,7 +453,7 @@ contains
        if (dset%isparallel) then
           if (present(mpicomm)) then
              ncerr = nf90_create(trim(filename), &
-                  cmode=NF90_NETCDF4, ncid=dset%ncid, &
+                  cmode=IOR(NF90_NETCDF4,NF90_NETCDF4), ncid=dset%ncid, &
                   comm = mpicomm, info = mpi_info_null)
           else
              ncerr = nf90_create(trim(filename), &
