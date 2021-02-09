@@ -453,7 +453,7 @@ contains
        if (dset%isparallel) then
           if (present(mpicomm)) then
              ncerr = nf90_create(trim(filename), &
-                  cmode=IOR(NF90_CLOBBER,NF90_NETCDF4), ncid=dset%ncid, &
+                  cmode=NF90_NETCDF4, ncid=dset%ncid, &
                   comm = mpicomm, info = mpi_info_null)
           else
              ncerr = nf90_create(trim(filename), &
@@ -462,14 +462,13 @@ contains
           end if
        else
           ncerr = nf90_create(trim(filename), &
-               cmode=IOR(IOR(NF90_CLOBBER,NF90_NETCDF4),NF90_CLASSIC_MODEL), &
-                                !cmode=IOR(NF90_CLOBBER,NF90_NETCDF4), &
+               cmode=IOR(NF90_CLOBBER,NF90_NETCDF4), &
                ncid=dset%ncid)
        end if
        dset%ishdf5 = .true.
     else
        ncerr = nf90_create(trim(filename), &
-            cmode=IOR(IOR(NF90_CLOBBER,NF90_64BIT_OFFSET),NF90_SHARE), &
+            cmode=IOR(NF90_CLOBBER,NF90_CDF5), &
             ncid=dset%ncid)
        dset%ishdf5 = .false.
     endif
