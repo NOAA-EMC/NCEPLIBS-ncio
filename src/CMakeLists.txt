@@ -1,3 +1,6 @@
+# This is the CMake file to build the src directory of NCEPLIBS-ncio,
+# an NCEP library for reading and writing netCDF data files.
+#
 list(APPEND fortran_src
   module_fv3gfs_ncio.f90
 )
