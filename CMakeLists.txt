@@ -29,6 +29,11 @@ find_package(NetCDF REQUIRED Fortran)
 
 add_subdirectory(src)
 
+include(CTest)
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
+
 # Determine whether or not to generate documentation.
 option(ENABLE_DOCS "Enable generation of doxygen-based documentation." OFF)
 if(ENABLE_DOCS)
