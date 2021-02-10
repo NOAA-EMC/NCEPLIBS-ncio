@@ -1,6 +1,6 @@
 program test_ncio
   use netcdf
-  use module_fv3gfs_ncio
+  use module_ncio
   implicit none
   
   character(len=500) filename
@@ -62,7 +62,7 @@ program test_ncio
   call read_attribute(dset,'ak',values_1d)
   print *,'ak =',values_1d
   ! create a copy of the dataset
-  filename='test_data/dynf000_copy.nc'
+  filename='dynf000_copy.nc'
   dsetout = create_dataset(filename, dset, copy_vardata=.true.)
   call write_attribute(dsetout,'foo',1,'ugrd')
   if (allocated(values_1d)) deallocate(values_1d)
