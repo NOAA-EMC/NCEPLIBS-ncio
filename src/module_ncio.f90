@@ -130,7 +130,7 @@ contains
   end subroutine nccheck
 
   function get_dim(dset, dimname) result(dim)
-    ! get Dimension object given anem
+    ! get Dimension object given name
     type(Dataset) :: dset
     type(Dimension) :: dim
     character(len=*), intent(in) :: dimname
@@ -155,7 +155,7 @@ contains
   end function get_ndim
 
   function get_var(dset, varname) result (var)
-    ! get Variable object given anem
+    ! get Variable object given name
     type(Dataset) :: dset
     type(Variable) :: var
     character(len=*) :: varname

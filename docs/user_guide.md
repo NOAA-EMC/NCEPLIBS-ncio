@@ -59,14 +59,14 @@ The NCEPLIBS-ncio code here: https://github.com/NOAA-EMC/NCEPLIBS-ncio.
     ! use optional kwarg varname to check for a variable attribute.
 
   function get_dim(dset, dimname) result(dim)
-    ! get Dimension object given anem
+    ! get Dimension object given name
 
   integer function get_ndim(dset,varname)
     ! get Dimension index (ndim) given name
     ! Dimension object can then be accessed via Dataset%dimensions(ndim)
 
   function get_var(dset, varname) result (var)
-    ! get Variable object given anem
+    ! get Variable object given name
 
   integer function get_nvar(dset,varname)
     ! get variable index (nvar) given name
