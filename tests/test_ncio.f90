@@ -66,12 +66,31 @@ program test_ncio
     print *,'***variable id not correct...'
     stop 99
   endif
-  ! print all info for this variable
-  !do n=1,dset%variables(nvar)%ndims
-  !   print *,trim(adjustl(dset%variables(nvar)%dimnames(n))),&
-  !        dset%variables(nvar)%dimlens(n),&
-  !        dset%dimensions(dset%variables(nvar)%dimindxs(n))%len
-  !enddo
+  print *,'*** Test variable dimension info...'
+  if (trim(adjustl(dset%variables(nvar)%dimnames(1))) .ne. 'grid_xt' .or. &
+      dset%variables(nvar)%dimlens(1) .ne. 256 .or. &
+      dset%dimensions(dset%variables(nvar)%dimindxs(1))%len .ne. 256) then
+    print *,'***dimension 1 info not correct...'
+    stop 99
+  endif
+  if (trim(adjustl(dset%variables(nvar)%dimnames(2))) .ne. 'grid_yt' .or. &
+      dset%variables(nvar)%dimlens(2) .ne. 128 .or. &
+      dset%dimensions(dset%variables(nvar)%dimindxs(2))%len .ne. 128) then
+    print *,'***dimension 2 info not correct...'
+    stop 99
+  endif
+  if (trim(adjustl(dset%variables(nvar)%dimnames(3))) .ne. 'pfull' .or. &
+      dset%variables(nvar)%dimlens(3) .ne. 64 .or. &
+      dset%dimensions(dset%variables(nvar)%dimindxs(3))%len .ne. 64) then
+    print *,'***dimension 3 info not correct...'
+    stop 99
+  endif
+  if (trim(adjustl(dset%variables(nvar)%dimnames(4))) .ne. 'time' .or. &
+      dset%variables(nvar)%dimlens(4) .ne. 1 .or. &
+      dset%dimensions(dset%variables(nvar)%dimindxs(4))%len .ne. 1) then
+    print *,'***dimension 4 info not correct...'
+    stop 99
+  endif
   idate = get_idate_from_time_units(dset)
   print *,'*** Test getting idate from time units attribute...'
   icheck = (/2016,1,4,6,0,0/)
