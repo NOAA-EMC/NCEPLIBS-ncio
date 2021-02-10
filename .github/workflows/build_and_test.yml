@@ -17,15 +17,10 @@ jobs:
         sudo apt-get install libnetcdf-dev libnetcdff-dev netcdf-bin pkg-config
         sudo apt-get install doxygen
        
-    - name: build
+    - name: build and test
       run: |
         pwd && ls -l
         mkdir build && cd build
         cmake .. -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH=~
         make -j2
-
-
-    
-        
-   
-
+        ctest --verbose
