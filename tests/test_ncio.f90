@@ -15,7 +15,7 @@ program test_ncio
   integer ndim,nvar,ndims,ival,idate(6),ierr,n
   logical hasit
   
-  dsetin = open_dataset('dynf000_template.nc')
+  dsetin = open_dataset('dynf000_template.nc.in')
   ! create a copy of the template file
   dset = create_dataset('dynf000.nc',dsetin)
   print *,'ncid=',dsetin%ncid
