@@ -20,6 +20,8 @@ This package requires:
 ## Installing
 
 module for reading/writing FV3 netcdf lat/lon data.
+API docs [here](https://github.com/NOAA-EMC/NCEPLIBS-ncio/blob/develop/docs/user_guide.md).
+Example usage:
 
 * open a Dataset.
 ```fortran
