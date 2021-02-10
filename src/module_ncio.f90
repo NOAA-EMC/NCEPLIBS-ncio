@@ -130,6 +130,7 @@ contains
   end subroutine nccheck
 
   function get_dim(dset, dimname) result(dim)
+    ! get Dimension object given anem
     type(Dataset) :: dset
     type(Dimension) :: dim
     character(len=*), intent(in) :: dimname
@@ -139,7 +140,8 @@ contains
   end function get_dim
 
   integer function get_ndim(dset, dimname)
-    ! get dimension index given name
+    ! get Dimension index given name
+    ! Dimension object can then be accessed via Dataset%dimensions(nvar)
     type(Dataset), intent(in) :: dset
     character(len=*), intent(in) :: dimname
     integer ndim
@@ -153,6 +155,7 @@ contains
   end function get_ndim
 
   function get_var(dset, varname) result (var)
+    ! get Variable object given anem
     type(Dataset) :: dset
     type(Variable) :: var
     character(len=*) :: varname
@@ -201,7 +204,7 @@ contains
   end function has_attr
 
   integer function get_nvar(dset,varname)
-    ! get variable index given name
+    ! get Variable index given name
     type(Dataset), intent(in) :: dset
     character(len=*), intent(in) :: varname
     integer nvar
@@ -258,6 +261,7 @@ contains
     ! open existing dataset, create dataset object for reading netcdf file
     ! if optional error return code errcode is not specified,
     ! program will stop if a nonzero error code returned by the netcdf lib.
+    ! returns Dataset object.
     implicit none
     character(len=*), intent(in) :: filename
     type(Dataset) :: dset
@@ -395,6 +399,7 @@ contains
     ! if optional nocompress=.true., outputfile will not use compression even if input file does
     ! if optional error return code errcode is not specified,
     ! program will stop if a nonzero error code returned by the netcdf lib.
+    ! returns Dataset object.
     implicit none
     character(len=*), intent(in) :: filename
     character(len=nf90_max_name) :: attname, varname
