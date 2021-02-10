@@ -91,21 +91,21 @@ program test_ncio
     print *,'***dimension 4 info not correct...'
     stop 99
   endif
-  idate = get_idate_from_time_units(dset)
   print *,'*** Test getting idate from time units attribute...'
+  idate = get_idate_from_time_units(dset)
   icheck = (/2016,1,4,6,0,0/)
   if (all(idate .ne. icheck)) then
       print *,'*** idate not correct'
       stop 99
   endif
-  time_units = get_time_units_from_idate(idate, time_measure='minutes')
   print *,'*** Test getting time units from idate...'
+  time_units = get_time_units_from_idate(idate, time_measure='minutes')
   if (trim(time_units) .ne. 'minutes since 2016-01-04 06:00:00') then
     print *,'***time units not correct...'
     stop 99
   endif
-  call read_attribute(dset,'foo',time_units,errcode=ierr)
   print *,'*** Test the return code is correct for missing attribute...'
+  call read_attribute(dset,'foo',time_units,errcode=ierr)
   if (ierr .ne. NF90_ENOTATT) then
     print *,'***return code not correct for missing attribute...'
     stop 99
@@ -114,8 +114,8 @@ program test_ncio
   
   ! re-open dataset
   dset = open_dataset('dynf000.nc')
-  var = get_var(dset,'vgrd') 
   print *,'*** Test number of dimensions for variable is correct...'
+  var = get_var(dset,'vgrd') 
   if (var%ndims .ne. 4) then
     print *,'***number of dimensions for variable not correct...'
     stop 99
