@@ -7,8 +7,9 @@ NetCDF read/write modules for the NCEP models. This is part of the
 
 The NCEPLIBS-ncio code here: https://github.com/NOAA-EMC/NCEPLIBS-ncio.
 
-#API
+# API
 
+```
   type Variable
      integer varid ! netCDF variable ID
      integer ndims ! number of dimensions
@@ -139,3 +140,4 @@ The NCEPLIBS-ncio code here: https://github.com/NOAA-EMC/NCEPLIBS-ncio.
     ! write attribute 'attname' with data in 'values'.  If optional
     ! argument 'varname' is given, a variable attribute is written.
     ! values can be a real(4), real(8), integer, string or 1d array.
+```
