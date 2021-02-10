@@ -76,6 +76,10 @@ The NCEPLIBS-ncio code here: https://github.com/NOAA-EMC/NCEPLIBS-ncio.
     ! open existing dataset, create dataset object for reading netcdf file
     ! if optional error return code errcode is not specified,
     ! program will stop if a nonzero error code returned by the netcdf lib.
+    ! if optional flag paropen is T, dataset will
+    ! be opened for parallel access (Default F)
+    ! mpicomm (optional) is the MPI communicator to use (Default MPI_COMM_WORLD)
+    ! ignored if paropen=F
     ! returns Dataset object.
 
   function create_dataset(filename, dsetin, copy_vardata, paropen, nocompress, mpicomm, errcode) result(dset)
@@ -85,9 +89,13 @@ The NCEPLIBS-ncio code here: https://github.com/NOAA-EMC/NCEPLIBS-ncio.
     ! variable data) is copied. Default is F (only coord var data
     ! copied).
     ! if optional nocompress=.true., outputfile will not use compression even if input file does
+    ! if optional flag paropen is T, dataset will
+    ! be opened for parallel access (Default F)
+    ! mpicomm (optional) is the MPI communicator to use (Default MPI_COMM_WORLD)
+    ! ignored if paropen=F
     ! if optional error return code errcode is not specified,
     ! program will stop if a nonzero error code returned by the netcdf lib.
-    ! returns Dataset object
+    ! returns Dataset object.
 
   subroutine close_dataset(dset,errcode)
     ! close netcdf file, deallocate members of dataset object.

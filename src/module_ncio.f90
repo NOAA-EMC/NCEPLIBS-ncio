@@ -261,6 +261,10 @@ contains
     ! open existing dataset, create dataset object for reading netcdf file
     ! if optional error return code errcode is not specified,
     ! program will stop if a nonzero error code returned by the netcdf lib.
+    ! if optional flag paropen is T, dataset will
+    ! be opened for parallel access (Default F)
+    ! mpicomm (optional) is the MPI communicator to use (Default MPI_COMM_WORLD)
+    ! ignored if paropen=F
     ! returns Dataset object.
     implicit none
     character(len=*), intent(in) :: filename
@@ -397,6 +401,10 @@ contains
     ! variable data) is copied. Default is F (only coord var data
     ! copied).
     ! if optional nocompress=.true., outputfile will not use compression even if input file does
+    ! if optional flag paropen is T, dataset will
+    ! be opened for parallel access (Default F)
+    ! mpicomm (optional) is the MPI communicator to use (Default MPI_COMM_WORLD)
+    ! ignored if paropen=F
     ! if optional error return code errcode is not specified,
     ! program will stop if a nonzero error code returned by the netcdf lib.
     ! returns Dataset object.
