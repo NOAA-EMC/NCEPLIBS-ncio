@@ -682,6 +682,7 @@ contains
        elseif (dsetin%variables(nvar)%dtype == NF90_INT .or.&
             dsetin%variables(nvar)%dtype == NF90_BYTE .or.&
             dsetin%variables(nvar)%dtype == NF90_SHORT) then
+! TODO:  support NF90_UBYTE, USHORT, UINT, INT64, UINT64
           if (dsetin%variables(nvar)%ndims == 1) then
              call read_vardata(dsetin, varname, ivalues_1d)
              call write_vardata(dset, varname, ivalues_1d)
