@@ -1,4 +1,7 @@
 program test_ncio
+
+! test for NCEPLIBS-ncio
+
   use netcdf
   use module_ncio
   implicit none
@@ -15,10 +18,9 @@ program test_ncio
   logical hasit
   
   dsetin = open_dataset('dynf000_template.nc.in')
-  ! create a copy of the template file
   print *,'*** Test creation of new dataset from template...'
   dset = create_dataset('dynf000.nc',dsetin)
-  print *,'*** Test that number of variables,dimensions,attributes read...'
+  print *,'*** Test that number of variables,dimensions,attributes is read...'
   if (dsetin%nvars .ne. 23) then
     print *,'***number of variables not correct...'
     stop 99
@@ -163,4 +165,5 @@ program test_ncio
   endif
   call close_dataset(dset)
   print *,"SUCCESS!"
+
 end program test_ncio
