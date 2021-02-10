@@ -97,7 +97,8 @@ module module_ncio
   end interface write_attribute
 
   interface quantize_data
-     module procedure quantize_data_2d, quantize_data_3d, quantize_data_4d
+     module procedure quantize_data_2d, quantize_data_3d, &
+                      quantize_data_4d, quantize_data_5d
   end interface quantize_data
 
   public :: open_dataset, create_dataset, close_dataset, Dataset, Variable, Dimension, &
@@ -1335,5 +1336,11 @@ contains
     real(4), intent(out) :: dataOut(:,:,:,:)
     include "quantize_data_code.f90"
   end subroutine quantize_data_4d
+
+  subroutine quantize_data_5d(dataIn, dataOut, nbits, compress_err)
+    real(4), intent(in) :: dataIn(:,:,:,:,:)
+    real(4), intent(out) :: dataOut(:,:,:,:,:)
+    include "quantize_data_code.f90"
+  end subroutine quantize_data_5d
 
 end module module_ncio

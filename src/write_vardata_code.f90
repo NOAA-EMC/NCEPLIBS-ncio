@@ -52,29 +52,15 @@
 
   ncerr = nf90_var_par_access(dset%ncid, dset%variables(nvar)%varid, nf90_collective)
   if (is_slice) then
-     if (dset%variables(nvar)%ndims == 4) then
+     if (dset%variables(nvar)%ndims > 1) then
         ncerr = nf90_put_var(dset%ncid, dset%variables(nvar)%varid,values, &
-             start=start,count=count)
-     else if (dset%variables(nvar)%ndims == 3) then
-        ncerr = nf90_put_var(dset%ncid, dset%variables(nvar)%varid,values, &
-             start=start,count=count)
-     else if (dset%variables(nvar)%ndims == 2) then
-        ncerr = nf90_put_var(dset%ncid, dset%variables(nvar)%varid,values, &
-             start=start,count=count)
+                             start=start,count=count)
      else if (dset%variables(nvar)%ndims == 1) then
         if (return_errcode) then
            errcode = -1
            return
         else
            print *,'cannot write a slice to a 1d variable'
-           stop 99
-        endif
-     else if (dset%variables(nvar)%ndims > 4) then
-        if (return_errcode) then
-           errcode = -1
-           return
-        else
-           print *,'only variables up to 4d supported'
            stop 99
         endif
      endif
