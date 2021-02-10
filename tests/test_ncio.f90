@@ -7,7 +7,6 @@ program test_ncio
   type(Dataset) :: dset, dsetin
   type(Variable) :: var
   real(4), allocatable, dimension(:) :: values_1d
-  real(8), allocatable, dimension(:) :: values8_1d
   real(4), allocatable, dimension(:,:) :: values_2d
   real(4), allocatable, dimension(:,:,:) :: values_3d
   real(4), allocatable, dimension(:,:,:,:) :: values_4d
