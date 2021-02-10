@@ -1,6 +1,25 @@
-# NCEPLIBS-ncio
-module for reading/writing FV3 netcdf lat/lon data.
 
+# NCEPLIBS-ncio
+
+This is a library used by NCEP models for netCDF I/O. This is part of
+the [NCEPLIBS](https://github.com/NOAA-EMC/NCEPLIBS) project.
+
+## Authors
+
+Jeff Whitaker, Cory Martin
+
+Code manager: Edward Hartnett
+
+## Prerequisites
+
+This package requires:
+
+ - [netcdf-c Library](https://github.com/Unidata/netcdf-c)
+ - [netcdf-fortran Library](https://github.com/Unidata/netcdf-fortran)
+
+## Installing
+
+module for reading/writing FV3 netcdf lat/lon data.
 
 * open a Dataset.
 ```fortran
@@ -83,4 +102,3 @@ dim = get_dim(ds, 'time')
 ```fortran
 call close_dataset(ds)
 call close_dataset(dso)
-

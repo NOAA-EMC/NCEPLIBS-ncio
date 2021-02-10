@@ -1,10 +1,42 @@
-cmake_minimum_required(VERSION 2.8)
-if(BUILD_FV3GFS_NCIO)
-  set(Fortran_MODULE_DIRECTORY "${PROJECT_BINARY_DIR}/include")
-  # NetCDF-4 library
-  include_directories( ${NETCDF_INCLUDES} ${FV3GFS_NCIO_INCS} )
-  FILE(GLOB FV3GFS_NCIO_SRC ${CMAKE_CURRENT_SOURCE_DIR}/module_fv3gfs_ncio.f90 )
-  set_source_files_properties( ${FV3GFS_NCIO_SRC} PROPERTIES COMPILE_FLAGS ${FV3GFS_NCIO_Fortran_FLAGS} )
-  add_library(fv3gfs_ncio STATIC ${FV3GFS_NCIO_SRC})
-endif(BUILD_FV3GFS_NCIO)
+# This is the main CMake build file for NCEPLIBS-ncio, a NOAA library
+# to for reading and writing netCDF data.
+#
+# 2/9/21
 
+cmake_minimum_required(VERSION 3.15)
+
+file(STRINGS "VERSION" pVersion)
+
+project(ncio
+        VERSION ${pVersion}
+        LANGUAGES Fortran)
+
+include(GNUInstallDirs)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+if(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release|RelWithDebInfo|MinSizeRel)$")
+  message(STATUS "Setting build type to 'Release' as none was specified.")
+  set(CMAKE_BUILD_TYPE
+      "Release"
+      CACHE STRING "Choose the type of build." FORCE)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
+                                               "MinSizeRel" "RelWithDebInfo")
+endif()
+
+find_package(MPI REQUIRED)
+find_package(NetCDF REQUIRED Fortran)
+
+add_subdirectory(src)
+
+include(CTest)
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
+
+# Determine whether or not to generate documentation.
+option(ENABLE_DOCS "Enable generation of doxygen-based documentation." OFF)
+if(ENABLE_DOCS)
+  find_package(Doxygen REQUIRED)
+  add_subdirectory(docs)  
+endif()
