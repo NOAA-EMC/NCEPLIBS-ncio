@@ -39,6 +39,7 @@ program test_ncio
   call read_vardata(dset, 'vgrd', values_4d)
   values_3d=1.013e5 
   values_4d=99.
+  values_4d(:,:,10,:) = -99. 
   ! populate pressfc and vgrd
   print *,'*** Test write of variable data...'
   call write_vardata(dset,'pressfc', values_3d)
@@ -124,13 +125,13 @@ program test_ncio
   endif
   print *,'*** Test reading of data just written...'
   call read_vardata(dset, 'vgrd', values_4d)
-  if (minval(values_4d) .ne. 99. .or. maxval(values_4d) .ne. 99.) then
+  if (minval(values_4d) .ne. -99. .or. maxval(values_4d) .ne. 99.) then
     print *,'***vgrd variable data read as 4d not correct...'
     stop 99
   endif
   ! this should work also, since time dim is singleton
   call read_vardata(dset, 'vgrd', values_3d) 
-  if (minval(values_3d) .ne. 99. .or. maxval(values_3d) .ne. 99.) then
+  if (minval(values_3d) .ne. -99. .or. maxval(values_3d) .ne. 99.) then
     print *,'***vgrd variable data read as 3d not correct...'
     stop 99
   endif
@@ -144,6 +145,15 @@ program test_ncio
   if (minval(values_2d) .ne. 1.013e5 .or. maxval(values_2d) .ne. 1.013e5) then
     print *,'***presssfc variable data read as 2d not correct...'
     stop 99
+  endif
+  print *,'*** Test reading of slice...'
+  ! read 10th element along 3rd dimension
+  call read_vardata(dset, 'vgrd', values_3d,10,3)
+  if ( all(shape(values_3d) .ne. (/256,128,1/)) ) then
+      print *,'***shape of slice incorrect...'
+  endif
+  if ( all(values_3d .ne. -99.) ) then
+      print *,'***data in slice incorrect...'
   endif
   print *, '*** Test has_var function...'
   hasit = has_var(dset,'pressfc')
