@@ -259,12 +259,15 @@ contains
 
   function open_dataset(filename,errcode,paropen, mpicomm) result(dset)
     ! open existing dataset, create dataset object for reading netcdf file
-    ! if optional error return code errcode is not specified,
-    ! program will stop if a nonzero error code returned by the netcdf lib.
-    ! if optional flag paropen is T, dataset will
-    ! be opened for parallel access (Default F)
-    ! mpicomm (optional) is the MPI communicator to use (Default MPI_COMM_WORLD)
-    ! ignored if paropen=F
+    !
+    ! filename: filename of netCDF Dataset.
+    ! errcode: optional error return code.  If not specified 
+    !          the program will stop if a nonzero error code returned by the netcdf lib.
+    ! paropen: optional flag to indicate whether to open dataset for parallel
+    !          access (Default .false.)
+    ! mpicomm: optional MPI communicator to use (Default MPI_COMM_WORLD)
+    !          ignored if paropen=F
+    !
     ! returns Dataset object.
     implicit none
     character(len=*), intent(in) :: filename
@@ -397,16 +400,21 @@ contains
   function create_dataset(filename, dsetin, copy_vardata, paropen, nocompress, mpicomm, errcode) result(dset)
     ! create new dataset, using an existing dataset object to define
     ! variables, dimensions and attributes.
-    ! If copy_vardata=T, all variable data (not just coordinate
-    ! variable data) is copied. Default is F (only coord var data
-    ! copied).
-    ! if optional nocompress=.true., outputfile will not use compression even if input file does
-    ! if optional flag paropen is T, dataset will
-    ! be opened for parallel access (Default F)
-    ! mpicomm (optional) is the MPI communicator to use (Default MPI_COMM_WORLD)
-    ! ignored if paropen=F
-    ! if optional error return code errcode is not specified,
-    ! program will stop if a nonzero error code returned by the netcdf lib.
+    !
+    ! filename: filename for netCDF Dataset.
+    ! dsetin:  dataset object to use as a template.
+    ! copyvardata: optional flag to control whether all variable
+    !              data is copied (Default is .false., only coordinate
+    !              variable data is copied).
+    ! errcode: optional error return code.  If not specified 
+    !          the program will stop if a nonzero error code returned by the netcdf lib.
+    ! paropen: optional flag to indicate whether to open dataset for parallel
+    !          access (Default .false.)
+    ! nocompress: optional flag to disable compression  even if input dataset is
+    !             compressed (Default .false.).
+    ! mpicomm: optional MPI communicator to use (Default MPI_COMM_WORLD)
+    !          ignored if paropen=F
+    !
     ! returns Dataset object.
     implicit none
     character(len=*), intent(in) :: filename
@@ -771,6 +779,7 @@ contains
 
   !subroutine read_vardata(dset,varname,values,nslice,slicedim,errcode)
   ! read data from variable varname in dataset dset, return in it array values.
+  !
   ! dset:    Input dataset instance returned by open_dataset/create_dataset.
   ! varname: Input string name of variable.
   ! values:  Array to hold variable data.  Must be
@@ -789,6 +798,7 @@ contains
 
   !subroutine write_vardata(dset,varname,values,nslice,slicedim,errcode)
   ! write data (in array values) to variable varname in dataset dset.
+  !
   ! dset:    Input dataset instance returned by open_dataset/create_dataset.
   ! varname: Input string name of variable.
   ! values:  Array with variable data.  Must be
