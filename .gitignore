@@ -6,5 +6,5 @@ build*/
 install*/
 
 *.nc*
-
+ 
 .*.sw[a-p]

@@ -19,11 +19,13 @@ This package requires:
 
 ## Installing
 
-module for reading/writing FV3 netcdf lat/lon data.
+module for reading/writing netcdf gridded data.
+API docs [here](https://github.com/NOAA-EMC/NCEPLIBS-ncio/blob/develop/docs/user_guide.md).
+Example usage:
 
 * open a Dataset.
 ```fortran
-use module_fv3gfs_ncio
+use module_ncio
 type(Dataset) :: ds
 ds = open_dataset('gfs.t00z.atmf240.nc')
 ```
@@ -92,7 +94,7 @@ call write_attribute(dso, 'units', charatt, 'time')
 ```fortran
 type(Variable) :: var
 type(Dimension) :: dim
-! see module_fv3gfs_ncio.f90 for type definitions.
+! see module_ncio.f90 for type definitions.
 ! type members can be used to the call netcdf-fortran90 interface
 ! directly.
 var = get_var(ds, 'ugrd')

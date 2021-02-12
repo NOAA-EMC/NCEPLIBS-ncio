@@ -1,10 +1,10 @@
 !> @file
-!! Module for reading/writing netcdf global lat/lon grid files output by FV3GFS.
-!! Assumes netcdf classic data model, nf90_format_netcdf4_classic format.
+!! Module for reading/writing netcdf files such as the lat/lon grid history files output by the GFS.
+!! writing requires a template file.
 !! Handles 32 and 64 bit real variables, 8, 16 and 32 bit integer
 !! variables and char variables. Variables can have up to 5 dimensions.
 !! @author jeff whitaker <jeffrey.s.whitaker@noaa.gov> @date 201910
-module module_fv3gfs_ncio
+module module_ncio
 
   use netcdf
   use mpi
@@ -97,7 +97,8 @@ module module_fv3gfs_ncio
   end interface write_attribute
 
   interface quantize_data
-     module procedure quantize_data_2d, quantize_data_3d, quantize_data_4d
+     module procedure quantize_data_2d, quantize_data_3d, &
+                      quantize_data_4d, quantize_data_5d
   end interface quantize_data
 
   public :: open_dataset, create_dataset, close_dataset, Dataset, Variable, Dimension, &
@@ -129,6 +130,7 @@ contains
   end subroutine nccheck
 
   function get_dim(dset, dimname) result(dim)
+    ! get Dimension object given name
     type(Dataset) :: dset
     type(Dimension) :: dim
     character(len=*), intent(in) :: dimname
@@ -138,7 +140,8 @@ contains
   end function get_dim
 
   integer function get_ndim(dset, dimname)
-    ! get dimension index given name
+    ! get Dimension index given name
+    ! Dimension object can then be accessed via Dataset%dimensions(nvar)
     type(Dataset), intent(in) :: dset
     character(len=*), intent(in) :: dimname
     integer ndim
@@ -152,6 +155,7 @@ contains
   end function get_ndim
 
   function get_var(dset, varname) result (var)
+    ! get Variable object given name
     type(Dataset) :: dset
     type(Variable) :: var
     character(len=*) :: varname
@@ -200,7 +204,7 @@ contains
   end function has_attr
 
   integer function get_nvar(dset,varname)
-    ! get variable index given name
+    ! get Variable index given name
     type(Dataset), intent(in) :: dset
     character(len=*), intent(in) :: varname
     integer nvar
@@ -255,8 +259,16 @@ contains
 
   function open_dataset(filename,errcode,paropen, mpicomm) result(dset)
     ! open existing dataset, create dataset object for reading netcdf file
-    ! if optional error return code errcode is not specified,
-    ! program will stop if a nonzero error code returned by the netcdf lib.
+    !
+    ! filename: filename of netCDF Dataset.
+    ! errcode: optional error return code.  If not specified 
+    !          the program will stop if a nonzero error code returned by the netcdf lib.
+    ! paropen: optional flag to indicate whether to open dataset for parallel
+    !          access (Default .false.)
+    ! mpicomm: optional MPI communicator to use (Default MPI_COMM_WORLD)
+    !          ignored if paropen=F
+    !
+    ! returns Dataset object.
     implicit none
     character(len=*), intent(in) :: filename
     type(Dataset) :: dset
@@ -388,12 +400,22 @@ contains
   function create_dataset(filename, dsetin, copy_vardata, paropen, nocompress, mpicomm, errcode) result(dset)
     ! create new dataset, using an existing dataset object to define
     ! variables, dimensions and attributes.
-    ! If copy_vardata=T, all variable data (not just coordinate
-    ! variable data) is copied. Default is F (only coord var data
-    ! copied).
-    ! if optional nocompress=.true., outputfile will not use compression even if input file does
-    ! if optional error return code errcode is not specified,
-    ! program will stop if a nonzero error code returned by the netcdf lib.
+    !
+    ! filename: filename for netCDF Dataset.
+    ! dsetin:  dataset object to use as a template.
+    ! copyvardata: optional flag to control whether all variable
+    !              data is copied (Default is .false., only coordinate
+    !              variable data is copied).
+    ! errcode: optional error return code.  If not specified 
+    !          the program will stop if a nonzero error code returned by the netcdf lib.
+    ! paropen: optional flag to indicate whether to open dataset for parallel
+    !          access (Default .false.)
+    ! nocompress: optional flag to disable compression  even if input dataset is
+    !             compressed (Default .false.).
+    ! mpicomm: optional MPI communicator to use (Default MPI_COMM_WORLD)
+    !          ignored if paropen=F
+    !
+    ! returns Dataset object.
     implicit none
     character(len=*), intent(in) :: filename
     character(len=nf90_max_name) :: attname, varname
@@ -462,14 +484,13 @@ contains
           end if
        else
           ncerr = nf90_create(trim(filename), &
-               cmode=IOR(IOR(NF90_CLOBBER,NF90_NETCDF4),NF90_CLASSIC_MODEL), &
-                                !cmode=IOR(NF90_CLOBBER,NF90_NETCDF4), &
+               cmode=IOR(NF90_CLOBBER,NF90_NETCDF4), &
                ncid=dset%ncid)
        end if
        dset%ishdf5 = .true.
     else
        ncerr = nf90_create(trim(filename), &
-            cmode=IOR(IOR(NF90_CLOBBER,NF90_64BIT_OFFSET),NF90_SHARE), &
+            cmode=IOR(NF90_CLOBBER,NF90_CDF5), &
             ncid=dset%ncid)
        dset%ishdf5 = .false.
     endif
@@ -683,6 +704,7 @@ contains
        elseif (dsetin%variables(nvar)%dtype == NF90_INT .or.&
             dsetin%variables(nvar)%dtype == NF90_BYTE .or.&
             dsetin%variables(nvar)%dtype == NF90_SHORT) then
+! TODO:  support NF90_UBYTE, USHORT, UINT, INT64, UINT64
           if (dsetin%variables(nvar)%ndims == 1) then
              call read_vardata(dsetin, varname, ivalues_1d)
              call write_vardata(dset, varname, ivalues_1d)
@@ -757,6 +779,7 @@ contains
 
   !subroutine read_vardata(dset,varname,values,nslice,slicedim,errcode)
   ! read data from variable varname in dataset dset, return in it array values.
+  !
   ! dset:    Input dataset instance returned by open_dataset/create_dataset.
   ! varname: Input string name of variable.
   ! values:  Array to hold variable data.  Must be
@@ -775,6 +798,7 @@ contains
 
   !subroutine write_vardata(dset,varname,values,nslice,slicedim,errcode)
   ! write data (in array values) to variable varname in dataset dset.
+  !
   ! dset:    Input dataset instance returned by open_dataset/create_dataset.
   ! varname: Input string name of variable.
   ! values:  Array with variable data.  Must be
@@ -1336,4 +1360,10 @@ contains
     include "quantize_data_code.f90"
   end subroutine quantize_data_4d
 
-end module module_fv3gfs_ncio
+  subroutine quantize_data_5d(dataIn, dataOut, nbits, compress_err)
+    real(4), intent(in) :: dataIn(:,:,:,:,:)
+    real(4), intent(out) :: dataOut(:,:,:,:,:)
+    include "quantize_data_code.f90"
+  end subroutine quantize_data_5d
+
+end module module_ncio
