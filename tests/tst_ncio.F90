@@ -1,5 +1,5 @@
 ! This is a test for the NCEPLIBS-ncio package.
-program test_ncio
+program tst_ncio
 
   use netcdf
   use module_ncio
@@ -15,6 +15,8 @@ program test_ncio
   real(4) mval,r4val
   integer ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n
   logical hasit
+  
+  print *,'*** Testing NCEPLIBS-ncio.'
   
   dsetin = open_dataset('dynf000_template.nc.in')
   print *,'*** Test creation of new dataset from template...'
@@ -177,4 +179,4 @@ program test_ncio
   call close_dataset(dset)
   print *,"SUCCESS!"
 
-end program test_ncio
+end program tst_ncio
