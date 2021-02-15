@@ -1,6 +1,5 @@
+! This is a test for the NCEPLIBS-ncio package.
 program test_ncio
-
-! test for NCEPLIBS-ncio
 
   use netcdf
   use module_ncio
