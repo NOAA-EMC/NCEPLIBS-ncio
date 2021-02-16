@@ -98,7 +98,7 @@ module module_ncio
 
   interface quantize_data
      module procedure quantize_data_2d, quantize_data_3d, &
-                      quantize_data_4d, quantize_data_5d
+          quantize_data_4d, quantize_data_5d
   end interface quantize_data
 
   public :: open_dataset, create_dataset, close_dataset, Dataset, Variable, Dimension, &
@@ -108,6 +108,11 @@ module module_ncio
 
 contains
 
+  !>
+  !!
+  !! @param status
+  !! @param halt
+  !! @param fname
   subroutine nccheck(status,halt,fname)
     ! check return code, print error message
     implicit none
@@ -129,6 +134,12 @@ contains
     end if
   end subroutine nccheck
 
+  !>
+  !! 
+  !! 
+  !! @param dset 
+  !! @param dimname 
+  !! 
   function get_dim(dset, dimname) result(dim)
     ! get Dimension object given name
     type(Dataset) :: dset
@@ -139,6 +150,12 @@ contains
     dim = dset%dimensions(ndim)
   end function get_dim
 
+  !>
+  !! 
+  !! @param dset 
+  !! @param dimname 
+  !! 
+  !! @return 
   integer function get_ndim(dset, dimname)
     ! get Dimension index given name
     ! Dimension object can then be accessed via Dataset%dimensions(nvar)
@@ -154,6 +171,12 @@ contains
     enddo
   end function get_ndim
 
+  !>
+  !! 
+  !! @param dset 
+  !! @param varname 
+  !! 
+  !! @return 
   function get_var(dset, varname) result (var)
     ! get Variable object given name
     type(Dataset) :: dset
@@ -164,6 +187,12 @@ contains
     var = dset%variables(nvar)
   end function get_var
 
+  !>
+  !! 
+  !! @param dset 
+  !! @param varname 
+  !! 
+  !! @return 
   logical function has_var(dset, varname)
     ! returns .true. is varname exists in dset, otherwise .false.
     type(Dataset) :: dset
@@ -177,6 +206,13 @@ contains
     endif
   end function has_var
 
+  !>
+  !! 
+  !! @param dset 
+  !! @param attname 
+  !! @param varname 
+  !! 
+  !! @return 
   logical function has_attr(dset, attname, varname)
     ! returns .true. if attribute exists in dset, otherwise .false.
     ! use optional kwarg varname to check for a variable attribute.
@@ -203,6 +239,12 @@ contains
     endif
   end function has_attr
 
+  !>
+  !! 
+  !! @param dset 
+  !! @param varname 
+  !! 
+  !! @return 
   integer function get_nvar(dset,varname)
     ! get Variable index given name
     type(Dataset), intent(in) :: dset
@@ -217,6 +259,12 @@ contains
     enddo
   end function get_nvar
 
+  !>
+  !! 
+  !! @param dset 
+  !! @param errcode
+  !! 
+  !! @return 
   subroutine set_varunlimdimlens_(dset,errcode)
     ! reset dimension length (dimlens) for unlim dim for all variables
     type(Dataset), intent(inout) :: dset
@@ -257,18 +305,19 @@ contains
     enddo
   end subroutine set_varunlimdimlens_
 
+  !> Open existing dataset, create dataset object for reading netcdf
+  !! file.
+  !!
+  !! @param filename: filename of netCDF Dataset.
+  !! @param errcode: optional error return code.  If not specified
+  !!          the program will stop if a nonzero error code returned by the netcdf lib.
+  !! @param paropen: optional flag to indicate whether to open dataset for parallel
+  !!          access (Default .false.)
+  !! @param mpicomm optional MPI communicator to use (Default MPI_COMM_WORLD)
+  !!          ignored if paropen=F
+  !!
+  !! @returns Dataset object.
   function open_dataset(filename,errcode,paropen, mpicomm) result(dset)
-    ! open existing dataset, create dataset object for reading netcdf file
-    !
-    ! filename: filename of netCDF Dataset.
-    ! errcode: optional error return code.  If not specified 
-    !          the program will stop if a nonzero error code returned by the netcdf lib.
-    ! paropen: optional flag to indicate whether to open dataset for parallel
-    !          access (Default .false.)
-    ! mpicomm: optional MPI communicator to use (Default MPI_COMM_WORLD)
-    !          ignored if paropen=F
-    !
-    ! returns Dataset object.
     implicit none
     character(len=*), intent(in) :: filename
     type(Dataset) :: dset
@@ -397,25 +446,25 @@ contains
     enddo
   end function open_dataset
 
+  !> create new dataset, using an existing dataset object to define
+  !! variables, dimensions and attributes.
+  !!
+  !! @param filename: filename for netCDF Dataset.
+  !! @param dsetin:  dataset object to use as a template.
+  !! @param copyvardata: optional flag to control whether all variable
+  !!              data is copied (Default is .false., only coordinate
+  !!              variable data is copied).
+  !! @param errcode: optional error return code.  If not specified
+  !!          the program will stop if a nonzero error code returned by the netcdf lib.
+  !! @param paropen: optional flag to indicate whether to open dataset for parallel
+  !!          access (Default .false.)
+  !! @param nocompress: optional flag to disable compression  even if input dataset is
+  !!             compressed (Default .false.).
+  !! @param mpicomm: optional MPI communicator to use (Default MPI_COMM_WORLD)
+  !!          ignored if paropen=F
+  !!
+  !! @returns Dataset object.
   function create_dataset(filename, dsetin, copy_vardata, paropen, nocompress, mpicomm, errcode) result(dset)
-    ! create new dataset, using an existing dataset object to define
-    ! variables, dimensions and attributes.
-    !
-    ! filename: filename for netCDF Dataset.
-    ! dsetin:  dataset object to use as a template.
-    ! copyvardata: optional flag to control whether all variable
-    !              data is copied (Default is .false., only coordinate
-    !              variable data is copied).
-    ! errcode: optional error return code.  If not specified 
-    !          the program will stop if a nonzero error code returned by the netcdf lib.
-    ! paropen: optional flag to indicate whether to open dataset for parallel
-    !          access (Default .false.)
-    ! nocompress: optional flag to disable compression  even if input dataset is
-    !             compressed (Default .false.).
-    ! mpicomm: optional MPI communicator to use (Default MPI_COMM_WORLD)
-    !          ignored if paropen=F
-    !
-    ! returns Dataset object.
     implicit none
     character(len=*), intent(in) :: filename
     character(len=nf90_max_name) :: attname, varname
@@ -704,7 +753,7 @@ contains
        elseif (dsetin%variables(nvar)%dtype == NF90_INT .or.&
             dsetin%variables(nvar)%dtype == NF90_BYTE .or.&
             dsetin%variables(nvar)%dtype == NF90_SHORT) then
-! TODO:  support NF90_UBYTE, USHORT, UINT, INT64, UINT64
+          ! TODO:  support NF90_UBYTE, USHORT, UINT, INT64, UINT64
           if (dsetin%variables(nvar)%ndims == 1) then
              call read_vardata(dsetin, varname, ivalues_1d)
              call write_vardata(dset, varname, ivalues_1d)
