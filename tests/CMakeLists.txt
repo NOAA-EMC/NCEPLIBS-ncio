@@ -1,8 +1,13 @@
+# This is the CMake file for the tests directory of NCEPLIBS-ncio.
 
-add_executable(test_ncio test_ncio.f90)
+# Copy some test files from current source dir to out-of-tree build dir.
+execute_process( COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/dynf000_template.nc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/dynf000_template.nc.in)
 
-target_link_libraries(test_ncio PRIVATE ncio::ncio NetCDF::NetCDF_Fortran)
-add_test(NAME test_ncio  COMMAND test_ncio
-         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
+# Build and run test.
+add_executable(tst_ncio tst_ncio.F90)
+target_link_libraries(tst_ncio PRIVATE ncio::ncio NetCDF::NetCDF_Fortran)
+add_test(NAME tst_ncio  COMMAND tst_ncio)
+
 
