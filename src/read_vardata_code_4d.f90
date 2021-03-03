@@ -1,6 +1,6 @@
   !> @file
   !! @brief Read 4D var data.
-  !!
+  !! optional return errcode
   !! @author Jeff Whitaker, Cory Martin
   type(Dataset), intent(in) :: dset
   character(len=*), intent(in) :: varname
@@ -13,12 +13,14 @@
   integer, allocatable, dimension(:) :: start, count
   integer :: dimlens(4)
   logical return_errcode
+  ! check if use the errcode
   if(present(errcode)) then
      return_errcode=.true.
      errcode = 0
   else
      return_errcode=.false.
   endif
+  ! check if count/dims of data are avail
   if (present(nslice)) then
      ncount = nslice
   else
@@ -46,7 +48,6 @@
         ndim = ndim + 1
      end if
   end do
-
   if (dset%variables(nvar)%ndims /= 4 .and. dset%variables(nvar)%ndims /= 5) then
      if (return_errcode) then
         call nccheck(ncerr,halt=.false.)
@@ -57,7 +58,7 @@
         stop 99
      endif
   endif
-
+  ! allocate/deallocate values
   if (allocated(values)) deallocate(values)
   if (present(ncstart) .and. present(nccount)) then
      allocate(values(nccount(1),nccount(2),nccount(3),nccount(4)))
@@ -79,6 +80,7 @@
         ncerr = nf90_get_var(dset%ncid, dset%variables(nvar)%varid, values)
      end if
   end if
+  ! err check
   if (return_errcode) then
      call nccheck(ncerr,halt=.false.)
      errcode=ncerr

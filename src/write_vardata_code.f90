@@ -1,6 +1,6 @@
   !> @file
   !! @brief Write variable data.
-  !!
+  !! Optional return errcode
   !! @author Jeff Whitaker, Cory Martin
   type(Dataset), intent(inout) :: dset
   character(len=*), intent(in) :: varname
@@ -11,12 +11,14 @@
   integer, allocatable, dimension(:) :: start, count, dimlens
   logical is_slice
   logical return_errcode
+  ! check if use the errcode
   if(present(errcode)) then
      return_errcode=.true.
      errcode = 0
   else
      return_errcode=.false.
   endif
+  ! check if count/dims of data are avail
   if (present(nslice)) then
      ncount = nslice
      is_slice = .true.
@@ -24,6 +26,7 @@
      ncount = 1
      is_slice = .false.
   endif
+  ! define variable name and allocate variable
   nvar = get_nvar(dset,varname)
   allocate(start(dset%variables(nvar)%ndims),count(dset%variables(nvar)%ndims))
   allocate(dimlens(dset%variables(nvar)%ndims))
@@ -47,9 +50,7 @@
         ndim = ndim + 1
      end if
   end do
-
-
-
+  ! write operations on a parallel file system are performed collectively
   ncerr = nf90_var_par_access(dset%ncid, dset%variables(nvar)%varid, nf90_collective)
   if (is_slice) then
      if (dset%variables(nvar)%ndims > 1) then

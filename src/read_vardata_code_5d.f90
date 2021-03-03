@@ -1,12 +1,13 @@
   !> @file
   !! @brief Read 5D var data.
-  !!
+  !! optional return errcode
   !! @author Jeff Whitaker, Cory Martin
   type(Dataset), intent(in) :: dset
   character(len=*), intent(in) :: varname
   integer, intent(out), optional :: errcode
   integer ncerr, nvar, n1,n2,n3,n4,n5
   logical return_errcode
+  ! check if use the errcode
   if(present(errcode)) then
      return_errcode=.true.
      errcode = 0
@@ -28,9 +29,11 @@
   n3 = dset%variables(nvar)%dimlens(3)
   n4 = dset%variables(nvar)%dimlens(4)
   n5 = dset%variables(nvar)%dimlens(5)
+  ! allocate/deallocate values
   if (allocated(values)) deallocate(values)
   allocate(values(n1,n2,n3,n4,n5))
   ncerr = nf90_get_var(dset%ncid, dset%variables(nvar)%varid, values)
+  ! err check
   if (return_errcode) then
      call nccheck(ncerr,halt=.false.)
      errcode=ncerr
