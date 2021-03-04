@@ -35,8 +35,7 @@ module module_ncio
      integer dimid !< netCDF dimension ID
      integer len   !< dimension length (updated after every write_vardata call)
      logical isunlimited !< unlimited? 
-     character(len=nf90_max_name) :: !< name name of dimension
-
+     character(len=nf90_max_name) :: name !< name name of dimension
   end type Dimension
 
   type Dataset
