@@ -24,7 +24,6 @@ module module_ncio
      logical hasunlim !< has an unlimited dim?
      character(len=nf90_max_name) :: name !< variable name
      integer, allocatable, dimension(:) :: dimids !< netCDF dimension IDs
-
      integer, allocatable, dimension(:) :: dimindxs !< indices into Dataset%dimensions for associated dimensions.
      character(len=nf90_max_name), allocatable, dimension(:) :: dimnames !< names of associated dimensions.
      !< current dimension lengths (updated after every write_vardata call)
