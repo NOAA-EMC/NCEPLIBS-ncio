@@ -50,7 +50,7 @@ module module_ncio
      type(Dimension), allocatable, dimension(:) :: dimensions !< array of Dimension instances
   end type Dataset
 
-  !> @brief read data from variable varname in dataset dset, return in it array values.
+  !> Read data from variable varname in dataset dset, return in it array values.
   !!
   !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
   !! @param[in] varname Input string name of variable.
@@ -85,7 +85,7 @@ module module_ncio
   end interface read_vardata
   
   
-  !> @brief write data (in array values) to variable varname in dataset dset.
+  !> Write data (in array values) to variable varname in dataset dset.
   !!
   !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
   !! @param[in] varname Input string name of variable.
@@ -118,8 +118,8 @@ module module_ncio
           write_vardata_4d_char, write_vardata_5d_char
   end interface write_vardata
     
-  !> @brief read attribute 'attname' return in 'values'.  If optional
-  !! argument 'varname' is given, a variable attribute is returned.
+  !> Read attribute 'attname' return in 'values'.  
+  !! If optional argument 'varname' is given, a variable attribute is returned.
   !! if the attribute is a 1d array, values should be an allocatable 1d
   !! array of the correct type.
   !! @author jeff whitaker
@@ -131,7 +131,7 @@ module module_ncio
           read_attribute_byte_scalar, read_attribute_byte_1d
   end interface read_attribute
   
-  !! @brief write attribute 'attname' with data in 'values'.  If optional
+  !! Write attribute 'attname' with data in 'values'.  If optional
   !! argument 'varname' is given, a variable attribute is written.
   !! values can be a real(4), real(8), integer, string or 1d array.
   !! @author jeff whitaker
@@ -143,7 +143,7 @@ module module_ncio
           write_attribute_byte_scalar, write_attribute_byte_1d
   end interface write_attribute
   
-  !! @brief Quantize data.
+  !! Quantize data.
   !!
   !! @author Jeff Whitaker, Cory Martin
   interface quantize_data
@@ -156,11 +156,11 @@ module module_ncio
        get_time_units_from_idate, quantize_data, has_var, has_attr
 
 contains
-  !> @brief Check return code, print error message.
+  !> Check return code, print error message.
   !!
-  !! @param status
-  !! @param halt
-  !! @param fname
+  !! @param status the status indicator
+  !! @param halt the halt option
+  !! @param fname the filename
   !! @author jeff whitaker 
   subroutine nccheck(status,halt,fname)
     implicit none
@@ -181,11 +181,10 @@ contains
        if (stopit) stop 99
     end if
   end subroutine nccheck
-  !> @brief Get Dimension object given name.
+  !> Get Dimension object given name.
   !! 
-  !!
-  !! @param dset 
-  !! @param dimname 
+  !! @param dset the dataset
+  !! @param dimname the dimension name
   !! @author jeff whitaker
   function get_dim(dset, dimname) result(dim)
     type(Dataset) :: dset
@@ -195,11 +194,11 @@ contains
     ndim = get_ndim(dset, dimname)
     dim = dset%dimensions(ndim)
   end function get_dim
-  !> @brief Get Dimension index given name.
+  !> Get Dimension index given name.
   !! Dimension object can then be accessed via Dataset%dimensions(nvar)
   !!
-  !! @param dset 
-  !! @param dimname 
+  !! @param dset the dataset
+  !! @param dimname the dimension name
   !! 
   !! @return 
   !! @author jeff whitaker
@@ -215,10 +214,10 @@ contains
        endif
     enddo
   end function get_ndim
-  !> @brief Get Variable object given name.
+  !> Get Variable object given name.
   !!
-  !! @param dset 
-  !! @param varname 
+  !! @param dset the dataset
+  !! @param varname the variable name
   !! 
   !! @return 
   !! @author Jeff Whitaker
@@ -232,8 +231,8 @@ contains
   end function get_var
   !> @return .true. is varname exists in dset, otherwise .false.
   !!
-  !! @param dset 
-  !! @param varname 
+  !! @param dset the dataset
+  !! @param varname the variable name
   !! 
   !! @return 
   logical function has_var(dset, varname)
@@ -251,8 +250,8 @@ contains
   !! use optional kwarg varname to check for a variable attribute.
   !!
   !! @param dset 
-  !! @param attname 
-  !! @param varname 
+  !! @param attname the attribute name
+  !! @param varname the variable name
   !! 
   !! @return 
   !! @author Jeff Whitaker
@@ -279,10 +278,10 @@ contains
        has_attr=.true.
     endif
   end function has_attr
-  !> @brief Get Variable index given name.
+  !> Get Variable index given name.
   !!
-  !! @param dset 
-  !! @param varname 
+  !! @param dset the dataset
+  !! @param varname the variable name
   !! 
   !! @return
   !! @author Jeff Whitaker
@@ -298,10 +297,10 @@ contains
        endif
     enddo
   end function get_nvar
-  !> @brief Reset dimension length (dimlens) for unlim dim for all variables.
+  !> Reset dimension length (dimlens) for unlim dim for all variables.
   !!
-  !! @param dset 
-  !! @param errcode
+  !! @param dset the dataset
+  !! @param errcode the err code
   !! 
   !! @return 
   !! @author Jeff Whitaker
@@ -343,7 +342,7 @@ contains
        endif
     enddo
   end subroutine set_varunlimdimlens_
-  !> @brief Open existing dataset, create dataset object for reading netcdf
+  !> Open existing dataset, create dataset object for reading netcdf
   !! file.
   !!
   !! @param filename filename of netCDF Dataset.
@@ -485,7 +484,7 @@ contains
     enddo
   end function open_dataset
 !
-  !> @brief Create new dataset, using an existing dataset object to define.
+  !> Create new dataset, using an existing dataset object to define.
   !! Variables, dimensions and attributes.
   !!
   !! @param filename filename for netCDF Dataset.
@@ -835,7 +834,7 @@ contains
        endif
     enddo
   end function create_dataset
-  !> @brief Close a netcdf file, deallocate members of dataset object.
+  !> Close a netcdf file, deallocate members of dataset object.
   !! if optional error return code errcode is not specified,
   !! program will stop if a nonzero error code returned by the netcdf lib.
   !!
