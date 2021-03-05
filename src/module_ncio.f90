@@ -50,6 +50,25 @@ module module_ncio
      type(Dimension), allocatable, dimension(:) :: dimensions !< array of Dimension instances
   end type Dataset
 
+  !> @brief read data from variable varname in dataset dset, return in it array values.
+  !!
+  !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
+  !! @param[in] varname Input string name of variable.
+  !! @param values Array to hold variable data.  Must be
+  !!          an allocatable array with same rank
+  !!          as variable varname (or 1 dimension less).
+  !! @param nslice optional index along dimension slicedim
+  !! @param slicedim optional, if nslice is set, index of which dimension to slice with
+  !!          nslice, default is ndims.
+  !! @param ncstart optional, if ncstart and nccount are set, manually specify the
+  !!          start and count of netCDF read
+  !! @param nccount optional, if ncstart and nccount are set, manually specify the
+  !!          start and count of netCDF read
+  !! @param errcode optional error return code.  If not specified,
+  !!          program will stop if a nonzero error code returned
+  !!          from netcdf library.
+  !! @returns array values
+  !! @author jeff whitaker 
   interface read_vardata
      module procedure read_vardata_1d_r4, read_vardata_2d_r4, read_vardata_3d_r4,&
           read_vardata_4d_r4, read_vardata_5d_r4, &
@@ -64,6 +83,27 @@ module module_ncio
           read_vardata_1d_char, read_vardata_2d_char, &
           read_vardata_3d_char, read_vardata_4d_char, read_vardata_5d_char
   end interface read_vardata
+  
+  
+  !> @brief write data (in array values) to variable varname in dataset dset.
+  !!
+  !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
+  !! @param[in] varname Input string name of variable.
+  !! @param values Array with variable data.  Must be
+  !!          an allocatable array with same rank
+  !!          as variable varname (or 1 dimension less).
+  !! @param nslice optional index along dimension slicedim
+  !! @param slicedim optional, if nslice is set, index of which dimension to slice with
+  !!          nslice, default is ndims
+  !! @param ncstart optional, if ncstart and nccount are set, manually specify the
+  !!          start and count of netCDF write
+  !! @param nccount optional, if ncstart and nccount are set, manually specify the
+  !!          start and count of netCDF write
+  !! @param errcode optional error return code.  If not specified,
+  !!          program will stop if a nonzero error code returned
+  !!          from netcdf library.
+  !! @returns dataset dset
+  !! @author jeff whitaker 
   interface write_vardata
      module procedure write_vardata_1d_r4, write_vardata_2d_r4, write_vardata_3d_r4,&
           write_vardata_4d_r4, write_vardata_1d_r8, write_vardata_2d_r8, write_vardata_3d_r8,&
@@ -77,6 +117,12 @@ module module_ncio
           write_vardata_1d_char, write_vardata_2d_char, write_vardata_3d_char, &
           write_vardata_4d_char, write_vardata_5d_char
   end interface write_vardata
+    
+  !> @brief read attribute 'attname' return in 'values'.  If optional
+  !! argument 'varname' is given, a variable attribute is returned.
+  !! if the attribute is a 1d array, values should be an allocatable 1d
+  !! array of the correct type.
+  !! @author jeff whitaker
   interface read_attribute
      module procedure read_attribute_r4_scalar, read_attribute_int_scalar,&
           read_attribute_r8_scalar, read_attribute_r4_1d,&
@@ -84,6 +130,11 @@ module module_ncio
           read_attribute_short_scalar, read_attribute_short_1d, &
           read_attribute_byte_scalar, read_attribute_byte_1d
   end interface read_attribute
+  
+  !! @brief write attribute 'attname' with data in 'values'.  If optional
+  !! argument 'varname' is given, a variable attribute is written.
+  !! values can be a real(4), real(8), integer, string or 1d array.
+  !! @author jeff whitaker
   interface write_attribute
      module procedure write_attribute_r4_scalar, write_attribute_int_scalar,&
           write_attribute_r8_scalar, write_attribute_r4_1d,&
@@ -91,6 +142,10 @@ module module_ncio
           write_attribute_short_scalar, write_attribute_short_1d, &
           write_attribute_byte_scalar, write_attribute_byte_1d
   end interface write_attribute
+  
+  !! @brief Quantize data.
+  !!
+  !! @author Jeff Whitaker, Cory Martin
   interface quantize_data
      module procedure quantize_data_2d, quantize_data_3d, &
           quantize_data_4d, quantize_data_5d
@@ -101,7 +156,7 @@ module module_ncio
        get_time_units_from_idate, quantize_data, has_var, has_attr
 
 contains
-  !> Check return code, print error message.
+  !> @brief Check return code, print error message.
   !!
   !! @param status
   !! @param halt
@@ -126,12 +181,12 @@ contains
        if (stopit) stop 99
     end if
   end subroutine nccheck
-  !> Get Dimension object given name.
+  !> @brief Get Dimension object given name.
   !! 
   !!
   !! @param dset 
   !! @param dimname 
-  !! 
+  !! @author jeff whitaker
   function get_dim(dset, dimname) result(dim)
     type(Dataset) :: dset
     type(Dimension) :: dim
@@ -140,13 +195,14 @@ contains
     ndim = get_ndim(dset, dimname)
     dim = dset%dimensions(ndim)
   end function get_dim
-  !> Get Dimension index given name.
+  !> @brief Get Dimension index given name.
   !! Dimension object can then be accessed via Dataset%dimensions(nvar)
   !!
   !! @param dset 
   !! @param dimname 
   !! 
   !! @return 
+  !! @author jeff whitaker
   integer function get_ndim(dset, dimname)
     type(Dataset), intent(in) :: dset
     character(len=*), intent(in) :: dimname
@@ -159,12 +215,13 @@ contains
        endif
     enddo
   end function get_ndim
-  !> Get Variable object given name.
+  !> @brief Get Variable object given name.
   !!
   !! @param dset 
   !! @param varname 
   !! 
   !! @return 
+  !! @author Jeff Whitaker
   function get_var(dset, varname) result (var)
     type(Dataset) :: dset
     type(Variable) :: var
@@ -198,6 +255,7 @@ contains
   !! @param varname 
   !! 
   !! @return 
+  !! @author Jeff Whitaker
   logical function has_attr(dset, attname, varname)
     type(Dataset) :: dset
     character(len=*) :: attname
@@ -221,12 +279,13 @@ contains
        has_attr=.true.
     endif
   end function has_attr
-  !> Get Variable index given name.
+  !> @brief Get Variable index given name.
   !!
   !! @param dset 
   !! @param varname 
   !! 
-  !! @return 
+  !! @return
+  !! @author Jeff Whitaker
   integer function get_nvar(dset,varname)
     type(Dataset), intent(in) :: dset
     character(len=*), intent(in) :: varname
@@ -239,12 +298,13 @@ contains
        endif
     enddo
   end function get_nvar
-  !> Reset dimension length (dimlens) for unlim dim for all variables.
+  !> @brief Reset dimension length (dimlens) for unlim dim for all variables.
   !!
   !! @param dset 
   !! @param errcode
   !! 
   !! @return 
+  !! @author Jeff Whitaker
   subroutine set_varunlimdimlens_(dset,errcode)
     type(Dataset), intent(inout) :: dset
     integer, intent(out), optional :: errcode
@@ -283,7 +343,7 @@ contains
        endif
     enddo
   end subroutine set_varunlimdimlens_
-  !> Open existing dataset, create dataset object for reading netcdf
+  !> @brief Open existing dataset, create dataset object for reading netcdf
   !! file.
   !!
   !! @param filename filename of netCDF Dataset.
@@ -295,6 +355,7 @@ contains
   !!          ignored if paropen=F
   !!
   !! @returns Dataset object.
+  !! @author Jeff Whitaker
   function open_dataset(filename,errcode,paropen, mpicomm) result(dset)
     implicit none
     character(len=*), intent(in) :: filename
@@ -424,7 +485,7 @@ contains
     enddo
   end function open_dataset
 !
-  !> Create new dataset, using an existing dataset object to define.
+  !> @brief Create new dataset, using an existing dataset object to define.
   !! Variables, dimensions and attributes.
   !!
   !! @param filename filename for netCDF Dataset.
@@ -442,6 +503,7 @@ contains
   !!          ignored if paropen=F
   !!
   !! @returns Dataset object.
+  !! @author jeff whitaker <jeffrey.s.whitaker@noaa.gov>
   function create_dataset(filename, dsetin, copy_vardata, paropen, nocompress, mpicomm, errcode) result(dset)
     implicit none
     character(len=*), intent(in) :: filename
@@ -773,13 +835,14 @@ contains
        endif
     enddo
   end function create_dataset
-  !> Close a netcdf file, deallocate members of dataset object.
+  !> @brief Close a netcdf file, deallocate members of dataset object.
   !! if optional error return code errcode is not specified,
   !! program will stop if a nonzero error code returned by the netcdf lib.
   !!
   !! @param filename filename for netCDF Dataset.
   !! @param errcode optional error return code.  If not specified
   !!          the program will stop if a nonzero error code returned by the
+  !! @author jeff whitaker
   subroutine close_dataset(dset,errcode)
     type(Dataset), intent(inout) :: dset
     integer, intent(out), optional :: errcode
@@ -809,56 +872,6 @@ contains
     deallocate(dset%variables,dset%dimensions)
   end subroutine close_dataset
 
-  !> subroutine read_vardata(dset,varname,values,nslice,slicedim,errcode)
-  !! read data from variable varname in dataset dset, return in it array values.
-  !!
-  !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
-  !! @param[in] varname Input string name of variable.
-  !! @param values Array to hold variable data.  Must be
-  !!          an allocatable array with same rank
-  !!          as variable varname (or 1 dimension less).
-  !! @param nslice optional index along dimension slicedim
-  !! @param slicedim optional, if nslice is set, index of which dimension to slice with
-  !!          nslice, default is ndims.
-  !! @param ncstart optional, if ncstart and nccount are set, manually specify the
-  !!          start and count of netCDF read
-  !! @param nccount optional, if ncstart and nccount are set, manually specify the
-  !!          start and count of netCDF read
-  !! @param errcode optional error return code.  If not specified,
-  !!          program will stop if a nonzero error code returned
-  !!          from netcdf library.
-  !! @returns array values
-  
-  !> subroutine write_vardata(dset,varname,values,nslice,slicedim,errcode)
-  !! write data (in array values) to variable varname in dataset dset.
-  !!
-  !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
-  !! @param[in] varname Input string name of variable.
-  !! @param values Array with variable data.  Must be
-  !!          an allocatable array with same rank
-  !!          as variable varname (or 1 dimension less).
-  !! @param nslice optional index along dimension slicedim
-  !! @param slicedim optional, if nslice is set, index of which dimension to slice with
-  !!          nslice, default is ndims
-  !! @param ncstart optional, if ncstart and nccount are set, manually specify the
-  !!          start and count of netCDF write
-  !! @param nccount optional, if ncstart and nccount are set, manually specify the
-  !!          start and count of netCDF write
-  !! @param errcode optional error return code.  If not specified,
-  !!          program will stop if a nonzero error code returned
-  !!          from netcdf library.
-  !! @returns dataset dset
-  
-  !> subroutine read_attribute(dset, attname, values, varname, errcode)
-  !! read attribute 'attname' return in 'values'.  If optional
-  !! argument 'varname' is given, a variable attribute is returned.
-  !! if the attribute is a 1d array, values should be an allocatable 1d
-  !! array of the correct type.
-  !!
-  !! subroutine write_attribute(dset, attname, values, varname, errcode)
-  !! write attribute 'attname' with data in 'values'.  If optional
-  !! argument 'varname' is given, a variable attribute is written.
-  !! values can be a real(4), real(8), integer, string or 1d array.
   subroutine read_vardata_1d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4), allocatable, dimension(:), intent(inout) :: values
     include "read_vardata_code_1d.f90"
