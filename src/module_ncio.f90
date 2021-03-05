@@ -1,5 +1,5 @@
 !> @file
-!! @brief Module for reading/writing netcdf files such as the lat/lon grid history files output by the GFS..
+!! @brief Module for reading/writing netcdf files output by the GFS.
 !! @author jeff whitaker <jeffrey.s.whitaker@noaa.gov> @date 201910
 
 !> writing requires a template file.
@@ -26,8 +26,7 @@ module module_ncio
      integer, allocatable, dimension(:) :: dimids !< netCDF dimension IDs
      integer, allocatable, dimension(:) :: dimindxs !< indices into Dataset%dimensions for associated dimensions.
      character(len=nf90_max_name), allocatable, dimension(:) :: dimnames !< names of associated dimensions.
-     !< current dimension lengths (updated after every write_vardata call)
-     integer, allocatable, dimension(:) :: dimlens
+     integer, allocatable, dimension(:) :: dimlens !< current dimension lengths (updated after every write_vardata call)
      integer, allocatable, dimension(:) :: chunksizes
   end type Variable
 
@@ -287,10 +286,10 @@ contains
   !> Open existing dataset, create dataset object for reading netcdf
   !! file.
   !!
-  !! @param filename: filename of netCDF Dataset.
-  !! @param errcode: optional error return code.  If not specified
+  !! @param filename filename of netCDF Dataset.
+  !! @param errcode optional error return code.  If not specified
   !!          the program will stop if a nonzero error code returned by the netcdf lib.
-  !! @param paropen: optional flag to indicate whether to open dataset for parallel
+  !! @param paropen optional flag to indicate whether to open dataset for parallel
   !!          access (Default .false.)
   !! @param mpicomm optional MPI communicator to use (Default MPI_COMM_WORLD)
   !!          ignored if paropen=F
@@ -428,18 +427,18 @@ contains
   !> Create new dataset, using an existing dataset object to define.
   !! Variables, dimensions and attributes.
   !!
-  !! @param filename: filename for netCDF Dataset.
-  !! @param dsetin:  dataset object to use as a template.
-  !! @param copyvardata: optional flag to control whether all variable
+  !! @param filename filename for netCDF Dataset.
+  !! @param dsetin dataset object to use as a template.
+  !! @param copyvardata optional flag to control whether all variable
   !!              data is copied (Default is .false., only coordinate
   !!              variable data is copied).
-  !! @param errcode: optional error return code.  If not specified
+  !! @param errcode optional error return code.  If not specified
   !!          the program will stop if a nonzero error code returned by the netcdf lib.
-  !! @param paropen: optional flag to indicate whether to open dataset for parallel
+  !! @param paropen optional flag to indicate whether to open dataset for parallel
   !!          access (Default .false.)
-  !! @param nocompress: optional flag to disable compression  even if input dataset is
+  !! @param nocompress optional flag to disable compression  even if input dataset is
   !!             compressed (Default .false.).
-  !! @param mpicomm: optional MPI communicator to use (Default MPI_COMM_WORLD)
+  !! @param mpicomm optional MPI communicator to use (Default MPI_COMM_WORLD)
   !!          ignored if paropen=F
   !!
   !! @returns Dataset object.
@@ -778,8 +777,8 @@ contains
   !! if optional error return code errcode is not specified,
   !! program will stop if a nonzero error code returned by the netcdf lib.
   !!
-  !! @param filename: filename for netCDF Dataset.
-  !! @param errcode: optional error return code.  If not specified
+  !! @param filename filename for netCDF Dataset.
+  !! @param errcode optional error return code.  If not specified
   !!          the program will stop if a nonzero error code returned by the
   subroutine close_dataset(dset,errcode)
     type(Dataset), intent(inout) :: dset
@@ -813,19 +812,19 @@ contains
   !> subroutine read_vardata(dset,varname,values,nslice,slicedim,errcode)
   !! read data from variable varname in dataset dset, return in it array values.
   !!
-  !! @param[in] dset:    Input dataset instance returned by open_dataset/create_dataset.
-  !! @param[in] varname: Input string name of variable.
-  !! @param values:  Array to hold variable data.  Must be
+  !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
+  !! @param[in] varname Input string name of variable.
+  !! @param values Array to hold variable data.  Must be
   !!          an allocatable array with same rank
   !!          as variable varname (or 1 dimension less).
-  !! @param nslice:  optional index along dimension slicedim
-  !! @param slicedim: optional, if nslice is set, index of which dimension to slice with
+  !! @param nslice optional index along dimension slicedim
+  !! @param slicedim optional, if nslice is set, index of which dimension to slice with
   !!          nslice, default is ndims.
-  !! @param ncstart: optional, if ncstart and nccount are set, manually specify the
+  !! @param ncstart optional, if ncstart and nccount are set, manually specify the
   !!          start and count of netCDF read
-  !! @param nccount: optional, if ncstart and nccount are set, manually specify the
+  !! @param nccount optional, if ncstart and nccount are set, manually specify the
   !!          start and count of netCDF read
-  !! @param errcode: optional error return code.  If not specified,
+  !! @param errcode optional error return code.  If not specified,
   !!          program will stop if a nonzero error code returned
   !!          from netcdf library.
   !! @returns array values
@@ -833,19 +832,19 @@ contains
   !> subroutine write_vardata(dset,varname,values,nslice,slicedim,errcode)
   !! write data (in array values) to variable varname in dataset dset.
   !!
-  !! @param[in] dset:    Input dataset instance returned by open_dataset/create_dataset.
-  !! @param[in] varname: Input string name of variable.
-  !! @param values:  Array with variable data.  Must be
+  !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
+  !! @param[in] varname Input string name of variable.
+  !! @param values Array with variable data.  Must be
   !!          an allocatable array with same rank
   !!          as variable varname (or 1 dimension less).
-  !! @param nslice:  optional index along dimension slicedim
-  !! @param slicedim: optional, if nslice is set, index of which dimension to slice with
+  !! @param nslice optional index along dimension slicedim
+  !! @param slicedim optional, if nslice is set, index of which dimension to slice with
   !!          nslice, default is ndims
-  !! @param ncstart: optional, if ncstart and nccount are set, manually specify the
+  !! @param ncstart optional, if ncstart and nccount are set, manually specify the
   !!          start and count of netCDF write
-  !! @param nccount: optional, if ncstart and nccount are set, manually specify the
+  !! @param nccount optional, if ncstart and nccount are set, manually specify the
   !!          start and count of netCDF write
-  !! @param errcode: optional error return code.  If not specified,
+  !! @param errcode optional error return code.  If not specified,
   !!          program will stop if a nonzero error code returned
   !!          from netcdf library.
   !! @returns dataset dset
