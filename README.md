@@ -8,7 +8,7 @@ the [NCEPLIBS](https://github.com/NOAA-EMC/NCEPLIBS) project.
 
 Jeff Whitaker, Cory Martin
 
-Code manager: Edward Hartnett
+Code manager: Hang Lei
 
 ## Prerequisites
 
