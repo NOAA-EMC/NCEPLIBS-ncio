@@ -1,7 +1,6 @@
-  !> @file
-  !! @brief Quantize data.
-  !!
-  !! @author Jeff Whitaker, Cory Martin
+  ! Quantize data.
+  !
+  ! author Jeff Whitaker, Cory Martin
   integer, intent(in) :: nbits
   real(4), intent(out) :: compress_err
   real(4) dataMin, dataMax, scale_fact, offset
