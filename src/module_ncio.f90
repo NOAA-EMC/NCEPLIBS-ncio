@@ -22,17 +22,17 @@ module module_ncio
   type Variable
      integer varid !< NetCDF variable ID.
      integer ndims !< Number of dimensions.
-     integer dtype !< netCDF data type
-     integer natts !< number of attributes
-     integer deflate_level !< compression level (if > 0)
-     logical shuffle  !< shuffle filter?
-     logical hasunlim !< has an unlimited dim?
-     character(len=nf90_max_name) :: name !< variable name
-     integer, allocatable, dimension(:) :: dimids !< netCDF dimension IDs
-     integer, allocatable, dimension(:) :: dimindxs !< indices into Dataset%dimensions for associated dimensions.
-     character(len=nf90_max_name), allocatable, dimension(:) :: dimnames !< names of associated dimensions.
-     integer, allocatable, dimension(:) :: dimlens !< current dimension lengths (updated after every write_vardata call)
-     integer, allocatable, dimension(:) :: chunksizes
+     integer dtype !< NetCDF data type.
+     integer natts !< Number of attributes.
+     integer deflate_level !< Compression level (if > 0).
+     logical shuffle  !< Shuffle filter?
+     logical hasunlim !< Has an unlimited dim?
+     character(len=nf90_max_name) :: name !< Variable name.
+     integer, allocatable, dimension(:) :: dimids !< NetCDF dimension IDs.
+     integer, allocatable, dimension(:) :: dimindxs !< Indices into Dataset%dimensions for associated dimensions.
+     character(len=nf90_max_name), allocatable, dimension(:) :: dimnames !< Names of associated dimensions.
+     integer, allocatable, dimension(:) :: dimlens !< Current dimension lengths (updated after every write_vardata call).
+     integer, allocatable, dimension(:) :: chunksizes !< Chunksizes to use with data.
   end type Variable
 
   type Dimension
@@ -55,25 +55,41 @@ module module_ncio
      type(Dimension), allocatable, dimension(:) :: dimensions !< array of Dimension instances
   end type Dataset
 
-  !> Read data from variable varname in dataset dset, return in it array values.
+  !> @defgroup read_vardata_8param Read Variable Data with slice/start/count Arrays.
+  !! Read data from variable varname in dataset dset, return in it
+  !! array values.
   !!
-  !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
+  !! @param[in] dset Input dataset instance returned by
+  !! open_dataset/create_dataset.
   !! @param[in] varname Input string name of variable.
-  !! @param values Array to hold variable data. Must be
-  !!          an allocatable array with same rank
-  !!          as variable varname (or 1 dimension less).
-  !! @param nslice optional index along dimension slicedim
-  !! @param slicedim optional, if nslice is set, index of which dimension to slice with
-  !!          nslice, default is ndims.
-  !! @param ncstart optional, if ncstart and nccount are set, manually specify the
-  !!          start and count of netCDF read
-  !! @param nccount optional, if ncstart and nccount are set, manually specify the
-  !!          start and count of netCDF read
-  !! @param errcode optional error return code. If not specified,
-  !!          program will stop if a nonzero error code returned
-  !!          from netcdf library.
-  !! @returns array values
-  !! @author jeff whitaker 
+  !! @param[inout] values Array to hold variable data. Must be an allocatable
+  !! array with same rank as variable varname (or 1 dimension less).
+  !! @param[in] nslice optional index along dimension slicedim
+  !! @param[in] slicedim optional, if nslice is set, index of which
+  !! dimension to slice with nslice, default is ndims.
+  !! @param[in] ncstart optional, if ncstart and nccount are set, manually
+  !! specify the start and count of netCDF read.
+  !! @param[in] nccount optional, if ncstart and nccount are set, manually
+  !! specify the start and count of netCDF read.
+  !! @param[out] errcode optional error return code. If not specified,
+  !! program will stop if a nonzero error code returned from netcdf
+  !! library.
+  !! @author jeff whitaker
+  !!
+  !! @defgroup read_vardata_4param Read Variable Data without slice/start/count Arrays.
+  !! Read data from variable varname in dataset dset, return in it
+  !! array values.
+  !!
+  !! @param[in] dset Input dataset instance returned by
+  !! open_dataset/create_dataset.
+  !! @param[in] varname Input string name of variable.
+  !! @param[inout] values Array to hold variable data. Must be an allocatable
+  !! array with same rank as variable varname (or 1 dimension less).
+  !! @param[out] errcode optional error return code. If not specified,
+  !! program will stop if a nonzero error code returned from netcdf
+  !! library.
+  !! @author jeff whitaker
+  !!
   interface read_vardata
      module procedure read_vardata_1d_r4, read_vardata_2d_r4, read_vardata_3d_r4,&
           read_vardata_4d_r4, read_vardata_5d_r4, &
@@ -88,7 +104,6 @@ module module_ncio
           read_vardata_1d_char, read_vardata_2d_char, &
           read_vardata_3d_char, read_vardata_4d_char, read_vardata_5d_char
   end interface read_vardata
-  
   
   !> Write data (in array values) to variable varname in dataset dset.
   !!
@@ -161,11 +176,12 @@ module module_ncio
        get_time_units_from_idate, quantize_data, has_var, has_attr
 
 contains
+
   !> Check return code, print error message.
   !!
-  !! @param status the status indicator
-  !! @param halt the halt option
-  !! @param fname the filename
+  !! @param[in] status the status indicator
+  !! @param[in] halt the halt option
+  !! @param[in] fname the filename
   !! @author jeff whitaker 
   subroutine nccheck(status,halt,fname)
     implicit none
@@ -186,6 +202,7 @@ contains
        if (stopit) stop 99
     end if
   end subroutine nccheck
+
   !> Get Dimension object given name.
   !! 
   !! @param dset the dataset
@@ -199,6 +216,7 @@ contains
     ndim = get_ndim(dset, dimname)
     dim = dset%dimensions(ndim)
   end function get_dim
+
   !> Get Dimension index given name.
   !! Dimension object can then be accessed via Dataset%dimensions(nvar)
   !!
@@ -219,6 +237,7 @@ contains
        endif
     enddo
   end function get_ndim
+
   !> Get Variable object given name.
   !!
   !! @param dset the dataset
@@ -234,6 +253,7 @@ contains
     nvar = get_nvar(dset, varname)
     var = dset%variables(nvar)
   end function get_var
+
   !> @return .true. is varname exists in dset, otherwise .false.
   !!
   !! @param dset the dataset
@@ -251,6 +271,7 @@ contains
        has_var=.false.
     endif
   end function has_var
+
   !> @return .true. if attribute exists in dset, otherwise .false.
   !! use optional kwarg varname to check for a variable attribute.
   !!
@@ -283,6 +304,7 @@ contains
        has_attr=.true.
     endif
   end function has_attr
+
   !> Get Variable index given name.
   !!
   !! @param dset the dataset
@@ -302,12 +324,12 @@ contains
        endif
     enddo
   end function get_nvar
+
   !> Reset dimension length (dimlens) for unlim dim for all variables.
   !!
   !! @param dset the dataset
   !! @param errcode the err code
   !! 
-  !! @return 
   !! @author Jeff Whitaker
   subroutine set_varunlimdimlens_(dset,errcode)
     type(Dataset), intent(inout) :: dset
@@ -347,6 +369,7 @@ contains
        endif
     enddo
   end subroutine set_varunlimdimlens_
+
   !> Open existing dataset, create dataset object for reading netcdf
   !! file.
   !!
@@ -488,7 +511,7 @@ contains
        enddo
     enddo
   end function open_dataset
-!
+
   !> Create new dataset, using an existing dataset object to define.
   !! Variables, dimensions and attributes.
   !!
@@ -877,151 +900,181 @@ contains
     deallocate(dset%variables,dset%dimensions)
   end subroutine close_dataset
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_1d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4), allocatable, dimension(:), intent(inout) :: values
     include "read_vardata_code_1d.f90"
   end subroutine read_vardata_1d_r4
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_2d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4), allocatable, dimension(:,:), intent(inout) :: values
     include "read_vardata_code_2d.f90"
   end subroutine read_vardata_2d_r4
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_3d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4), allocatable, dimension(:,:,:), intent(inout) :: values
     include "read_vardata_code_3d.f90"
   end subroutine read_vardata_3d_r4
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_4d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4), allocatable, dimension(:,:,:,:), intent(inout) :: values
     include "read_vardata_code_4d.f90"
   end subroutine read_vardata_4d_r4
 
+  !> @copydoc read_vardata_4param
   subroutine read_vardata_5d_r4(dset, varname, values, errcode)
     real(4), allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_r4
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_1d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8), allocatable, dimension(:), intent(inout) :: values
     include "read_vardata_code_1d.f90"
   end subroutine read_vardata_1d_r8
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_2d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8), allocatable, dimension(:,:), intent(inout) :: values
     include "read_vardata_code_2d.f90"
   end subroutine read_vardata_2d_r8
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_3d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8), allocatable, dimension(:,:,:), intent(inout) :: values
     include "read_vardata_code_3d.f90"
   end subroutine read_vardata_3d_r8
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_4d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8), allocatable, dimension(:,:,:,:), intent(inout) :: values
     include "read_vardata_code_4d.f90"
   end subroutine read_vardata_4d_r8
 
+  !> @copydoc read_vardata_4param
   subroutine read_vardata_5d_r8(dset, varname, values, errcode)
     real(8), allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_r8
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_1d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer, allocatable, dimension(:), intent(inout) :: values
     include "read_vardata_code_1d.f90"
   end subroutine read_vardata_1d_int
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_2d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer, allocatable, dimension(:,:), intent(inout) :: values
     include "read_vardata_code_2d.f90"
   end subroutine read_vardata_2d_int
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_3d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer, allocatable, dimension(:,:,:), intent(inout) :: values
     include "read_vardata_code_3d.f90"
   end subroutine read_vardata_3d_int
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_4d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer, allocatable, dimension(:,:,:,:), intent(inout) :: values
     include "read_vardata_code_4d.f90"
   end subroutine read_vardata_4d_int
 
+  !> @copydoc read_vardata_4param
   subroutine read_vardata_5d_int(dset, varname, values, errcode)
     integer, allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_int
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_1d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2), allocatable, dimension(:), intent(inout) :: values
     include "read_vardata_code_1d.f90"
   end subroutine read_vardata_1d_short
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_2d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2), allocatable, dimension(:,:), intent(inout) :: values
     include "read_vardata_code_2d.f90"
   end subroutine read_vardata_2d_short
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_3d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2), allocatable, dimension(:,:,:), intent(inout) :: values
     include "read_vardata_code_3d.f90"
   end subroutine read_vardata_3d_short
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_4d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2), allocatable, dimension(:,:,:,:), intent(inout) :: values
     include "read_vardata_code_4d.f90"
   end subroutine read_vardata_4d_short
 
+  !> @copydoc read_vardata_4param
   subroutine read_vardata_5d_short(dset, varname, values, errcode)
     integer(2), allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_short
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_1d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1), allocatable, dimension(:), intent(inout) :: values
     include "read_vardata_code_1d.f90"
   end subroutine read_vardata_1d_byte
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_2d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1), allocatable, dimension(:,:), intent(inout) :: values
     include "read_vardata_code_2d.f90"
   end subroutine read_vardata_2d_byte
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_3d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1), allocatable, dimension(:,:,:), intent(inout) :: values
     include "read_vardata_code_3d.f90"
   end subroutine read_vardata_3d_byte
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_4d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1), allocatable, dimension(:,:,:,:), intent(inout) :: values
     include "read_vardata_code_4d.f90"
   end subroutine read_vardata_4d_byte
 
+  !> @copydoc read_vardata_4param
   subroutine read_vardata_5d_byte(dset, varname, values, errcode)
     integer(1), allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_byte
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_1d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character, allocatable, dimension(:), intent(inout) :: values
     include "read_vardata_code_1d.f90"
   end subroutine read_vardata_1d_char
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_2d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character, allocatable, dimension(:,:), intent(inout) :: values
     include "read_vardata_code_2d.f90"
   end subroutine read_vardata_2d_char
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_3d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character, allocatable, dimension(:,:,:), intent(inout) :: values
     include "read_vardata_code_3d.f90"
   end subroutine read_vardata_3d_char
 
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_4d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character, allocatable, dimension(:,:,:,:), intent(inout) :: values
     include "read_vardata_code_4d.f90"
   end subroutine read_vardata_4d_char
 
+  !> @copydoc read_vardata_4param
   subroutine read_vardata_5d_char(dset, varname, values, errcode)
     character, allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
