@@ -2,10 +2,15 @@
 !! @brief Module for reading/writing netcdf files output by the GFS.
 !! @author jeff whitaker <jeffrey.s.whitaker@noaa.gov> @date 201910
 
-!> writing requires a template file.
-!! Handles 32 and 64 bit real variables, 8, 16 and 32 bit integer
-!! variables and char variables. Variables can have up to 5 dimensions.
-!! @author jeff whitaker <jeffrey.s.whitaker@noaa.gov> @date 201910
+!> This is a module for reading/writing netcdf files output by the
+!! GFS. It handles 32 and 64 bit real variables, 8, 16 and 32 bit
+!! integer variables and char variables. Variables can have up to 5
+!! dimensions.
+!!
+!! @note Wwriting requires a template file.
+!!
+!! @author jeff whitaker <jeffrey.s.whitaker@noaa.gov>
+!! @date Oct, 2019
 module module_ncio
 
   use netcdf
@@ -54,7 +59,7 @@ module module_ncio
   !!
   !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
   !! @param[in] varname Input string name of variable.
-  !! @param values Array to hold variable data.  Must be
+  !! @param values Array to hold variable data. Must be
   !!          an allocatable array with same rank
   !!          as variable varname (or 1 dimension less).
   !! @param nslice optional index along dimension slicedim
@@ -64,7 +69,7 @@ module module_ncio
   !!          start and count of netCDF read
   !! @param nccount optional, if ncstart and nccount are set, manually specify the
   !!          start and count of netCDF read
-  !! @param errcode optional error return code.  If not specified,
+  !! @param errcode optional error return code. If not specified,
   !!          program will stop if a nonzero error code returned
   !!          from netcdf library.
   !! @returns array values
@@ -89,7 +94,7 @@ module module_ncio
   !!
   !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
   !! @param[in] varname Input string name of variable.
-  !! @param values Array with variable data.  Must be
+  !! @param values Array with variable data. Must be
   !!          an allocatable array with same rank
   !!          as variable varname (or 1 dimension less).
   !! @param nslice optional index along dimension slicedim
@@ -99,7 +104,7 @@ module module_ncio
   !!          start and count of netCDF write
   !! @param nccount optional, if ncstart and nccount are set, manually specify the
   !!          start and count of netCDF write
-  !! @param errcode optional error return code.  If not specified,
+  !! @param errcode optional error return code. If not specified,
   !!          program will stop if a nonzero error code returned
   !!          from netcdf library.
   !! @returns dataset dset
@@ -118,7 +123,7 @@ module module_ncio
           write_vardata_4d_char, write_vardata_5d_char
   end interface write_vardata
     
-  !> Read attribute 'attname' return in 'values'.  
+  !> Read attribute 'attname' return in 'values'. 
   !! If optional argument 'varname' is given, a variable attribute is returned.
   !! if the attribute is a 1d array, values should be an allocatable 1d
   !! array of the correct type.
@@ -131,7 +136,7 @@ module module_ncio
           read_attribute_byte_scalar, read_attribute_byte_1d
   end interface read_attribute
   
-  !! Write attribute 'attname' with data in 'values'.  If optional
+  !! Write attribute 'attname' with data in 'values'. If optional
   !! argument 'varname' is given, a variable attribute is written.
   !! values can be a real(4), real(8), integer, string or 1d array.
   !! @author jeff whitaker
@@ -346,7 +351,7 @@ contains
   !! file.
   !!
   !! @param filename filename of netCDF Dataset.
-  !! @param errcode optional error return code.  If not specified
+  !! @param errcode optional error return code. If not specified
   !!          the program will stop if a nonzero error code returned by the netcdf lib.
   !! @param paropen optional flag to indicate whether to open dataset for parallel
   !!          access (Default .false.)
@@ -487,19 +492,19 @@ contains
   !> Create new dataset, using an existing dataset object to define.
   !! Variables, dimensions and attributes.
   !!
-  !! @param filename filename for netCDF Dataset.
-  !! @param dsetin dataset object to use as a template.
-  !! @param copyvardata optional flag to control whether all variable
+  !! @param[in] filename filename for netCDF Dataset.
+  !! @param[in] dsetin dataset object to use as a template.
+  !! @param[in] copy_vardata optional flag to control whether all variable
   !!              data is copied (Default is .false., only coordinate
   !!              variable data is copied).
-  !! @param errcode optional error return code.  If not specified
-  !!          the program will stop if a nonzero error code returned by the netcdf lib.
-  !! @param paropen optional flag to indicate whether to open dataset for parallel
+  !! @param[in] paropen optional flag to indicate whether to open dataset for parallel
   !!          access (Default .false.)
-  !! @param nocompress optional flag to disable compression  even if input dataset is
+  !! @param[in] nocompress optional flag to disable compression  even if input dataset is
   !!             compressed (Default .false.).
-  !! @param mpicomm optional MPI communicator to use (Default MPI_COMM_WORLD)
+  !! @param[in] mpicomm optional MPI communicator to use (Default MPI_COMM_WORLD)
   !!          ignored if paropen=F
+  !! @param[out] errcode optional error return code. If not specified
+  !!          the program will stop if a nonzero error code returned by the netcdf lib.
   !!
   !! @returns Dataset object.
   !! @author jeff whitaker <jeffrey.s.whitaker@noaa.gov>
@@ -834,13 +839,14 @@ contains
        endif
     enddo
   end function create_dataset
-  !> Close a netcdf file, deallocate members of dataset object.
-  !! if optional error return code errcode is not specified,
-  !! program will stop if a nonzero error code returned by the netcdf lib.
+
+  !> Close a netcdf file, deallocate members of dataset object. If
+  !! optional error return code errcode is not specified, program will
+  !! stop if a nonzero error code returned by the netcdf lib.
   !!
-  !! @param filename filename for netCDF Dataset.
-  !! @param errcode optional error return code.  If not specified
-  !!          the program will stop if a nonzero error code returned by the
+  !! @param dset a Dataset object with the open netCDF file.
+  !! @param errcode optional error return code. If not specified the
+  !! program will stop if a nonzero error code returned by the
   !! @author jeff whitaker
   subroutine close_dataset(dset,errcode)
     type(Dataset), intent(inout) :: dset
