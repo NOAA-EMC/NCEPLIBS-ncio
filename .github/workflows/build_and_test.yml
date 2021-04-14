@@ -26,7 +26,7 @@ jobs:
         make -j2
         ctest --verbose
         export PATH="/home/runner/.local/bin:$PATH"
-        gcovr -r .. --html-details -o test-coverage.html
+        gcovr -s $HOME/work/NCEPLIBS-ncio/NCEPLIBS-ncio/src -r .. --html-details -o test-coverage.html
 
     - uses: actions/upload-artifact@v2
       if: ${{ matrix.os == 'ubuntu-20.04' }}
