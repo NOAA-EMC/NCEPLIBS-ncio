@@ -16,24 +16,11 @@ jobs:
         sudo apt-get install libmpich-dev
         sudo apt-get install libnetcdf-dev libnetcdff-dev netcdf-bin pkg-config
         sudo apt-get install doxygen
-        python3 -m pip install gcovr
-          
+       
     - name: build and test
       run: |
-        set -x
         pwd && ls -l
         mkdir build && cd build
-        cmake .. -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH=~ -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -O0"
+        cmake .. -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH=~
         make -j2
-        make VERBOSE=1 test
-        export PATH="/home/runner/.local/bin:$PATH"
-        ls -l
-        gcovr --version
-        gcovr -s $HOME/work/NCEPLIBS-ncio/NCEPLIBS-ncio/src -r .. --html-details -o test-coverage.html
-        pwd
-        ls -l
-
-    - uses: actions/upload-artifact@v2
-      with:
-        name: test-coverage
-        path: /home/runner/work/NCEPLIBS-ncio/NCEPLIBS-ncio/build/*.html
+        ctest --verbose
