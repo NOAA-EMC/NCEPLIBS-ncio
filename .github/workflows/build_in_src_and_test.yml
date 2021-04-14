@@ -1,4 +1,4 @@
-name: Build and Test
+name: Build in source and do code coverage anaysis
 on: [push, pull_request]
 
 jobs:
@@ -26,7 +26,7 @@ jobs:
         make -j2
         make VERBOSE=1 test
         export PATH="/home/runner/.local/bin:$PATH"
-        gcovr -s $HOME/work/NCEPLIBS-ncio/NCEPLIBS-ncio/src -r .. --html-details -o test-coverage.html --html-details -o test-coverage.html
+        gcovr --html-details -o test-coverage.html
 
     - uses: actions/upload-artifact@v2
       with:
