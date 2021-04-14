@@ -12,8 +12,9 @@ program tst_ncio
   real(4), allocatable, dimension(:,:) :: values_2d
   real(4), allocatable, dimension(:,:,:) :: values_3d
   real(4), allocatable, dimension(:,:,:,:) :: values_4d
-  real(4) mval,r4val
-  integer ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n
+  real(4), dimension(10,10) :: quantize1, quantize2
+  real(4) mval,r4val,qerr
+  integer ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
   logical hasit
 
   print *,'*** Testing NCEPLIBS-ncio.'
@@ -54,6 +55,19 @@ program tst_ncio
   if (allocated(values_1d)) deallocate(values_1d)
   allocate(values_1d(5))
   values_1d = (/1,2,3,4,5/)
+
+  print *,'*** Test quantize data...'
+  nbits = 8 ! eight bit only
+  quantize1 = 314.1592653589793
+  quantize1(5,:) = 123.456789
+  quantize1(10,:) = 1013.254321
+  call quantize_data(quantize1, quantize2, nbits, qerr)
+  if (abs(quantize2(1,1)-quantize1(1,1)) .gt. qerr) then
+     print *,'*** quantize data not working properly...'
+     print *,'abs(quantize2(1,1)-quantize1(1,1))==',abs(quantize2(1,1)-quantize1(1,1))
+     print *,'error==',qerr
+     stop 99
+  end if
 
   print *,'*** Test write of attributes...'
   call write_attribute(dset,'bar',values_1d,'ugrd')
