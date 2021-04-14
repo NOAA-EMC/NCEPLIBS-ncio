@@ -22,12 +22,13 @@ jobs:
       run: |
         set -x
         pwd && ls -l
+        pwd && ls -l
         cmake . -DCMAKE_PREFIX_PATH=~ -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -O0"
         make VERBOSE=1 -j2
         make VERBOSE=1 test
+        pwd && ls -l
         gcovr --html-details -o test-coverage.html
-        ls -l
-        pwd
+        pwd && ls -l
 
     - uses: actions/upload-artifact@v2
       with:
