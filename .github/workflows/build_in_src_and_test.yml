@@ -23,10 +23,11 @@ jobs:
         set -x
         pwd && ls -l
         cmake . -DCMAKE_PREFIX_PATH=~ -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -O0"
-        make -j2
+        make VERBOSE=1 -j2
         make VERBOSE=1 test
-        export PATH="/home/runner/.local/bin:$PATH"
         gcovr --html-details -o test-coverage.html
+        ls -l
+        pwd
 
     - uses: actions/upload-artifact@v2
       with:
