@@ -34,5 +34,6 @@ jobs:
         ls -l
 
     - uses: actions/upload-artifact@v2
+      with:
         name: test-coverage
         path: NCEPLIBS-ncio/build/*.html
