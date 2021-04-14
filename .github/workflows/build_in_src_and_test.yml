@@ -27,7 +27,7 @@ jobs:
         make VERBOSE=1 -j2
         make VERBOSE=1 test
         pwd && ls -l
-        gcovr --html-details -o test-coverage.html
+        gcovr -v --html-details -o test-coverage.html
         pwd && ls -l
 
     - uses: actions/upload-artifact@v2
