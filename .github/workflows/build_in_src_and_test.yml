@@ -23,7 +23,7 @@ jobs:
         set -x
         pwd && ls -l
         pwd && ls -l
-        cmake . -DCMAKE_PREFIX_PATH=~ -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -O0"
+        cmake . -DCMAKE_PREFIX_PATH=~ -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -fprofile-abs-path -O0"
         make VERBOSE=1 -j2
         make VERBOSE=1 test
         pwd && ls -l
