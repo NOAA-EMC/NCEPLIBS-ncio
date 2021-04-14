@@ -34,7 +34,5 @@ jobs:
         ls -l
 
     - uses: actions/upload-artifact@v2
-      if: ${{ matrix.os == 'ubuntu-20.04' }}
-      with:
         name: test-coverage
         path: NCEPLIBS-ncio/build/*.html
