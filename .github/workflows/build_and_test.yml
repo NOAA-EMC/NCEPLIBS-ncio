@@ -36,4 +36,4 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: test-coverage
-        path: /home/runner/work/NCEPLIBS-ncio/NCEPLIBS-ncio/build/test-coverage.html
+        path: /home/runner/work/NCEPLIBS-ncio/NCEPLIBS-ncio/build/*.html
