@@ -1,0 +1,36 @@
+name: Build in source and do code coverage anaysis
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    env:
+      FC: gfortran-9
+      CC: gcc-9
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: install-dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install libmpich-dev
+        sudo apt-get install libnetcdf-dev libnetcdff-dev netcdf-bin pkg-config
+        sudo apt-get install doxygen
+        python3 -m pip install gcovr
+          
+    - name: build and test
+      run: |
+        set -x
+        pwd && ls -l
+        pwd && ls -l
+        cmake . -DCMAKE_PREFIX_PATH=~ -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -fprofile-abs-path -O0"
+        make VERBOSE=1 -j2
+        make VERBOSE=1 test
+        pwd && ls -l
+        gcovr -v --html-details -o test-coverage.html
+        pwd && ls -l
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: test-coverage
+        path: /home/runner/work/NCEPLIBS-ncio/NCEPLIBS-ncio/*.html
