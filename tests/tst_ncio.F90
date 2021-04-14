@@ -56,11 +56,26 @@ program tst_ncio
   allocate(values_1d(5))
   values_1d = (/1,2,3,4,5/)
 
-  print *,'*** Test quantize data...'
+  ! the next tests exercise the quantize data functionality
+  ! this packs the data so that the last 32-nbits of each float are
+  ! zero for efficient zlib compression (note this results in 'lossy'
+  ! compression and the qerr value is the max error introduced by
+  ! this data packing procedure
+  print *,'*** Test quantize data to 8 bit ...'
   nbits = 8 ! eight bit only
   quantize1 = 314.1592653589793
   quantize1(5,:) = 123.456789
   quantize1(10,:) = 1013.254321
+  call quantize_data(quantize1, quantize2, nbits, qerr)
+  if (abs(quantize2(1,1)-quantize1(1,1)) .gt. qerr) then
+     print *,'*** quantize data not working properly...'
+     print *,'abs(quantize2(1,1)-quantize1(1,1))==',abs(quantize2(1,1)-quantize1(1,1))
+     print *,'error==',qerr
+     stop 99
+  end if
+
+  print *,'*** Test quantize data to 32 bit ...'
+  nbits = 32
   call quantize_data(quantize1, quantize2, nbits, qerr)
   if (abs(quantize2(1,1)-quantize1(1,1)) .gt. qerr) then
      print *,'*** quantize data not working properly...'
