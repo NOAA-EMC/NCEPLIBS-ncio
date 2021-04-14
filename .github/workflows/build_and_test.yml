@@ -20,6 +20,7 @@ jobs:
           
     - name: build and test
       run: |
+        set -x
         pwd && ls -l
         mkdir build && cd build
         cmake .. -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH=~ -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -O0"
@@ -28,6 +29,7 @@ jobs:
         export PATH="/home/runner/.local/bin:$PATH"
         ls -l
         gcovr -s $HOME/work/NCEPLIBS-ncio/NCEPLIBS-ncio/src -r .. --html-details -o test-coverage.html
+        ls -l
 
     - uses: actions/upload-artifact@v2
       if: ${{ matrix.os == 'ubuntu-20.04' }}
