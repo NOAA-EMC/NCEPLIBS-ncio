@@ -35,7 +35,10 @@ jobs:
        
     - name: build and test
       run: |
+        set -x
         pwd && ls -l
+        mpicc --version
+        mpifort --version
         mkdir build && cd build
         cmake .. -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH=~
         make -j2
