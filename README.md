@@ -1,8 +1,10 @@
 
 # NCEPLIBS-ncio
 
-This is a library used by NCEP models for netCDF I/O. This is part of
-the [NCEPLIBS](https://github.com/NOAA-EMC/NCEPLIBS) project.
+This is a library used by [NCEP GSI
+system](https://dtcenter.ucar.edu/com-GSI/users/docs/) for netCDF
+I/O. This is part of the
+[NCEPLIBS](https://github.com/NOAA-EMC/NCEPLIBS) project.
 
 For more detailed documentation see
 https://noaa-emc.github.io/NCEPLIBS-ncio/.
