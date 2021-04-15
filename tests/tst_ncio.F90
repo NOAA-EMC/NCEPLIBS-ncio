@@ -1,4 +1,6 @@
 ! This is a test for the NCEPLIBS-ncio package.
+!
+! Cory Driver, Jeff Whitaker
 program tst_ncio
 
   use netcdf
@@ -16,6 +18,7 @@ program tst_ncio
   real(4) mval,r4val,qerr
   integer ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
   logical hasit
+  integer ecode
 
   print *,'*** Testing NCEPLIBS-ncio.'
 
@@ -94,16 +97,23 @@ program tst_ncio
      print *,'***attribute not read or written correctly...'
      stop 99
   endif
-  call read_attribute(dset,'missing_value',mval,'pressfc')
+
+  print *,'*** Test read of attribute just written with errcode...'
+  call read_attribute(dset,'hello',charatt,errcode=ecode)
+  if (trim(charatt) .ne. 'world') then
+     print *,'***attribute not read or written correctly...'
+     stop 99
+  endif
 
   print *,'*** Test read of missing_value attribute...'
+  call read_attribute(dset,'missing_value',mval,'pressfc')
   if (mval .ne. -1.e10) then
      print *,'***missing_value not correct...'
      stop 99
   endif
-  nvar = get_nvar(dset, 'vgrd')
 
   print *,'*** Test getting variable id...'
+  nvar = get_nvar(dset, 'vgrd')
   if (trim(dset%variables(nvar)%name) .ne. 'vgrd') then
      print *,'***variable id not correct...'
      stop 99
