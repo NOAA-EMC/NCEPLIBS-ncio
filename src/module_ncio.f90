@@ -1,6 +1,6 @@
 !> @file
 !! @brief Module for reading/writing netcdf files output by the GFS.
-!! @author jeff whitaker <jeffrey.s.whitaker@noaa.gov> @date 201910
+!! @author Jeff Whitaker <jeffrey.s.whitaker@noaa.gov> @date 201910
 
 !> This is a module for reading/writing netcdf files output by the
 !! GFS. It handles 32 and 64 bit real variables, 8, 16 and 32 bit
@@ -9,7 +9,7 @@
 !!
 !! @note Wwriting requires a template file.
 !!
-!! @author jeff whitaker <jeffrey.s.whitaker@noaa.gov>
+!! @author Jeff Whitaker <jeffrey.s.whitaker@noaa.gov>
 !! @date Oct, 2019
 module module_ncio
 
@@ -74,9 +74,13 @@ module module_ncio
   !! @param[out] errcode optional error return code. If not specified,
   !! program will stop if a nonzero error code returned from netcdf
   !! library.
-  !! @author jeff whitaker
+  !! @author Jeff Whitaker
   !!
   !! @defgroup read_vardata_4param Read Variable Data without slice/start/count Arrays.
+  !!
+  !! When reading 5D arrays, the subsetting options are not present in
+  !! NCEPLIBS-ncio.
+  !!
   !! Read data from variable varname in dataset dset, return in it
   !! array values.
   !!
@@ -88,8 +92,14 @@ module module_ncio
   !! @param[out] errcode optional error return code. If not specified,
   !! program will stop if a nonzero error code returned from netcdf
   !! library.
-  !! @author jeff whitaker
   !!
+  !! @author Jeff Whitaker
+
+  !> This interface provides access to the read_vardata
+  !! subroutines. The 5D subroutines have a different number of
+  !! parameters from the lower-dimension read subroutines.
+  !!
+  !! @author Jeff Whitaker
   interface read_vardata
      module procedure read_vardata_1d_r4, read_vardata_2d_r4, read_vardata_3d_r4,&
           read_vardata_4d_r4, read_vardata_5d_r4, &
@@ -109,21 +119,21 @@ module module_ncio
   !!
   !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
   !! @param[in] varname Input string name of variable.
-  !! @param values Array with variable data. Must be
-  !!          an allocatable array with same rank
-  !!          as variable varname (or 1 dimension less).
-  !! @param nslice optional index along dimension slicedim
-  !! @param slicedim optional, if nslice is set, index of which dimension to slice with
-  !!          nslice, default is ndims
-  !! @param ncstart optional, if ncstart and nccount are set, manually specify the
-  !!          start and count of netCDF write
-  !! @param nccount optional, if ncstart and nccount are set, manually specify the
-  !!          start and count of netCDF write
-  !! @param errcode optional error return code. If not specified,
-  !!          program will stop if a nonzero error code returned
-  !!          from netcdf library.
-  !! @returns dataset dset
-  !! @author jeff whitaker 
+  !! @param[in] values Array with variable data. Must be an
+  !! allocatable array with same rank as variable varname (or 1
+  !! dimension less).
+  !! @param[in] nslice optional index along dimension slicedim.
+  !! @param[in] slicedim optional, if nslice is set, index of which
+  !! dimension to slice with nslice, default is ndims.
+  !! @param[in] ncstart optional, if ncstart and nccount are set,
+  !! manually specify the start and count of netCDF write.
+  !! @param[in] nccount optional, if ncstart and nccount are set,
+  !! manually specify the start and count of netCDF write.
+  !! @param[out] errcode optional error return code. If not specified,
+  !! program will stop if a nonzero error code returned from netcdf
+  !! library.
+  !!
+  !! @author Jeff Whitaker 
   interface write_vardata
      module procedure write_vardata_1d_r4, write_vardata_2d_r4, write_vardata_3d_r4,&
           write_vardata_4d_r4, write_vardata_1d_r8, write_vardata_2d_r8, write_vardata_3d_r8,&
@@ -138,11 +148,19 @@ module module_ncio
           write_vardata_4d_char, write_vardata_5d_char
   end interface write_vardata
     
-  !> Read attribute 'attname' return in 'values'. 
-  !! If optional argument 'varname' is given, a variable attribute is returned.
-  !! if the attribute is a 1d array, values should be an allocatable 1d
-  !! array of the correct type.
-  !! @author jeff whitaker
+  !> Read attribute 'attname' return in 'values'.
+  !!
+  !! If optional argument 'varname' is given, a variable attribute is
+  !! returned. If the attribute is a 1d array, values should be an
+  !! allocatable 1d array of the correct type.
+  !!
+  !! @param[in] dset ???
+  !! @param[in] attname ???
+  !! @param[inout] values ???
+  !! @param[in] varname ???
+  !! @param[out] errcode ???
+  !!
+  !! @author Jeff Whitaker
   interface read_attribute
      module procedure read_attribute_r4_scalar, read_attribute_int_scalar,&
           read_attribute_r8_scalar, read_attribute_r4_1d,&
@@ -151,10 +169,17 @@ module module_ncio
           read_attribute_byte_scalar, read_attribute_byte_1d
   end interface read_attribute
   
-  !! Write attribute 'attname' with data in 'values'. If optional
+  !> Write attribute 'attname' with data in 'values'. If optional
   !! argument 'varname' is given, a variable attribute is written.
   !! values can be a real(4), real(8), integer, string or 1d array.
-  !! @author jeff whitaker
+  !!
+  !! @param[in] dset ???
+  !! @param[in] attname ???
+  !! @param[inout] values ???
+  !! @param[in] varname ???
+  !! @param[out] errcode ???
+  !!
+  !! @author Jeff Whitaker
   interface write_attribute
      module procedure write_attribute_r4_scalar, write_attribute_int_scalar,&
           write_attribute_r8_scalar, write_attribute_r4_1d,&
@@ -163,7 +188,12 @@ module module_ncio
           write_attribute_byte_scalar, write_attribute_byte_1d
   end interface write_attribute
   
-  !! Quantize data.
+  !> Quantize data.
+  !!
+  !! @param[in] dataIn ???
+  !! @param[out] dataOut ???
+  !! @param[in] nbits ???
+  !! @param[out] compress_err ???
   !!
   !! @author Jeff Whitaker, Cory Martin
   interface quantize_data
@@ -182,7 +212,7 @@ contains
   !! @param[in] status the status indicator
   !! @param[in] halt the halt option
   !! @param[in] fname the filename
-  !! @author jeff whitaker 
+  !! @author Jeff Whitaker 
   subroutine nccheck(status,halt,fname)
     implicit none
     integer, intent (in) :: status
@@ -207,7 +237,7 @@ contains
   !! 
   !! @param dset the dataset
   !! @param dimname the dimension name
-  !! @author jeff whitaker
+  !! @author Jeff Whitaker
   function get_dim(dset, dimname) result(dim)
     type(Dataset) :: dset
     type(Dimension) :: dim
@@ -224,7 +254,7 @@ contains
   !! @param dimname the dimension name
   !! 
   !! @return 
-  !! @author jeff whitaker
+  !! @author Jeff Whitaker
   integer function get_ndim(dset, dimname)
     type(Dataset), intent(in) :: dset
     character(len=*), intent(in) :: dimname
@@ -530,7 +560,7 @@ contains
   !!          the program will stop if a nonzero error code returned by the netcdf lib.
   !!
   !! @returns Dataset object.
-  !! @author jeff whitaker <jeffrey.s.whitaker@noaa.gov>
+  !! @author Jeff Whitaker <jeffrey.s.whitaker@noaa.gov>
   function create_dataset(filename, dsetin, copy_vardata, paropen, nocompress, mpicomm, errcode) result(dset)
     implicit none
     character(len=*), intent(in) :: filename
@@ -870,7 +900,7 @@ contains
   !! @param dset a Dataset object with the open netCDF file.
   !! @param errcode optional error return code. If not specified the
   !! program will stop if a nonzero error code returned by the
-  !! @author jeff whitaker
+  !! @author Jeff Whitaker
   subroutine close_dataset(dset,errcode)
     type(Dataset), intent(inout) :: dset
     integer, intent(out), optional :: errcode
@@ -1080,6 +1110,7 @@ contains
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_char
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_1d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4),  dimension(:), intent(in) :: values
     integer, intent(in), optional :: ncstart(1)
@@ -1087,6 +1118,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_1d_r4
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_2d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4),  dimension(:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(2)
@@ -1094,6 +1126,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_2d_r4
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_3d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4),  dimension(:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(3)
@@ -1101,6 +1134,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_3d_r4
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_4d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4),  dimension(:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(4)
@@ -1108,6 +1142,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_4d_r4
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_5d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4),  dimension(:,:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(5)
@@ -1115,6 +1150,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_5d_r4
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_1d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8),  dimension(:), intent(in) :: values
     integer, intent(in), optional :: ncstart(1)
@@ -1122,6 +1158,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_1d_r8
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_2d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8),  dimension(:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(2)
@@ -1129,6 +1166,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_2d_r8
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_3d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8),  dimension(:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(3)
@@ -1136,6 +1174,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_3d_r8
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_4d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8),  dimension(:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(4)
@@ -1143,6 +1182,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_4d_r8
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_5d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8),  dimension(:,:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(5)
@@ -1150,6 +1190,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_5d_r8
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_1d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer,  dimension(:), intent(in) :: values
     integer, intent(in), optional :: ncstart(1)
@@ -1157,6 +1198,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_1d_int
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_2d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer,  dimension(:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(2)
@@ -1164,6 +1206,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_2d_int
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_3d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer,  dimension(:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(3)
@@ -1171,6 +1214,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_3d_int
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_4d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer,  dimension(:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(4)
@@ -1178,6 +1222,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_4d_int
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_5d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer,  dimension(:,:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(5)
@@ -1185,6 +1230,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_5d_int
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_1d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2),  dimension(:), intent(in) :: values
     integer, intent(in), optional :: ncstart(1)
@@ -1192,6 +1238,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_1d_short
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_2d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2),  dimension(:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(2)
@@ -1199,6 +1246,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_2d_short
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_3d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2),  dimension(:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(3)
@@ -1206,6 +1254,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_3d_short
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_4d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2),  dimension(:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(4)
@@ -1213,6 +1262,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_4d_short
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_5d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2),  dimension(:,:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(5)
@@ -1220,6 +1270,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_5d_short
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_1d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1),  dimension(:), intent(in) :: values
     integer, intent(in), optional :: ncstart(1)
@@ -1227,6 +1278,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_1d_byte
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_2d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1),  dimension(:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(2)
@@ -1234,6 +1286,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_2d_byte
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_3d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1),  dimension(:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(3)
@@ -1241,6 +1294,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_3d_byte
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_4d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1),  dimension(:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(4)
@@ -1248,6 +1302,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_4d_byte
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_5d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1),  dimension(:,:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(5)
@@ -1255,6 +1310,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_5d_byte
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_1d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character,  dimension(:), intent(in) :: values
     integer, intent(in), optional :: ncstart(1)
@@ -1262,6 +1318,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_1d_char
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_2d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character,  dimension(:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(2)
@@ -1269,6 +1326,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_2d_char
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_3d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character,  dimension(:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(3)
@@ -1276,6 +1334,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_3d_char
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_4d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character,  dimension(:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(4)
@@ -1283,6 +1342,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_4d_char
 
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_5d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character,  dimension(:,:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(5)
@@ -1290,118 +1350,144 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_5d_char
 
+  !> @copydoc module_ncio::read_attribute
   subroutine read_attribute_int_scalar(dset, attname, values, varname, errcode)
     integer, intent(inout) :: values
     include "read_scalar_attribute_code.f90"
   end subroutine read_attribute_int_scalar
 
+  !> @copydoc module_ncio::read_attribute
   subroutine read_attribute_short_scalar(dset, attname, values, varname, errcode)
     integer(2), intent(inout) :: values
     include "read_scalar_attribute_code.f90"
   end subroutine read_attribute_short_scalar
 
+  !> @copydoc module_ncio::read_attribute
   subroutine read_attribute_byte_scalar(dset, attname, values, varname, errcode)
     integer(1), intent(inout) :: values
     include "read_scalar_attribute_code.f90"
   end subroutine read_attribute_byte_scalar
 
+  !> @copydoc module_ncio::read_attribute
   subroutine read_attribute_r4_scalar(dset, attname, values, varname, errcode)
     real(4), intent(inout) :: values
     include "read_scalar_attribute_code.f90"
   end subroutine read_attribute_r4_scalar
 
+  !> @copydoc module_ncio::read_attribute
   subroutine read_attribute_r8_scalar(dset, attname, values, varname, errcode)
     real(8), intent(inout) :: values
     include "read_scalar_attribute_code.f90"
   end subroutine read_attribute_r8_scalar
 
+  !> @copydoc module_ncio::read_attribute
   subroutine read_attribute_r4_1d(dset, attname, values, varname, errcode)
     real(4), intent(inout), allocatable, dimension(:) :: values
     include "read_attribute_code.f90"
   end subroutine read_attribute_r4_1d
 
+  !> @copydoc module_ncio::read_attribute
   subroutine read_attribute_r8_1d(dset, attname, values, varname, errcode)
     real(8), intent(inout), allocatable, dimension(:) :: values
     include "read_attribute_code.f90"
   end subroutine read_attribute_r8_1d
 
+  !> @copydoc module_ncio::read_attribute
   subroutine read_attribute_int_1d(dset, attname, values, varname, errcode)
     integer, intent(inout), allocatable, dimension(:) :: values
     include "read_attribute_code.f90"
   end subroutine read_attribute_int_1d
 
+  !> @copydoc module_ncio::read_attribute
   subroutine read_attribute_short_1d(dset, attname, values, varname, errcode)
     integer(2), intent(inout), allocatable, dimension(:) :: values
     include "read_attribute_code.f90"
   end subroutine read_attribute_short_1d
 
+  !> @copydoc module_ncio::read_attribute
   subroutine read_attribute_byte_1d(dset, attname, values, varname, errcode)
     integer(1), intent(inout), allocatable, dimension(:) :: values
     include "read_attribute_code.f90"
   end subroutine read_attribute_byte_1d
 
+  !> @copydoc module_ncio::read_attribute
   subroutine read_attribute_char(dset, attname, values, varname, errcode)
     character(len=*), intent(inout) :: values
     include "read_scalar_attribute_code.f90"
   end subroutine read_attribute_char
 
+  !> @copydoc module_ncio::write_attribute
   subroutine write_attribute_int_scalar(dset, attname, values, varname, errcode)
     integer, intent(in) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_int_scalar
 
+  !> @copydoc module_ncio::write_attribute
   subroutine write_attribute_short_scalar(dset, attname, values, varname, errcode)
     integer(2), intent(in) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_short_scalar
 
+  !> @copydoc module_ncio::write_attribute
   subroutine write_attribute_byte_scalar(dset, attname, values, varname, errcode)
     integer(1), intent(in) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_byte_scalar
 
+  !> @copydoc module_ncio::write_attribute
   subroutine write_attribute_r4_scalar(dset, attname, values, varname, errcode)
     real(4), intent(in) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_r4_scalar
 
+  !> @copydoc module_ncio::write_attribute
   subroutine write_attribute_r8_scalar(dset, attname, values, varname, errcode)
     real(8), intent(in) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_r8_scalar
 
+  !> @copydoc module_ncio::write_attribute
   subroutine write_attribute_r4_1d(dset, attname, values, varname, errcode)
     real(4), intent(in), allocatable, dimension(:) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_r4_1d
 
+  !> @copydoc module_ncio::write_attribute
   subroutine write_attribute_r8_1d(dset, attname, values, varname, errcode)
     real(8), intent(in), allocatable, dimension(:) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_r8_1d
 
+  !> @copydoc module_ncio::write_attribute
   subroutine write_attribute_int_1d(dset, attname, values, varname, errcode)
     integer, intent(in), allocatable, dimension(:) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_int_1d
 
+  !> @copydoc module_ncio::write_attribute
   subroutine write_attribute_short_1d(dset, attname, values, varname, errcode)
     integer(2), intent(in), allocatable, dimension(:) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_short_1d
 
+  !> @copydoc module_ncio::write_attribute
   subroutine write_attribute_byte_1d(dset, attname, values, varname, errcode)
     integer(1), intent(in), allocatable, dimension(:) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_byte_1d
 
+  !> @copydoc module_ncio::write_attribute
   subroutine write_attribute_char(dset, attname, values, varname, errcode)
     character(len=*), intent(in) :: values
     include "write_attribute_code.f90"
   end subroutine write_attribute_char
 
-    !> return integer array with year,month,day,hour,minute,second
-    !! parsed from time units attribute.
+  !> return integer array with year,month,day,hour,minute,second
+  !! parsed from time units attribute.
+  !!
+  !! @param[in] dset ???
+  !!
+  !! @author ???
   function get_idate_from_time_units(dset) result(idate)
     type(Dataset), intent(in) :: dset
     integer idate(6)
@@ -1425,10 +1511,16 @@ contains
     ipos2 = ipos1+1
     read(time_units(ipos1:ipos2),*) idate(6)
   end function get_idate_from_time_units
-    !> create time units attribute of form 'hours since YYYY-MM-DD HH:MM:SS'
-    !! from integer array with year,month,day,hour,minute,second
-    !! optional argument 'time_measure' can be used to change 'hours' to
-    !! 'days', 'minutes', 'seconds' etc.
+
+  !> create time units attribute of form 'hours since YYYY-MM-DD HH:MM:SS'
+  !! from integer array with year,month,day,hour,minute,second
+  !! optional argument 'time_measure' can be used to change 'hours' to
+  !! 'days', 'minutes', 'seconds' etc.
+  !!
+  !! @param[in] idate ???
+  !! @param[in] time_measure ???
+  !!
+  !! @author ???
   function get_time_units_from_idate(idate, time_measure) result(time_units)
     character(len=*), intent(in), optional :: time_measure
     integer, intent(in) ::  idate(6)
@@ -1445,24 +1537,28 @@ contains
     time_units = trim(adjustl(timechar))//time_units
   end function get_time_units_from_idate
 
+  !> @copydoc module_ncio::quantize_data
   subroutine quantize_data_2d(dataIn, dataOut, nbits, compress_err)
     real(4), intent(in) :: dataIn(:,:)
     real(4), intent(out) :: dataOut(:,:)
     include "quantize_data_code.f90"
   end subroutine quantize_data_2d
 
+  !> @copydoc module_ncio::quantize_data
   subroutine quantize_data_3d(dataIn, dataOut, nbits, compress_err)
     real(4), intent(in) :: dataIn(:,:,:)
     real(4), intent(out) :: dataOut(:,:,:)
     include "quantize_data_code.f90"
   end subroutine quantize_data_3d
 
+  !> @copydoc module_ncio::quantize_data
   subroutine quantize_data_4d(dataIn, dataOut, nbits, compress_err)
     real(4), intent(in) :: dataIn(:,:,:,:)
     real(4), intent(out) :: dataOut(:,:,:,:)
     include "quantize_data_code.f90"
   end subroutine quantize_data_4d
 
+  !> @copydoc module_ncio::quantize_data
   subroutine quantize_data_5d(dataIn, dataOut, nbits, compress_err)
     real(4), intent(in) :: dataIn(:,:,:,:,:)
     real(4), intent(out) :: dataOut(:,:,:,:,:)

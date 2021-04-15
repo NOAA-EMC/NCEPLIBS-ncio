@@ -1,11 +1,18 @@
 
 # NCEPLIBS-ncio
 
-This is a library used by NCEP models for netCDF I/O. This is part of
-the [NCEPLIBS](https://github.com/NOAA-EMC/NCEPLIBS) project.
+This is a library used by [NCEP GSI
+system](https://github.com/NOAA-EMC/GSI) to read the GFS forecast
+files for use in data assimilation. It is also used by
+[enkf_chgres_recenter_nc](https://github.com/NOAA-EMC/global-workflow/tree/develop/sorc/enkf_chgres_recenter_nc.fd),
+which will read in a template output file, an input file, and regrid
+the input file to the template output file resolution.
 
 For more detailed documentation see
 https://noaa-emc.github.io/NCEPLIBS-ncio/.
+
+NCEPLIBS-ncio is part of the
+[NCEPLIBS](https://github.com/NOAA-EMC/NCEPLIBS) project.
 
 ## Authors
 
