@@ -3,19 +3,36 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     env:
       FC: gfortran-9
       CC: gcc-9
+    strategy:
+      matrix:
+        os: [macos-10.15, ubuntu-20.04]
+        compiler: [gcc-9]      
 
     steps:
     - uses: actions/checkout@v2
     - name: install-dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install libmpich-dev
-        sudo apt-get install libnetcdf-dev libnetcdff-dev netcdf-bin pkg-config
-        sudo apt-get install doxygen
+        if [[ ${{ matrix.os }} == "ubuntu-20.04" ]]; then
+          sudo apt-get update
+          sudo apt-get install libmpich-dev
+          sudo apt-get install libnetcdf-dev libnetcdff-dev netcdf-bin pkg-config
+          sudo apt-get install doxygen
+        elif [[ ${{ matrix.os }} == "macos-10.15" ]]; then
+          brew update
+          brew install doxygen
+          brew install mpich
+          brew install netcdf
+          brew install wget
+          if [[ ${{ matrix.compiler }} == "gcc-9" ]]; then
+            sudo ln -sf /usr/local/bin/gfortran-9 /usr/local/bin/gfortran
+          elif  [[ ${{ matrix.compiler }} == "gcc-10" ]]; then
+            sudo ln -sf /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
+          fi
+        fi
        
     - name: build and test
       run: |
