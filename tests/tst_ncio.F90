@@ -90,6 +90,7 @@ program tst_ncio
   print *,'*** Test write of attributes...'
   call write_attribute(dset,'bar',values_1d,'ugrd')
   call write_attribute(dset,'hello','world')
+  call write_attribute(dset,'captain','kirk','grid_xt')
 
   print *,'*** Test read of attribute just written...'
   call read_attribute(dset,'hello',charatt)
