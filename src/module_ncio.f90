@@ -92,8 +92,14 @@ module module_ncio
   !! @param[out] errcode optional error return code. If not specified,
   !! program will stop if a nonzero error code returned from netcdf
   !! library.
-  !! @author Jeff Whitaker
   !!
+  !! @author Jeff Whitaker
+
+  !> This interface provides access to the read_vardata
+  !! subroutines. The 5D subroutines have a different number of
+  !! parameters from the lower-dimension read subroutines.
+  !!
+  !! @author Jeff Whitaker
   interface read_vardata
      module procedure read_vardata_1d_r4, read_vardata_2d_r4, read_vardata_3d_r4,&
           read_vardata_4d_r4, read_vardata_5d_r4, &
@@ -109,23 +115,21 @@ module module_ncio
           read_vardata_3d_char, read_vardata_4d_char, read_vardata_5d_char
   end interface read_vardata
   
-  !> @defgroup write_vardata Write Variable Data with slice/start/count Arrays.
-  !!
-  !! Write data (in array values) to variable varname in dataset dset.
+  !> Write data (in array values) to variable varname in dataset dset.
   !!
   !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
   !! @param[in] varname Input string name of variable.
   !! @param[in] values Array with variable data. Must be an
   !! allocatable array with same rank as variable varname (or 1
   !! dimension less).
-  !! @param nslice[in] optional index along dimension slicedim.
-  !! @param slicedim[in] optional, if nslice is set, index of which
+  !! @param[in] nslice optional index along dimension slicedim.
+  !! @param[in] slicedim optional, if nslice is set, index of which
   !! dimension to slice with nslice, default is ndims.
-  !! @param ncstart[in] optional, if ncstart and nccount are set,
+  !! @param[in] ncstart optional, if ncstart and nccount are set,
   !! manually specify the start and count of netCDF write.
-  !! @param nccount[in] optional, if ncstart and nccount are set,
+  !! @param[in] nccount optional, if ncstart and nccount are set,
   !! manually specify the start and count of netCDF write.
-  !! @param errcode[out] optional error return code. If not specified,
+  !! @param[out] errcode optional error return code. If not specified,
   !! program will stop if a nonzero error code returned from netcdf
   !! library.
   !!
@@ -1086,7 +1090,7 @@ contains
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_char
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_1d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4),  dimension(:), intent(in) :: values
     integer, intent(in), optional :: ncstart(1)
@@ -1094,7 +1098,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_1d_r4
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_2d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4),  dimension(:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(2)
@@ -1102,7 +1106,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_2d_r4
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_3d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4),  dimension(:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(3)
@@ -1110,7 +1114,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_3d_r4
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_4d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4),  dimension(:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(4)
@@ -1118,7 +1122,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_4d_r4
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_5d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4),  dimension(:,:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(5)
@@ -1126,7 +1130,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_5d_r4
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_1d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8),  dimension(:), intent(in) :: values
     integer, intent(in), optional :: ncstart(1)
@@ -1134,7 +1138,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_1d_r8
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_2d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8),  dimension(:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(2)
@@ -1142,7 +1146,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_2d_r8
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_3d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8),  dimension(:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(3)
@@ -1150,7 +1154,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_3d_r8
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_4d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8),  dimension(:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(4)
@@ -1158,7 +1162,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_4d_r8
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_5d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8),  dimension(:,:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(5)
@@ -1166,7 +1170,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_5d_r8
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_1d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer,  dimension(:), intent(in) :: values
     integer, intent(in), optional :: ncstart(1)
@@ -1174,7 +1178,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_1d_int
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_2d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer,  dimension(:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(2)
@@ -1182,7 +1186,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_2d_int
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_3d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer,  dimension(:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(3)
@@ -1190,7 +1194,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_3d_int
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_4d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer,  dimension(:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(4)
@@ -1198,7 +1202,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_4d_int
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_5d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer,  dimension(:,:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(5)
@@ -1206,7 +1210,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_5d_int
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_1d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2),  dimension(:), intent(in) :: values
     integer, intent(in), optional :: ncstart(1)
@@ -1214,7 +1218,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_1d_short
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_2d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2),  dimension(:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(2)
@@ -1222,7 +1226,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_2d_short
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_3d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2),  dimension(:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(3)
@@ -1230,7 +1234,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_3d_short
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_4d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2),  dimension(:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(4)
@@ -1238,7 +1242,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_4d_short
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_5d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2),  dimension(:,:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(5)
@@ -1246,7 +1250,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_5d_short
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_1d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1),  dimension(:), intent(in) :: values
     integer, intent(in), optional :: ncstart(1)
@@ -1254,7 +1258,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_1d_byte
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_2d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1),  dimension(:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(2)
@@ -1262,7 +1266,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_2d_byte
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_3d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1),  dimension(:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(3)
@@ -1270,7 +1274,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_3d_byte
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_4d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1),  dimension(:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(4)
@@ -1278,7 +1282,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_4d_byte
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_5d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1),  dimension(:,:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(5)
@@ -1286,7 +1290,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_5d_byte
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_1d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character,  dimension(:), intent(in) :: values
     integer, intent(in), optional :: ncstart(1)
@@ -1294,7 +1298,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_1d_char
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_2d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character,  dimension(:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(2)
@@ -1302,7 +1306,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_2d_char
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_3d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character,  dimension(:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(3)
@@ -1310,7 +1314,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_3d_char
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_4d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character,  dimension(:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(4)
@@ -1318,7 +1322,7 @@ contains
     include "write_vardata_code.f90"
   end subroutine write_vardata_4d_char
 
-  !> @copydoc write_vardata
+  !> @copydoc module_ncio::write_vardata
   subroutine write_vardata_5d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character,  dimension(:,:,:,:,:), intent(in) :: values
     integer, intent(in), optional :: ncstart(5)
