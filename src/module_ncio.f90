@@ -154,11 +154,15 @@ module module_ncio
   !! returned. If the attribute is a 1d array, values should be an
   !! allocatable 1d array of the correct type.
   !!
-  !! @param[in] dset ???
-  !! @param[in] attname ???
-  !! @param[inout] values ???
-  !! @param[in] varname ???
-  !! @param[out] errcode ???
+  !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
+  !! @param[in] attname Input string name of attribute to read.
+  !! @param[inout] values Array with attribute data. Must be an allocatable
+  !! array with same rank as attribute attname.
+  !! @param[in] varname optional, if provided, attribute will be read from variable
+  !! varname, otherwise attribute will be assumed to be a global attribute.
+  !! @param[out] errcode optional error return code. If not specified,
+  !! program will stop if a nonzero error code returned from netcdf
+  !! library.
   !!
   !! @author Jeff Whitaker
   interface read_attribute
@@ -173,11 +177,15 @@ module module_ncio
   !! argument 'varname' is given, a variable attribute is written.
   !! values can be a real(4), real(8), integer, string or 1d array.
   !!
-  !! @param[in] dset ???
-  !! @param[in] attname ???
-  !! @param[inout] values ???
-  !! @param[in] varname ???
-  !! @param[out] errcode ???
+  !! @param[in] dset Input dataset instance returned by open_dataset/create_dataset.
+  !! @param[in] attname Input string name of attribute to write.
+  !! @param[inout] values Array with attribute data. Must be an allocatable
+  !! array with same rank as attribute attname.
+  !! @param[in] varname optional, if provided, attribute will be written to variable
+  !! varname, otherwise attribute will be assumed to be a global attribute.
+  !! @param[out] errcode optional error return code. If not specified,
+  !! program will stop if a nonzero error code returned from netcdf
+  !! library.
   !!
   !! @author Jeff Whitaker
   interface write_attribute
@@ -190,10 +198,14 @@ module module_ncio
   
   !> Quantize data.
   !!
-  !! @param[in] dataIn ???
-  !! @param[out] dataOut ???
-  !! @param[in] nbits ???
-  !! @param[out] compress_err ???
+  !! @param[in] dataIn Input array of data to quantize.
+  !! @param[out] dataOut Output array of quantized data.
+  !! @param[in] nbits Number of bits to quantize data by (0-32). This subroutine
+  !! will convert data to 32 bit integers in range 0 to 2**nbits-1, then cast
+  !! back to 32 bit floats (data is then quantized in steps proportional to
+  !! to 2**nbits so last 32-nbits in floating point representation
+  !! should be zero for efficient zlib compression).
+  !! @param[out] compress_err Maximum absolute error between dataIn and dataOut.
   !!
   !! @author Jeff Whitaker, Cory Martin
   interface quantize_data
@@ -1485,9 +1497,10 @@ contains
   !> return integer array with year,month,day,hour,minute,second
   !! parsed from time units attribute.
   !!
-  !! @param[in] dset ???
+  !! @param[in] dset Input dataset instance returned by
+  !! open_dataset/create_dataset.
   !!
-  !! @author ???
+  !! @author Jeff Whitaker
   function get_idate_from_time_units(dset) result(idate)
     type(Dataset), intent(in) :: dset
     integer idate(6)
@@ -1517,10 +1530,11 @@ contains
   !! optional argument 'time_measure' can be used to change 'hours' to
   !! 'days', 'minutes', 'seconds' etc.
   !!
-  !! @param[in] idate ???
-  !! @param[in] time_measure ???
+  !! @param[in] idate Input array of integers idate(Year, Month, Day, Hour, Minute, Second)
+  !! @param[in] time_measure optional, string to indicate units of time since
+  !! idate time ('hours', 'days', 'minutes', 'seconds', etc.).
   !!
-  !! @author ???
+  !! @author Jeff Whitaker
   function get_time_units_from_idate(idate, time_measure) result(time_units)
     character(len=*), intent(in), optional :: time_measure
     integer, intent(in) ::  idate(6)
