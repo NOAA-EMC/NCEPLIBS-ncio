@@ -12,6 +12,7 @@ program tst_ncio
   real(4), allocatable, dimension(:,:) :: values_2d
   real(4), allocatable, dimension(:,:,:) :: values_3d
   real(4), allocatable, dimension(:,:,:,:) :: values_4d
+  real(4), allocatable, dimension(:,:,:,:,:) :: values_5d
   real(4), dimension(10,10) :: quantize1, quantize2
   real(4) mval,r4val,qerr
   integer ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
@@ -40,6 +41,11 @@ program tst_ncio
   print *,'*** Test read of variable data...'
   call read_vardata(dset, 'pressfc', values_3d)
   call read_vardata(dset, 'vgrd', values_4d)
+  print *, 'here'
+  call read_vardata(dset, 'tmp_spread', values_5d)
+  print *, maxval(values_3d)
+  print *, minval(values_4d)
+  print *, minval(values_5d), maxval(values_5d)
   values_3d=1.013e5
   values_4d=99.
 
