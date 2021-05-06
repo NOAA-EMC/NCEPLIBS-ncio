@@ -1,5 +1,6 @@
 ! This is a test for the NCEPLIBS-ncio package.
-program tst_ncio
+! Author: Brian Curtis (brian.curtis@noaa.gov)
+program tst_ncio_mpi
 
   use mpi
   use netcdf
@@ -184,4 +185,4 @@ program tst_ncio
 
   if (my_rank .eq. 0) print*, "SUCCESS!"
   call mpi_finalize(mpi_err)
-end program tst_ncio
+end program tst_ncio_mpi
