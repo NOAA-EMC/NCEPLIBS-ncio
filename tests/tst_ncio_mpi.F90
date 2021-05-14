@@ -41,9 +41,10 @@ program tst_ncio_mpi
 
 
   if (my_rank .eq. 0) print *,'*** Test read of variable data...'
-  call read_vardata(dset, 'pressfc', values_3d)
-  call read_vardata(dset, 'vgrd', values_4d)
+  call read_vardata(dsetin, 'pressfc', values_3d)
+  call read_vardata(dsetin, 'vgrd', values_4d)
   call read_vardata(dsetin, 'tmp_spread', values_5d)
+  
   if (maxval(values_3d) .ne. 102345.6) stop 7
   
   if (minval(values_4d) .ne. -5.5) stop 8
