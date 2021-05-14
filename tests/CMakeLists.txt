@@ -14,6 +14,8 @@ target_link_libraries(tst_ncio PRIVATE ncio::ncio NetCDF::NetCDF_Fortran)
 add_test(NAME tst_ncio  COMMAND tst_ncio)
 
 # Brian Curtis: MPI Test
+add_executable(tst_ncio_mpi tst_ncio_mpi.F90)
+target_link_libraries(tst_ncio_mpi PRIVATE ncio::ncio NetCDF::NetCDF_Fortran)
 add_mpi_test(tst_ncio_mpi
   EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/tst_ncio_mpi
   NUMPROCS 4
