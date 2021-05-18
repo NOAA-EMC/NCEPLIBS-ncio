@@ -30,7 +30,7 @@ program tst_ncio_mpi
   dsetin = open_dataset('dynf000_template.nc.in', paropen=.true., mpicomm=MPI_COMM_WORLD)
 
   if (my_rank .eq. 0) print *,'*** Test creation of new dataset from template...'
-  dset = create_dataset('dynf000.nc',dsetin, paropen=.true., mpicomm=MPI_COMM_WORLD)
+  dset = create_dataset('dynf000.nc', dsetin, paropen=.true., mpicomm=MPI_COMM_WORLD)
 
   if (my_rank .eq. 0) print *,'*** Test that number of variables,dimensions,attributes is read...'
   if (dsetin%nvars .ne. 24) stop 4

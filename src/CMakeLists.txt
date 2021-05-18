@@ -33,7 +33,8 @@ set_target_properties(${lib_name} PROPERTIES Fortran_MODULE_DIRECTORY
 target_include_directories(${lib_name} INTERFACE $<BUILD_INTERFACE:${module_dir}>
                                                  $<INSTALL_INTERFACE:include>)
 
-target_link_libraries(${lib_name} PRIVATE NetCDF::NetCDF_Fortran)
+target_link_libraries(${lib_name} PUBLIC NetCDF::NetCDF_Fortran)
+target_link_libraries(${lib_name} PUBLIC MPI::MPI_Fortran)
 
 list(APPEND LIB_TARGETS ${lib_name})
 
