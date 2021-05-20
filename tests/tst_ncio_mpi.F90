@@ -28,7 +28,7 @@ program tst_ncio_mpi
 
   if (my_rank .eq. 0) print*, '*** Testing NCEPLIBS-ncio with MPI.'
   dsetin = open_dataset('dynf000_par_template.nc.in', paropen=.true.)
-  stop 0
+  
   if (my_rank .eq. 0) print *,'*** Test creation of new dataset from template...'
   dset = create_dataset('dynf000_par.nc', dsetin, paropen=.true.)
 
