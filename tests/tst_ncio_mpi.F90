@@ -1,5 +1,5 @@
 ! This is a test for the NCEPLIBS-ncio package.
-! Author: Brian Curtis (brian.curtis@noaa.gov)
+! Author: Brian Curtis (brian.curtis@noaa.gov) May 2021
 program tst_ncio_mpi
 
   use mpi
