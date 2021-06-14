@@ -34,6 +34,7 @@ jobs:
             sudo ln -sf /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
           fi
         fi
+        python3 -m pip install gcovr
 
     - name: cache-netcdf
       id: cache-netcdf
@@ -69,7 +70,6 @@ jobs:
     - name: build-netcdf-fortran
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
       run: |
-        set -x
         export PATH="${HOME}/netcdf/bin:$PATH"
         export CC=mpicc
         export FC=mpifort
@@ -84,13 +84,15 @@ jobs:
        
     - name: build and test
       run: |
-        set -x
-        pwd && ls -l
-        mpicc --version
-        mpifort --version
         export FC=mpifort
         export CC=mpicc
         mkdir build && cd build
-        cmake .. -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH='~;~/netcdf'
+        cmake .. -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -fprofile-abs-path -O0"
         make -j2
         ctest --verbose
+        gcovr -v --html-details -o test-coverage.html
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: test-coverage
+        path: NCEPLIBS-ncio/build/*.html
