@@ -57,13 +57,14 @@ program tst_ncio_mpi
   ! populate pressfc and vgrd
   if (my_rank .eq. 0) print *,'*** Test write of variable data...'
   call write_vardata(dset,'pressfc', values_3d)
-  !! SKIP THIS ONE
+  !! SKIP THESE TWO
   !! call write_vardata(dset,'vgrd', values_4d)
-  !
-  ! ! write just a slice along 3rd dimension (index 10)
-  values_3d = -99.
-  call write_vardata(dset, 'vgrd', values_3d, 10, 3)
-  ! call write_attribute(dset,'foo',1,'ugrd')
+  !!
+  !! ! write just a slice along 3rd dimension (index 10)
+  !!values_3d = -99.
+  !!call write_vardata(dset, 'vgrd', values_3d, 10, 3)
+  !!!!!!!!!!!!!!!!!!!!!!!
+   call write_attribute(dset,'foo',1,'ugrd')
   ! if (allocated(values_1d)) deallocate(values_1d)
   ! allocate(values_1d(5))
   ! values_1d = (/1,2,3,4,5/)
