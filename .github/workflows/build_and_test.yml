@@ -13,7 +13,11 @@ jobs:
         compiler: [gcc-9]      
 
     steps:
-    - uses: actions/checkout@v2
+    - name: checkout
+      uses: actions/checkout@v2
+      with:
+        path: ncio
+
     - name: install-dependencies
       run: |
         if [[ ${{ matrix.os }} == "ubuntu-latest" ]]; then
@@ -36,15 +40,18 @@ jobs:
        
     - name: build and test
       run: |
+        cd ncio
         export FC=mpifort
         export CC=mpicc
         mkdir build && cd build
         cmake .. -DENABLE_DOCS=Yes -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -fprofile-abs-path -O0"
         make -j2
-        gcovr -v --html-details -o test-coverage.html
         ctest --verbose
+        gcovr -r .. --html-details -o test-coverage.html
 
-    - uses: actions/upload-artifact@v2
+    - name: upload-test-coverage
+      if: startsWith(matrix.os,'ubuntu')
+      uses: actions/upload-artifact@v2
       with:
         name: test-coverage
-        path: /home/runner/work/NCEPLIBS-ncio/NCEPLIBS-ncio/*.html
+        path: ncio/build/*.html
