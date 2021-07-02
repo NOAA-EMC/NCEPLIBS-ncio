@@ -32,16 +32,19 @@ jobs:
             sudo ln -sf /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
           fi
         fi
+        python3 -m pip install gcovr
        
     - name: build and test
       run: |
-        set -x
-        pwd && ls -l
-        mpicc --version
-        mpifort --version
         export FC=mpifort
         export CC=mpicc
         mkdir build && cd build
-        cmake .. -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH=~
+        cmake .. -DENABLE_DOCS=Yes -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -fprofile-abs-path -O0"
         make -j2
+        gcovr -v --html-details -o test-coverage.html
         ctest --verbose
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: test-coverage
+        path: /home/runner/work/NCEPLIBS-ncio/NCEPLIBS-ncio/*.html
