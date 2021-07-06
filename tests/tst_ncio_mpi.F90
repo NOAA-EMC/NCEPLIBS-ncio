@@ -56,15 +56,16 @@ program tst_ncio_mpi
 
   ! populate pressfc and vgrd
   if (my_rank .eq. 0) print *,'*** Test write of variable data...'
-  !!call write_vardata(dset,'pressfc', values_3d)
+  call write_vardata(dset,'pressfc', values_3d)
+
   !! SKIP THESE TWO
   call write_vardata(dset,'vgrd', values_4d)
   call MPI_BARRIER(MPI_COMM_WORLD, mpi_err)
-  !!
-  !! ! write just a slice along 3rd dimension (index 10)
-  !!values_3d = -99.
-  !!call write_vardata(dset, 'vgrd', values_3d, 10, 3)
-  !!!!!!!!!!!!!!!!!!!!!!!
+
+  ! write just a slice along 3rd dimension (index 10)
+  values_3d = -99.
+  call write_vardata(dset, 'vgrd', values_3d, 10, 3)
+
   call write_attribute(dset,'foo',1,'ugrd')
   if (allocated(values_1d)) deallocate(values_1d)
   allocate(values_1d(5))
@@ -89,23 +90,19 @@ program tst_ncio_mpi
   call quantize_data(quantize1, quantize2, nbits, qerr)
   if (abs(quantize2(1,1)-quantize1(1,1)) .gt. qerr) stop 11
 
-
   if (my_rank .eq. 0) print *,'*** Test write of attributes...'
   call write_attribute(dset,'bar',values_1d,'ugrd')
   call write_attribute(dset,'hello','world')
-
 
   if (my_rank .eq. 0) print *,'*** Test read of attribute just written...'
   call read_attribute(dset,'hello',charatt)
   if (trim(charatt) .ne. 'world') stop 12
 
+  call read_attribute(dset,'missing_value',mval,'pressfc')
 
-  !!!!!!!
-  !!call read_attribute(dset,'missing_value',mval,'pressfc')
+  if (my_rank .eq. 0) print *,'*** Test read of missing_value attribute...'
+  if (mval .ne. -1.e10) stop 13
 
-  !!if (my_rank .eq. 0) print *,'*** Test read of missing_value attribute...'
-  !!if (mval .ne. -1.e10) stop 13
-  !!!!!!!
   nvar = get_nvar(dset, 'vgrd')
 
   if (my_rank .eq. 0) print *,'*** Test getting variable id...'
@@ -151,7 +148,6 @@ program tst_ncio_mpi
      stop 21
   endif
   call close_dataset(dset)
-  !!!!!!!!
 
   ! re-open dataset
   dset = open_dataset('dynf000_par.nc', paropen=.true.)
@@ -162,30 +158,29 @@ program tst_ncio_mpi
 
   if (my_rank .eq. 0) print *,'*** Test reading of data just written...'
   call read_vardata(dset, 'vgrd', values_4d)
-  if (my_rank .eq. 0) print *,'max Values_4d is: ',maxval(values_4d)
-  if (my_rank .eq. 0) print *,'min Values_4d is: ',minval(values_4d)
-  if (minval(values_4d) .ne. -99. .or. maxval(values_4d) .ne. 99.) stop 23
-  
-  ! ! this should work also, since time dim is singleton
-  ! call read_vardata(dset, 'vgrd', values_3d)
-  ! if (minval(values_3d) .ne. -99. .or. maxval(values_3d) .ne. 99.) stop 24
 
-  !call read_vardata(dset, 'pressfc', values_3d)
-  !if (minval(values_3d) .ne. 1.013e5 .or. maxval(values_3d) .ne. 1.013e5) stop 25
+  if (minval(values_4d) .ne. -99. .or. maxval(values_4d) .ne. 99.) stop 23
 
   ! this should work also, since time dim is singleton
-  !call read_vardata(dset, 'pressfc', values_2d)
-  !if (minval(values_2d) .ne. 1.013e5 .or. maxval(values_2d) .ne. 1.013e5) stop 26
+  call read_vardata(dset, 'vgrd', values_3d)
+  if (minval(values_3d) .ne. -99. .or. maxval(values_3d) .ne. 99.) stop 24
 
-  !if (my_rank .eq. 0) print *,'*** Test reading of slice...'
+  call read_vardata(dset, 'pressfc', values_3d)
+  if (minval(values_3d) .ne. 1.013e5 .or. maxval(values_3d) .ne. 1.013e5) stop 25
+
+  ! this should work also, since time dim is singleton
+  call read_vardata(dset, 'pressfc', values_2d)
+  if (minval(values_2d) .ne. 1.013e5 .or. maxval(values_2d) .ne. 1.013e5) stop 26
+
+  if (my_rank .eq. 0) print *,'*** Test reading of slice...'
   ! read 10th element along 3rd dimension
-  ! call read_vardata(dset, 'vgrd', values_3d,10,3)
-  ! if ( all(shape(values_3d) .ne. (/256,128,1/)) ) stop 27
-  ! if ( all(values_3d .ne. -99.) ) stop 28
+  call read_vardata(dset, 'vgrd', values_3d,10,3)
+  if ( all(shape(values_3d) .ne. (/256,128,1/)) ) stop 27
+  if ( all(values_3d .ne. -99.) ) stop 28
 
-  !if (my_rank .eq. 0) print *, '*** Test has_var function...'
-  !hasit = has_var(dset,'pressfc')
-  !if (.not. hasit) stop 29
+  if (my_rank .eq. 0) print *, '*** Test has_var function...'
+  hasit = has_var(dset,'pressfc')
+  if (.not. hasit) stop 29
 
   if (my_rank .eq. 0) print *,'*** Test has_att function...'
   hasit = has_attr(dset,'max_abs_compression_error','pressfc')
