@@ -163,6 +163,7 @@ program tst_ncio_mpi
   if (my_rank .eq. 0) print *,'*** Test reading of data just written...'
   call read_vardata(dset, 'vgrd', values_4d)
   if (my_rank .eq. 0) print *,'max Values_4d is: ',maxval(values_4d)
+  if (my_rank .eq. 0) print *,'min Values_4d is: ',minval(values_4d)
   if (minval(values_4d) .ne. -99. .or. maxval(values_4d) .ne. 99.) stop 23
   
   ! ! this should work also, since time dim is singleton
