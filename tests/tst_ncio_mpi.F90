@@ -58,7 +58,8 @@ program tst_ncio_mpi
   if (my_rank .eq. 0) print *,'*** Test write of variable data...'
   call write_vardata(dset,'pressfc', values_3d)
   !! SKIP THESE TWO
-  call write_vardata(dset,'vgrd', values_4d)
+  call write_vardata(dsetin,'vgrd', values_4d)
+  !!call write_vardata(dset,'vgrd', values_4d)
   !!
   !! ! write just a slice along 3rd dimension (index 10)
   !!values_3d = -99.
