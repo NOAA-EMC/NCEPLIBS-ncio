@@ -59,12 +59,13 @@ program tst_ncio_mpi
   !!call write_vardata(dset,'pressfc', values_3d)
   !! SKIP THESE TWO
   call write_vardata(dset,'vgrd', values_4d)
+  call MPI_BARRIER(MPI_COMM_WORLD, mpi_err)
   !!
   !! ! write just a slice along 3rd dimension (index 10)
   !!values_3d = -99.
   !!call write_vardata(dset, 'vgrd', values_3d, 10, 3)
   !!!!!!!!!!!!!!!!!!!!!!!
-   call write_attribute(dset,'foo',1,'ugrd')
+  call write_attribute(dset,'foo',1,'ugrd')
   if (allocated(values_1d)) deallocate(values_1d)
   allocate(values_1d(5))
   values_1d = (/1,2,3,4,5/)
@@ -160,8 +161,9 @@ program tst_ncio_mpi
   if (var%ndims .ne. 4) stop 22
 
   if (my_rank .eq. 0) print *,'*** Test reading of data just written...'
-   call read_vardata(dset, 'vgrd', values_4d)
-   if (minval(values_4d) .ne. -99. .or. maxval(values_4d) .ne. 99.) stop 23
+  call read_vardata(dset, 'vgrd', values_4d)
+  if (my_rank .eq. 0) print *,'max Values_4d is: ',maxval(values_4d)
+  if (minval(values_4d) .ne. -99. .or. maxval(values_4d) .ne. 99.) stop 23
   
   ! ! this should work also, since time dim is singleton
   ! call read_vardata(dset, 'vgrd', values_3d)
