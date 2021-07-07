@@ -27,10 +27,10 @@ program tst_ncio_mpi
   call MPI_Comm_size(MPI_COMM_WORLD, nprocs, mpi_err)
 
   if (my_rank .eq. 0) print*, '*** Testing NCEPLIBS-ncio with MPI.'
-  dsetin = open_dataset('dynf000_par_template.nc.in', paropen=.true.)
+  dsetin = open_dataset('dynf000_par_template.nc.in', paropen=.true., mpicomm=MPI_COMM_WORLD)
 
   if (my_rank .eq. 0) print *,'*** Test creation of new dataset from template...'
-  dset = create_dataset('dynf000_par.nc', dsetin, paropen=.true.)
+  dset = create_dataset('dynf000_par.nc', dsetin, paropen=.true., mpicomm=MPI_COMM_WORLD)
 
   if (my_rank .eq. 0) print *,'*** Test that number of variables,dimensions,attributes is read...'
   if (dsetin%nvars .ne. 24) stop 4
@@ -57,11 +57,10 @@ program tst_ncio_mpi
   ! populate pressfc and vgrd
   if (my_rank .eq. 0) print *,'*** Test write of variable data #1...'
   call write_vardata(dset,'pressfc', values_3d)
-  call MPI_BARRIER(MPI_COMM_WORLD, mpi_err)
+
   if (my_rank .eq. 0) print *,'*** Test write of variable data #2...'
   !! SKIP THESE TWO
   call write_vardata(dset,'vgrd', values_4d)
-  call MPI_BARRIER(MPI_COMM_WORLD, mpi_err)
 
   if (my_rank .eq. 0) print *,'*** Test write of variable data #3...'
   ! write just a slice along 3rd dimension (index 10)
