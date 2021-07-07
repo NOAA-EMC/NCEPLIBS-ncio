@@ -2,10 +2,11 @@
 ! Author: Brian Curtis (brian.curtis@noaa.gov) May 2021
 program tst_ncio_mpi
 
-  use mpi
+  ! use mpi
   use netcdf
   use module_ncio
   implicit none
+  include 'mpif.h'
 
   character(len=72) charatt, time_units
   type(Dataset) :: dset, dsetin
