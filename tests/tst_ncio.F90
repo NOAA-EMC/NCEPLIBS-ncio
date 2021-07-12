@@ -12,6 +12,7 @@ program tst_ncio
   real(4), allocatable, dimension(:,:) :: values_2d
   real(4), allocatable, dimension(:,:,:) :: values_3d
   real(4), allocatable, dimension(:,:,:,:) :: values_4d
+  real(4), allocatable, dimension(:,:,:,:,:) :: values_5d
   real(4), dimension(10,10) :: quantize1, quantize2
   real(4) mval,r4val,qerr
   integer ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
@@ -23,11 +24,11 @@ program tst_ncio
   print *,'*** Test creation of new dataset from template...'
   dset = create_dataset('dynf000.nc',dsetin)
   print *,'*** Test that number of variables,dimensions,attributes is read...'
-  if (dsetin%nvars .ne. 23) then
+  if (dsetin%nvars .ne. 24) then
      print *,'***number of variables not correct...'
      stop 99
   endif
-  if (dsetin%ndims .ne. 5) then
+  if (dsetin%ndims .ne. 6) then
      print *,'***number of dimensions not correct...'
      stop 99
   endif
@@ -35,11 +36,27 @@ program tst_ncio
      print *,'***number of attributes not correct...'
      stop 99
   endif
-  call close_dataset(dsetin)
 
   print *,'*** Test read of variable data...'
-  call read_vardata(dset, 'pressfc', values_3d)
-  call read_vardata(dset, 'vgrd', values_4d)
+  call read_vardata(dsetin, 'pressfc', values_3d)
+  call read_vardata(dsetin, 'vgrd', values_4d)
+  call read_vardata(dsetin, 'tmp_spread', values_5d)
+  if (maxval(values_3d) .ne. 102345.6) then
+     print *,'*** read_vardata not working properly...'
+     print *, 'maxvalue(pressfc) != 102345.6'
+     stop 99
+  end if
+  if (minval(values_4d) .ne. -5.5) then
+     print *,'*** read_vardata not working properly...'
+     print *, 'minvalue(vgrd) != -5.5'
+     stop 99
+  end if
+  if ((minval(values_5d) .ne. -1.0) .and. (maxval(values_5d) .ne. 1.0)) then
+     print *,'*** read_vardata not working properly...'
+     print *, 'maxvalue(tmp_spread) != -1.0 and maxvalue(tmp_spread) != 1.0'
+     stop 99
+  end if
+  call close_dataset(dsetin)
   values_3d=1.013e5
   values_4d=99.
 
