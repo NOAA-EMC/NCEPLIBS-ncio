@@ -8,7 +8,7 @@ program tst_ncio_mpi
   implicit none
   include 'mpif.h'
 
-  character(len=72) charatt, time_units
+  character(len=72) :: charatt, time_units
   type(Dataset) :: dset, dsetin
   type(Variable) :: var
   real(4), allocatable, dimension(:) :: values_1d
@@ -17,11 +17,11 @@ program tst_ncio_mpi
   real(4), allocatable, dimension(:,:,:,:) :: values_4d
   real(4), allocatable, dimension(:,:,:,:,:) :: values_5d
   real(4), dimension(10,10) :: quantize1, quantize2
-  real(4) mval,r4val,qerr
-  integer ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
+  real(4) :: mval,r4val,qerr
+  integer :: ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
   integer :: my_rank, nprocs
   integer :: mpi_err
-  logical hasit
+  logical :: hasit
 
   call mpi_init(mpi_err)
   call MPI_Comm_rank(MPI_COMM_WORLD, my_rank, mpi_err)
