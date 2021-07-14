@@ -2,13 +2,12 @@
 ! Author: Brian Curtis (brian.curtis@noaa.gov) May 2021
 program tst_ncio_mpi
 
-  ! use mpi
+  use mpi
   use netcdf
   use module_ncio
   implicit none
-  include 'mpif.h'
 
-  character(len=72) :: charatt, time_units
+  character(len=72) charatt, time_units
   type(Dataset) :: dset, dsetin
   type(Variable) :: var
   real(4), allocatable, dimension(:) :: values_1d
@@ -17,21 +16,21 @@ program tst_ncio_mpi
   real(4), allocatable, dimension(:,:,:,:) :: values_4d
   real(4), allocatable, dimension(:,:,:,:,:) :: values_5d
   real(4), dimension(10,10) :: quantize1, quantize2
-  real(4) :: mval,r4val,qerr
-  integer :: ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
+  real(4) mval,r4val,qerr
+  integer ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
   integer :: my_rank, nprocs
   integer :: mpi_err
-  logical :: hasit
+  logical hasit
 
   call mpi_init(mpi_err)
   call MPI_Comm_rank(MPI_COMM_WORLD, my_rank, mpi_err)
   call MPI_Comm_size(MPI_COMM_WORLD, nprocs, mpi_err)
 
   if (my_rank .eq. 0) print*, '*** Testing NCEPLIBS-ncio with MPI.'
-  dsetin = open_dataset('dynf000_par_template.nc.in', paropen=.true., mpicomm=MPI_COMM_WORLD)
+  dsetin = open_dataset('dynf000_par_template.nc.in', paropen=.true.)
 
   if (my_rank .eq. 0) print *,'*** Test creation of new dataset from template...'
-  dset = create_dataset('dynf000_par.nc', dsetin, paropen=.true., mpicomm=MPI_COMM_WORLD)
+  dset = create_dataset('dynf000_par.nc', dsetin, paropen=.true.)
 
   if (my_rank .eq. 0) print *,'*** Test that number of variables,dimensions,attributes is read...'
   if (dsetin%nvars .ne. 24) stop 4
@@ -56,18 +55,16 @@ program tst_ncio_mpi
   values_4d=99.
 
   ! populate pressfc and vgrd
-  if (my_rank .eq. 0) print *,'*** Test write of variable data #1...'
+  if (my_rank .eq. 0) print *,'*** Test write of variable data...'
   call write_vardata(dset,'pressfc', values_3d)
 
-  if (my_rank .eq. 0) print *,'*** Test write of variable data #2...'
   !! SKIP THESE TWO
   call write_vardata(dset,'vgrd', values_4d)
+  call MPI_BARRIER(MPI_COMM_WORLD, mpi_err)
 
-  if (my_rank .eq. 0) print *,'*** Test write of variable data #3...'
   ! write just a slice along 3rd dimension (index 10)
   values_3d = -99.
   call write_vardata(dset, 'vgrd', values_3d, 10, 3)
-  call MPI_BARRIER(MPI_COMM_WORLD, mpi_err)
 
   call write_attribute(dset,'foo',1,'ugrd')
   if (allocated(values_1d)) deallocate(values_1d)
