@@ -7,10 +7,17 @@ program tst_ncio_mpi
   use module_ncio
   implicit none
 
+  interface
+    subroutine check(errorcode)
+      integer, intent(in) :: errorcode
+    end subroutine check
+  end interface
+
   character(len=72) charatt, time_units
   type(Dataset) :: dset, dsetin
   type(Variable) :: var
-  integer, parameter :: HALF_YT = 64, HALF_XT = 128 !yt = 128; xt = 256
+  integer, parameter :: YT = 128, XT = 256
+  integer, parameter :: HALF_YT = YT/2, HALF_XT = XT/2
   integer, parameter :: MAXDIM = 3
   real(4), allocatable, dimension(:) :: values_1d
   real(4), allocatable, dimension(:,:) :: values_2d
@@ -23,6 +30,7 @@ program tst_ncio_mpi
   integer :: my_rank, nprocs
   integer :: mpi_err
   integer :: errcode
+  integer :: testpass = 0
   integer :: start(MAXDIM), count(MAXDIM)
   logical hasit
 
@@ -37,53 +45,67 @@ program tst_ncio_mpi
     stop 1
   endif
 
-  if (my_rank .eq. 0) print *, '*** Testing funtion open_dataset with paropen=.true.'
-  dsetin = open_dataset('dynf000_par_template.nc.in', paropen=.true.)
+  if (my_rank .eq. 0) print *, '*** Testing function open_dataset with paropen=.true.'
+  dsetin = open_dataset('dynf000_template.nc.in', errcode=errcode, paropen=.true.)
+  call check(errcode)
+  if (my_rank .eq. 0) print *,'*** Test creation of new dataset from template...'
+  dset = create_dataset('dynf000_par.nc', dsetin, paropen=.true., errcode=errcode)
+  call check(errcode)
 
-  ! if (my_rank .eq. 0) print *,'*** Test creation of new dataset from template...'
-  ! dset = create_dataset('dynf000_par.nc', dsetin, paropen=.true.)
+  if (my_rank .eq. 0) print *,'*** Test that number of variables,dimensions,attributes is read...'
+  if (dsetin%nvars .ne. 24) stop 4
 
-  ! if (my_rank .eq. 0) print *,'*** Test that number of variables,dimensions,attributes is read...'
-  ! if (dsetin%nvars .ne. 24) stop 4
-  !
-  ! if (dsetin%ndims .ne. 6) stop 5
-  !
-  ! if (dsetin%natts .ne. 8) stop 6
+  if (dsetin%ndims .ne. 6) stop 5
+
+  if (dsetin%natts .ne. 8) stop 6
 
 
   if (my_rank .eq. 0) print *,'*** Test read of variable data...'
   ! Let's set the starting point of data reads for each pe
 
 
-  count = (/ 0, HALF_YT, HALF_XT /)
+  ! float pressfc(time, grid_yt, grid_xt)
+  ! dimensions:
+        ! grid_xt = 256 ;
+        ! grid_yt = 128 ;
+        ! pfull = 64 ;
+        ! phalf = 65 ;
+        ! time = UNLIMITED ; // (1 currently)
+        ! member = 2 ;
+  count = (/ HALF_XT, HALF_YT, 1 /)
   if (my_rank .eq. 0) then
      start = (/ 1, 1, 1 /)
   else if (my_rank .eq. 1) then
      start = (/ 1, HALF_YT + 1, 1 /)
   else if (my_rank .eq. 2) then
-     start = (/ 1, 1, HALF_XT + 1 /)
+     start = (/ HALF_XT + 1, 1, 1 /)
   else if (my_rank .eq. 3) then
-     start = (/ 1, HALF_YT + 1, HALF_XT + 1 /)
+     start = (/ HALF_XT + 1, HALF_YT + 1, 1 /)
   endif
 
 
   call read_vardata(dsetin, 'pressfc', values_3d, ncstart=start, nccount=count, errcode=errcode)
+  call check(errcode)
+  call close_dataset(dsetin, errcode=errcode)
+  call check(errcode)
+
 
   ! call read_vardata(dsetin, 'pressfc', values_3d)
   ! call read_vardata(dsetin, 'vgrd', values_4d)
   ! call read_vardata(dsetin, 'tmp_spread', values_5d)
-
-  if (maxval(values_3d) .ne. 102345.6) stop 7
+  if (maxval(values_3d) .eq. 102345.6) testpass = 1
+  call MPI_BARRIER(MPI_COMM_WORLD, mpi_err)
+  if (testpass .ne. 1) stop 7
 
   ! if (minval(values_4d) .ne. -5.5) stop 8
   ! if ((minval(values_5d) .ne. -1.0) .and. (maxval(values_5d) .ne. 1.0)) stop 9
 
-  call close_dataset(dsetin)
+
 
   ! values_3d=1.013e5
   ! values_4d=99.
   !
-  ! ! populate pressfc and vgrd
+  ! populate pressfc and vgrd
   ! if (my_rank .eq. 0) print *,'*** Test write of variable data...'
   ! call write_vardata(dset,'pressfc', values_3d)
   !
@@ -220,6 +242,19 @@ program tst_ncio_mpi
   ! if (values_1d(1) .ne. 20.) stop 31
   ! call close_dataset(dset)
 
-  if (my_rank .eq. 0) print*, "SUCCESS!"
+
   call mpi_finalize(mpi_err)
+  if (my_rank .eq. 0) print*, "*** SUCCESS!"
+
 end program tst_ncio_mpi
+
+subroutine check(errorcode)
+  use netcdf
+  implicit none
+  integer, intent(in) :: errorcode
+
+  if(errorcode /= nf90_noerr) then
+     print *, 'Error: ', trim(nf90_strerror(errorcode))
+     stop 99
+  endif
+end subroutine check
