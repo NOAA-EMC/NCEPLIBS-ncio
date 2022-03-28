@@ -24,11 +24,11 @@ program tst_ncio
   print *,'*** Test creation of new dataset from template...'
   dset = create_dataset('dynf000.nc',dsetin)
   print *,'*** Test that number of variables,dimensions,attributes is read...'
-  if (dsetin%nvars .ne. 24) then
+  if (dsetin%nvars .ne. 25) then
      print *,'***number of variables not correct...'
      stop 99
   endif
-  if (dsetin%ndims .ne. 6) then
+  if (dsetin%ndims .ne. 7) then
      print *,'***number of dimensions not correct...'
      stop 99
   endif

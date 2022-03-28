@@ -45,8 +45,8 @@ program tst_ncio_mpi
 
   if (my_rank .eq. 0) print *,'*** Test that number of variables,dimensions,attributes is read...'
 
-  if (dsetin%nvars .ne. 24) stop 5
-  if (dsetin%ndims .ne. 6) stop 6
+  if (dsetin%nvars .ne. 25) stop 5
+  if (dsetin%ndims .ne. 7) stop 6
   if (dsetin%natts .ne. 8) stop 7
 
 
