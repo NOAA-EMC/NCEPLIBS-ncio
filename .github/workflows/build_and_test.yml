@@ -11,7 +11,7 @@ jobs:
       matrix:
         os: [macos-10.15, ubuntu-latest]
         netcdf_version: [4.7.4]
-        hdf5_version: [1.12.1]
+        hdf5_version: [1.10.7]
         compiler: [gcc-9]      
 
     steps:
