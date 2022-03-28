@@ -4,6 +4,7 @@
   !! @author Jeff Whitaker, Cory Martin
   type(Dataset), intent(in) :: dset
   character(len=*), intent(in) :: varname
+  integer, allocatable, dimension(:) :: start, count
   integer, intent(out), optional :: errcode
   integer ncerr, nvar, n1,n2,n3,n4,n5
   logical return_errcode
@@ -32,7 +33,10 @@
   ! allocate/deallocate values
   if (allocated(values)) deallocate(values)
   allocate(values(n1,n2,n3,n4,n5))
-  ncerr = nf90_get_var(dset%ncid, dset%variables(nvar)%varid, values)
+  allocate(start(dset%variables(nvar)%ndims),count(dset%variables(nvar)%ndims))
+  start(:) = 1; count(1)=n1; count(2)=n2; count(3)=n3; count(4)=n4; count(5)=n5
+  ncerr = nf90_get_var(dset%ncid, dset%variables(nvar)%varid, values,&
+                       start,count)
   ! err check
   if (return_errcode) then
      call nccheck(ncerr,halt=.false.)

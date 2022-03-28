@@ -69,7 +69,8 @@
      ncerr = nf90_put_var(dset%ncid, dset%variables(nvar)%varid,values, &
           start=ncstart, count=nccount)
   else
-     ncerr = nf90_put_var(dset%ncid, dset%variables(nvar)%varid, values)
+     ncerr = nf90_put_var(dset%ncid, dset%variables(nvar)%varid, values, &
+          start=start, count=count)
   endif
   if (return_errcode) then
      call nccheck(ncerr,halt=.false.)
