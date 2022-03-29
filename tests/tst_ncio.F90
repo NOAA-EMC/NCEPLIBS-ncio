@@ -18,6 +18,9 @@ program tst_ncio
   real(4) mval,r4val,qerr
   character(len=20) time_iso
   integer ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
+  integer, parameter :: n_vars=25 ! number of variables in file
+  integer, parameter :: n_dims=7  ! number of dimensionsin file
+  integer, parameter :: n_atts=8  ! number of dimensionsin file
   logical hasit
 
   print *,'*** Testing NCEPLIBS-ncio.'
@@ -26,15 +29,15 @@ program tst_ncio
   print *,'*** Test creation of new dataset from template...'
   dset = create_dataset('dynf000.nc',dsetin)
   print *,'*** Test that number of variables,dimensions,attributes is read...'
-  if (dsetin%nvars .ne. 25) then
+  if (dsetin%nvars .ne. n_vars) then
      print *,'***number of variables not correct...'
      stop 99
   endif
-  if (dsetin%ndims .ne. 7) then
+  if (dsetin%ndims .ne. n_dims) then
      print *,'***number of dimensions not correct...'
      stop 99
   endif
-  if (dsetin%natts .ne. 8) then
+  if (dsetin%natts .ne. n_atts) then
      print *,'***number of attributes not correct...'
      stop 99
   endif
