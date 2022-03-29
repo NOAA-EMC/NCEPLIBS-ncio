@@ -10,11 +10,13 @@ program tst_ncio
   type(Variable) :: var
   real(4), allocatable, dimension(:) :: values_1d
   real(4), allocatable, dimension(:,:) :: values_2d
+  character, allocatable, dimension(:,:) :: values_2dc
   real(4), allocatable, dimension(:,:,:) :: values_3d
   real(4), allocatable, dimension(:,:,:,:) :: values_4d
   real(4), allocatable, dimension(:,:,:,:,:) :: values_5d
   real(4), dimension(10,10) :: quantize1, quantize2
   real(4) mval,r4val,qerr
+  character(len=20) time_iso
   integer ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
   logical hasit
 
@@ -37,6 +39,15 @@ program tst_ncio
      stop 99
   endif
 
+  print *,'*** Test read of 2d char array...'
+  call read_vardata(dsetin, 'time_iso', values_2dc)
+  do n = 1, 20
+     time_iso(n:n) = values_2dc(n,1)
+  enddo
+  if (time_iso .ne. '2016-01-04T06:00:00Z') then
+     print *,'*** read_vardata not working properly for 2d char array...'
+     stop 99
+  endif
   print *,'*** Test read of variable data...'
   call read_vardata(dsetin, 'pressfc', values_3d)
   call read_vardata(dsetin, 'vgrd', values_4d)
