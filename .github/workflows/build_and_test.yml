@@ -80,9 +80,9 @@ jobs:
         export FC=mpifort
         export CPPFLAGS=-I${HOME}/netcdf/include
         export LDFLAGS=-L${HOME}/netcdf/lib
-        wget https://github.com/Unidata/netcdf-fortran/archive/v${{ matrtix.netcdff_version }}.tar.gz &> /dev/null
-        tar -xzf v${{ matrtix.netcdff_version }}.tar.gz
-        pushd netcdf-${{ matrtix.netcdff_version }}
+        wget https://github.com/Unidata/netcdf-fortran/archive/v${{ matrix.netcdff_version }}.tar.gz &> /dev/null
+        tar -xzf v${{ matrix.netcdff_version }}.tar.gz
+        pushd netcdf-${{ matrix.netcdff_version }}
         ./configure --prefix=${HOME}/netcdf
         make -j2
         make install   
