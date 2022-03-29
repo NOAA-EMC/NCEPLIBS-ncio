@@ -56,6 +56,11 @@ program tst_ncio
      print *, 'maxvalue(tmp_spread) != -1.0 and maxvalue(tmp_spread) != 1.0'
      stop 99
   end if
+  print *,'*** Test reading of slice for 5d var...'
+  call read_vardata(dsetin, 'tmp_spread', values_5d, 10, 3)
+  if ( all(shape(values_5d) .ne. (/256,128,1,2,1/)) ) then
+     print *,'***shape of 5d slice incorrect...'
+  endif
   call close_dataset(dsetin)
   values_3d=1.013e5
   values_4d=99.
@@ -210,14 +215,14 @@ program tst_ncio
      stop 99
   endif
 
-  print *,'*** Test reading of slice...'
+  print *,'*** Test reading of slice for 3d var...'
   ! read 10th element along 3rd dimension
   call read_vardata(dset, 'vgrd', values_3d,10,3)
   if ( all(shape(values_3d) .ne. (/256,128,1/)) ) then
-     print *,'***shape of slice incorrect...'
+     print *,'***shape of 3d slice incorrect...'
   endif
   if ( all(values_3d .ne. -99.) ) then
-     print *,'***data in slice incorrect...'
+     print *,'***data in 3d slice incorrect...'
   endif
 
   print *, '*** Test has_var function...'
