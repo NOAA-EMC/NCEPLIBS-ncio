@@ -7,7 +7,7 @@
 !! integer variables and char variables. Variables can have up to 5
 !! dimensions.
 !!
-!! @note Wwriting requires a template file.
+!! @note Writing requires a template file.
 !!
 !! @author Jeff Whitaker <jeffrey.s.whitaker@noaa.gov>
 !! @date Oct, 2019
