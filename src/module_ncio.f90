@@ -76,14 +76,6 @@ module module_ncio
   !! library.
   !! @author Jeff Whitaker
   !!
-  !! @defgroup read_vardata_4param Read Variable Data without slice/start/count Arrays.
-  !!
-  !! When reading 5D arrays, the subsetting options are not present in
-  !! NCEPLIBS-ncio.
-  !!
-  !! Read data from variable varname in dataset dset, return in it
-  !! array values.
-  !!
   !! @param[in] dset Input dataset instance returned by
   !! open_dataset/create_dataset.
   !! @param[in] varname Input string name of variable.
@@ -966,7 +958,7 @@ contains
     include "read_vardata_code_4d.f90"
   end subroutine read_vardata_4d_r4
 
-  !> @copydoc read_vardata_4param
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_5d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4), allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
@@ -996,7 +988,7 @@ contains
     include "read_vardata_code_4d.f90"
   end subroutine read_vardata_4d_r8
 
-  !> @copydoc read_vardata_4param
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_5d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8), allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
@@ -1026,7 +1018,7 @@ contains
     include "read_vardata_code_4d.f90"
   end subroutine read_vardata_4d_int
 
-  !> @copydoc read_vardata_4param
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_5d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer, allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
@@ -1056,7 +1048,7 @@ contains
     include "read_vardata_code_4d.f90"
   end subroutine read_vardata_4d_short
 
-  !> @copydoc read_vardata_4param
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_5d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2), allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
@@ -1086,7 +1078,7 @@ contains
     include "read_vardata_code_4d.f90"
   end subroutine read_vardata_4d_byte
 
-  !> @copydoc read_vardata_4param
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_5d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1), allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
@@ -1116,7 +1108,7 @@ contains
     include "read_vardata_code_4d.f90"
   end subroutine read_vardata_4d_char
 
-  !> @copydoc read_vardata_4param
+  !> @copydoc read_vardata_8param
   subroutine read_vardata_5d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character, allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
