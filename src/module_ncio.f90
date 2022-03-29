@@ -74,6 +74,7 @@ module module_ncio
   !! @param[out] errcode optional error return code. If not specified,
   !! program will stop if a nonzero error code returned from netcdf
   !! library.
+  !!
   !! @author Jeff Whitaker
   !!
   !! @param[in] dset Input dataset instance returned by
