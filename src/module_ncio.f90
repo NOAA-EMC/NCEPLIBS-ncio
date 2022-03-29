@@ -967,7 +967,7 @@ contains
   end subroutine read_vardata_4d_r4
 
   !> @copydoc read_vardata_4param
-  subroutine read_vardata_5d_r4(dset, varname, values, errcode)
+  subroutine read_vardata_5d_r4(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(4), allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_r4
@@ -997,7 +997,7 @@ contains
   end subroutine read_vardata_4d_r8
 
   !> @copydoc read_vardata_4param
-  subroutine read_vardata_5d_r8(dset, varname, values, errcode)
+  subroutine read_vardata_5d_r8(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     real(8), allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_r8
@@ -1027,7 +1027,7 @@ contains
   end subroutine read_vardata_4d_int
 
   !> @copydoc read_vardata_4param
-  subroutine read_vardata_5d_int(dset, varname, values, errcode)
+  subroutine read_vardata_5d_int(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer, allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_int
@@ -1057,7 +1057,7 @@ contains
   end subroutine read_vardata_4d_short
 
   !> @copydoc read_vardata_4param
-  subroutine read_vardata_5d_short(dset, varname, values, errcode)
+  subroutine read_vardata_5d_short(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(2), allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_short
@@ -1087,7 +1087,7 @@ contains
   end subroutine read_vardata_4d_byte
 
   !> @copydoc read_vardata_4param
-  subroutine read_vardata_5d_byte(dset, varname, values, errcode)
+  subroutine read_vardata_5d_byte(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     integer(1), allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_byte
@@ -1117,7 +1117,7 @@ contains
   end subroutine read_vardata_4d_char
 
   !> @copydoc read_vardata_4param
-  subroutine read_vardata_5d_char(dset, varname, values, errcode)
+  subroutine read_vardata_5d_char(dset, varname, values, nslice, slicedim, ncstart, nccount, errcode)
     character, allocatable, dimension(:,:,:,:,:), intent(inout) :: values
     include "read_vardata_code_5d.f90"
   end subroutine read_vardata_5d_char

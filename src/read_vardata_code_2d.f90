@@ -76,7 +76,7 @@
      end if
   end if
   ncerr = nf90_get_var(dset%ncid, dset%variables(nvar)%varid, values,&
-         start=start, count=count)
+                       start=start, count=count)
   ! err check
   if (return_errcode) then
      call nccheck(ncerr,halt=.false.)
