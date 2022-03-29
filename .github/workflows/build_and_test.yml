@@ -29,7 +29,6 @@ jobs:
           brew update
           brew install doxygen
           brew install mpich
-          brew install libzip
           if [[ ${{ matrix.compiler }} == "gcc-9" ]]; then
             sudo ln -sf /usr/local/bin/gfortran-9 /usr/local/bin/gfortran
           elif  [[ ${{ matrix.compiler }} == "gcc-10" ]]; then
