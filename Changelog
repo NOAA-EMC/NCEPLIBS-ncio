@@ -1,5 +1,9 @@
 Change history:
 
+* 20210329: Jeff Whitaker (ESRL/PSD):  Fix reading of character arrays (so new
+'time_iso' variable can be read from GFS history files). Add slicing
+capability for 5d variables.
+
 * 20191207: Jeff Whitaker (ESRL/PSD):  preserve chunksize information in
 create_dataset, allow for NF90_FORMAT_64BIT (non-HDF5) formatted files (PR
 #2)

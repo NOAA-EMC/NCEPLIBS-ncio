@@ -69,20 +69,17 @@
      if (dset%variables(nvar)%ndims == 4) then
         start(4)=1; count(4)=1
      end if
-     ncerr = nf90_get_var(dset%ncid, dset%variables(nvar)%varid, values,&
-          start=start, count=count)
   else
      if (dset%variables(nvar)%ndims == 4) then
         allocate(values(dimlens(1),dimlens(2),dimlens(3)))
-        ncerr = nf90_get_var(dset%ncid, dset%variables(nvar)%varid, values,&
-             start=start, count=count)
      else
         allocate(values(dset%variables(nvar)%dimlens(1),&
              dset%variables(nvar)%dimlens(2),&
              dset%variables(nvar)%dimlens(3)))
-        ncerr = nf90_get_var(dset%ncid, dset%variables(nvar)%varid, values)
      end if
   end if
+  ncerr = nf90_get_var(dset%ncid, dset%variables(nvar)%varid, values,&
+                       start=start, count=count)
   ! err check
   if (return_errcode) then
      call nccheck(ncerr,halt=.false.)

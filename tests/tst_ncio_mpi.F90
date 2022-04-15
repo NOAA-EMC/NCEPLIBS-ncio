@@ -23,6 +23,9 @@ program tst_ncio_mpi
   integer :: mpi_err
   integer :: errcode
   integer :: start(MAXDIM), count(MAXDIM)
+  integer, parameter :: n_vars=25 ! number of variables in file
+  integer, parameter :: n_dims=7  ! number of dimensionsin file
+  integer, parameter :: n_atts=8  ! number of dimensionsin file
 
   call mpi_init(mpi_err)
   call MPI_Comm_rank(MPI_COMM_WORLD, my_rank, mpi_err)
@@ -45,9 +48,9 @@ program tst_ncio_mpi
 
   if (my_rank .eq. 0) print *,'*** Test that number of variables,dimensions,attributes is read...'
 
-  if (dsetin%nvars .ne. 24) stop 5
-  if (dsetin%ndims .ne. 6) stop 6
-  if (dsetin%natts .ne. 8) stop 7
+  if (dsetin%nvars .ne. n_vars) stop 5
+  if (dsetin%ndims .ne. n_dims) stop 6
+  if (dsetin%natts .ne. n_atts) stop 7
 
 
   if (my_rank .eq. 0) print *,'*** Test MPI read of 3-D pressfc variable...'

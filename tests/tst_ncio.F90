@@ -10,12 +10,17 @@ program tst_ncio
   type(Variable) :: var
   real(4), allocatable, dimension(:) :: values_1d
   real(4), allocatable, dimension(:,:) :: values_2d
+  character, allocatable, dimension(:,:) :: values_2dc
   real(4), allocatable, dimension(:,:,:) :: values_3d
   real(4), allocatable, dimension(:,:,:,:) :: values_4d
   real(4), allocatable, dimension(:,:,:,:,:) :: values_5d
   real(4), dimension(10,10) :: quantize1, quantize2
   real(4) mval,r4val,qerr
+  character(len=20) time_iso
   integer ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
+  integer, parameter :: n_vars=25 ! number of variables in file
+  integer, parameter :: n_dims=7  ! number of dimensionsin file
+  integer, parameter :: n_atts=8  ! number of dimensionsin file
   logical hasit
 
   print *,'*** Testing NCEPLIBS-ncio.'
@@ -24,19 +29,28 @@ program tst_ncio
   print *,'*** Test creation of new dataset from template...'
   dset = create_dataset('dynf000.nc',dsetin)
   print *,'*** Test that number of variables,dimensions,attributes is read...'
-  if (dsetin%nvars .ne. 24) then
+  if (dsetin%nvars .ne. n_vars) then
      print *,'***number of variables not correct...'
      stop 99
   endif
-  if (dsetin%ndims .ne. 6) then
+  if (dsetin%ndims .ne. n_dims) then
      print *,'***number of dimensions not correct...'
      stop 99
   endif
-  if (dsetin%natts .ne. 8) then
+  if (dsetin%natts .ne. n_atts) then
      print *,'***number of attributes not correct...'
      stop 99
   endif
 
+  print *,'*** Test read of 2d char array...'
+  call read_vardata(dsetin, 'time_iso', values_2dc)
+  do n = 1, 20
+     time_iso(n:n) = values_2dc(n,1)
+  enddo
+  if (time_iso .ne. '2016-01-04T06:00:00Z') then
+     print *,'*** read_vardata not working properly for 2d char array...'
+     stop 99
+  endif
   print *,'*** Test read of variable data...'
   call read_vardata(dsetin, 'pressfc', values_3d)
   call read_vardata(dsetin, 'vgrd', values_4d)
@@ -56,6 +70,11 @@ program tst_ncio
      print *, 'maxvalue(tmp_spread) != -1.0 and maxvalue(tmp_spread) != 1.0'
      stop 99
   end if
+  print *,'*** Test reading of slice for 5d var...'
+  call read_vardata(dsetin, 'tmp_spread', values_5d, 10, 3)
+  if ( all(shape(values_5d) .ne. (/256,128,1,2,1/)) ) then
+     print *,'***shape of 5d slice incorrect...'
+  endif
   call close_dataset(dsetin)
   values_3d=1.013e5
   values_4d=99.
@@ -210,14 +229,14 @@ program tst_ncio
      stop 99
   endif
 
-  print *,'*** Test reading of slice...'
+  print *,'*** Test reading of slice for 3d var...'
   ! read 10th element along 3rd dimension
   call read_vardata(dset, 'vgrd', values_3d,10,3)
   if ( all(shape(values_3d) .ne. (/256,128,1/)) ) then
-     print *,'***shape of slice incorrect...'
+     print *,'***shape of 3d slice incorrect...'
   endif
   if ( all(values_3d .ne. -99.) ) then
-     print *,'***data in slice incorrect...'
+     print *,'***data in 3d slice incorrect...'
   endif
 
   print *, '*** Test has_var function...'
