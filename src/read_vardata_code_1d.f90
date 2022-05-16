@@ -32,10 +32,15 @@
   if (present(slicedim)) then
      nd = slicedim
   else
+     ! slicedim not specified, if data array one dim smaller than
+     ! variable slice along last dimension of variable
      nd = dset%variables(nvar)%ndims
   endif
   do n=1,dset%variables(nvar)%ndims
-     if (n == nd .and. dset%variables(nvar)%ndims == 2) then
+     if (present(slicedim) .and. n == nd) then
+        start(n) = ncount
+        count(n) = 1
+     else if (.not. present(slicedim) .and. n == nd .and. dset%variables(nvar)%ndims == 2) then
         start(n) = ncount
         count(n) = 1
      else
