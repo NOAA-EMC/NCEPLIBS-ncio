@@ -51,6 +51,22 @@ program tst_ncio
      print *,'*** read_vardata not working properly for 2d char array...'
      stop 99
   endif
+  print *,'*** Test read of 1d variable data...'
+  if (allocated(values_1d)) deallocate(values_1d)
+  call read_vardata(dsetin, 'grid_xt', values_1d)
+  if (maxval(values_1d) .ne. 358.59375) then
+     print *,'*** read_vardata not working properly...'
+     print *, 'maxvalue(grid_xt) != 358.59375'
+     stop 99
+  end if
+  print *,'*** Test read of 2d variable data...'
+  if (allocated(values_2d)) deallocate(values_2d)
+  call read_vardata(dsetin, 'lon', values_2d)
+  if (values_2d(size(values_2d,1),size(values_2d,2)) .ne. 358.59375) then
+     print *,'*** read_vardata not working properly...'
+     print *, 'lons(nlons,nlats) != 358.59375'
+     stop 99
+  end if
   print *,'*** Test read of variable data...'
   call read_vardata(dsetin, 'pressfc', values_3d)
   call read_vardata(dsetin, 'vgrd', values_4d)
@@ -79,6 +95,9 @@ program tst_ncio
   values_3d=1.013e5
   values_4d=99.
 
+  ! populate lons
+  call write_vardata(dset,'grid_xt',values_1d)
+  call write_vardata(dset,'lon',values_2d)
   ! populate pressfc and vgrd
   print *,'*** Test write of variable data...'
   call write_vardata(dset,'pressfc', values_3d)

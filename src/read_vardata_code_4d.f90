@@ -38,7 +38,7 @@
   end if
   ndim = 1
   do n=1,dset%variables(nvar)%ndims
-     if (n == nd) then
+     if (n == nd .and. dset%variables(nvar)%ndims == 5) then
         start(n) = ncount
         count(n) = 1
      else
@@ -70,7 +70,7 @@
         start(5)=1; count(5)=1
      end if
   else
-     if (dset%variables(nvar)%ndims == 4) then
+     if (dset%variables(nvar)%ndims == 5) then
         allocate(values(dimlens(1),dimlens(2),dimlens(3),dimlens(4)))
      else
         allocate(values(dset%variables(nvar)%dimlens(1),&

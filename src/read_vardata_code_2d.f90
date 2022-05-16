@@ -38,7 +38,7 @@
   end if
   ndim = 1
   do n=1,dset%variables(nvar)%ndims
-     if (n == nd) then
+     if (n == nd .and. dset%variables(nvar)%ndims == 3) then
         start(n) = ncount
         count(n) = 1
      else

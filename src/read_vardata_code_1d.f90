@@ -33,9 +33,9 @@
      nd = slicedim
   else
      nd = dset%variables(nvar)%ndims
-  end if
+  endif
   do n=1,dset%variables(nvar)%ndims
-     if (n == nd) then
+     if (n == nd .and. dset%variables(nvar)%ndims == 2) then
         start(n) = ncount
         count(n) = 1
      else
