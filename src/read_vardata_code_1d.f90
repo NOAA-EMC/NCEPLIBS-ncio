@@ -35,7 +35,7 @@
      ! slicedim not specified, if data array one dim smaller than
      ! variable slice along last dimension of variable
      nd = dset%variables(nvar)%ndims
-  endif
+  end if
   do n=1,dset%variables(nvar)%ndims
      if (present(slicedim) .and. n == nd) then
         start(n) = ncount
