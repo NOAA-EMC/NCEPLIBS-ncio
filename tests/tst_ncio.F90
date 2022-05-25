@@ -8,6 +8,7 @@ program tst_ncio
   character(len=72) charatt, time_units
   type(Dataset) :: dset, dsetin
   type(Variable) :: var
+  type(Dimension) :: dim
   real(4), allocatable, dimension(:) :: values_1d
   real(4), allocatable, dimension(:,:) :: values_2d
   character, allocatable, dimension(:,:) :: values_2dc
@@ -17,7 +18,7 @@ program tst_ncio
   real(4), dimension(10,10) :: quantize1, quantize2
   real(4) mval,r4val,qerr
   character(len=20) time_iso
-  integer ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
+  integer nlons,nlats,ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
   integer, parameter :: n_vars=25 ! number of variables in file
   integer, parameter :: n_dims=7  ! number of dimensionsin file
   integer, parameter :: n_atts=8  ! number of dimensionsin file
@@ -51,6 +52,33 @@ program tst_ncio
      print *,'*** read_vardata not working properly for 2d char array...'
      stop 99
   endif
+  print *,'*** Test read of 1d variable data...'
+  if (allocated(values_1d)) deallocate(values_1d)
+  call read_vardata(dsetin, 'grid_xt', values_1d)
+  dim = get_dim(dset,'grid_xt'); nlons = dim%len
+  dim = get_dim(dset,'grid_yt'); nlats = dim%len
+  if (maxval(values_1d) .ne. 358.59375) then
+     print *,'*** read_vardata not working properly...'
+     print *, 'maxvalue(grid_xt) != 358.59375'
+     stop 99
+  end if
+  print *,'*** Test read of 2d variable data...'
+  if (allocated(values_2d)) deallocate(values_2d)
+  call read_vardata(dsetin, 'lon', values_2d)
+  var = get_var(dset,'lon')
+  if (var%dimlens(1) .ne. nlons) then
+     print *,'*** 1st dimension length for 2d var not correct..'
+     stop 99
+  endif
+  if (var%dimlens(2) .ne. nlats) then
+     print *,'*** 2nd dimension length for 2d var not correct..'
+     stop 99
+  endif
+  if (values_2d(nlons,nlats) .ne. 358.59375) then
+     print *,'*** read_vardata not working properly...'
+     print *, 'lons(nlons,nlats) != 358.59375'
+     stop 99
+  end if
   print *,'*** Test read of variable data...'
   call read_vardata(dsetin, 'pressfc', values_3d)
   call read_vardata(dsetin, 'vgrd', values_4d)
@@ -79,6 +107,9 @@ program tst_ncio
   values_3d=1.013e5
   values_4d=99.
 
+  ! populate lons
+  call write_vardata(dset,'grid_xt',values_1d)
+  call write_vardata(dset,'lon',values_2d)
   ! populate pressfc and vgrd
   print *,'*** Test write of variable data...'
   call write_vardata(dset,'pressfc', values_3d)
