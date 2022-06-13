@@ -7,8 +7,8 @@
   integer, intent(in), optional :: nslice
   integer, intent(in), optional :: slicedim
   integer, intent(out), optional :: errcode
-  integer ncerr, nvar, ncount, ndim, nd, n
-  integer, allocatable, dimension(:) :: start, count, dimlens
+  integer ncerr, nvar, ncount, nd, n, ndim
+  integer, allocatable, dimension(:) :: start, count, varshape
   logical is_slice
   logical return_errcode
   ! check if use the errcode
@@ -29,25 +29,26 @@
   ! define variable name and allocate variable
   nvar = get_nvar(dset,varname)
   allocate(start(dset%variables(nvar)%ndims),count(dset%variables(nvar)%ndims))
-  allocate(dimlens(dset%variables(nvar)%ndims))
+  allocate(varshape(dset%variables(nvar)%ndims))
   start(:) = 1
   count(:) = 1
-  dimlens(:) = 1
-  if (present(slicedim)) then
+  if (is_slice) then
      nd = slicedim
   else
      nd = dset%variables(nvar)%ndims
   end if
-  ndim = 1
   do n=1,dset%variables(nvar)%ndims
-     if (n == nd) then
+     ndim = dset%variables(nvar)%dimids(n)
+     if (is_slice .and. n == nd) then
         start(n) = ncount
         count(n) = 1
+     else if (n == nd .and. dset%dimensions(ndim)%isunlimited) then
+        start(n) = ncount
+        varshape = shape(values)
+        count(n) = varshape(n)
      else
         start(n) = 1
         count(n) = dset%variables(nvar)%dimlens(n)
-        dimlens(ndim) = dset%variables(nvar)%dimlens(n)
-        ndim = ndim + 1
      end if
   end do
   ! write operations on a parallel file system are performed collectively

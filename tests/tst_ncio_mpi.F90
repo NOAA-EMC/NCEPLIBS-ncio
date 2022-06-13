@@ -17,7 +17,7 @@ program tst_ncio_mpi
   integer, parameter :: YT = 128, XT = 256
   integer, parameter :: HALF_YT = YT/2, HALF_XT = XT/2
   integer, parameter :: MAXDIM = 3
-  real(4), allocatable, dimension(:,:,:) :: values_3d, pressfc_check
+  real(4), allocatable, dimension(:,:,:) :: values_3d, pressfc_check, data_3d
   ! integer ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
   integer :: my_rank, nprocs
   integer :: mpi_err
@@ -89,7 +89,10 @@ program tst_ncio_mpi
   call read_vardata(dset_test, 'pressfc', pressfc_check, errcode=errcode)
   call check(errcode)
 
-  if (maxval(pressfc_check) .ne. 102345.6) stop 33
+  allocate(data_3d,mold=pressfc_check)
+  data_3d=101325.
+  data_3d(128,64,1) = 102345.6
+  if (maxval((data_3d-pressfc_check)) .gt. 1.e-7) stop 33
   call close_dataset(dset_test, errcode=errcode)
   call check(errcode)
 
