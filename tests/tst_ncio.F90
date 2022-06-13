@@ -9,16 +9,16 @@ program tst_ncio
   type(Dataset) :: dset, dsetin
   type(Variable) :: var
   type(Dimension) :: dim
-  real(4), allocatable, dimension(:) :: values_1d
-  real(4), allocatable, dimension(:,:) :: values_2d
+  real(4), allocatable, dimension(:) :: values_1d, data_1d
+  real(4), allocatable, dimension(:,:) :: values_2d,data_2d
   character, allocatable, dimension(:,:) :: values_2dc
-  real(4), allocatable, dimension(:,:,:) :: values_3d
-  real(4), allocatable, dimension(:,:,:,:) :: values_4d
+  real(4), allocatable, dimension(:,:,:) :: values_3d, data_3d
+  real(4), allocatable, dimension(:,:,:,:) :: values_4d, data_4d
   real(4), allocatable, dimension(:,:,:,:,:) :: values_5d
   real(4), dimension(10,10) :: quantize1, quantize2
   real(4) mval,r4val,qerr
   character(len=20) time_iso
-  integer nlons,nlats,ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nbits
+  integer nlons,nlats,ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nn,nbits
   integer, parameter :: n_vars=25 ! number of variables in file
   integer, parameter :: n_dims=7  ! number of dimensionsin file
   integer, parameter :: n_atts=8  ! number of dimensionsin file
@@ -57,9 +57,16 @@ program tst_ncio
   call read_vardata(dsetin, 'grid_xt', values_1d)
   dim = get_dim(dset,'grid_xt'); nlons = dim%len
   dim = get_dim(dset,'grid_yt'); nlats = dim%len
-  if (maxval(values_1d) .ne. 358.59375) then
-     print *,'*** read_vardata not working properly...'
-     print *, 'maxvalue(grid_xt) != 358.59375'
+  allocate(data_1d(nlons))
+  allocate(data_2d(nlons,nlats))
+  do nn=1,nlats
+     do n=1,nlons
+       data_1d(n) = real(n-1)*360./nlons
+       data_2d(n,nn) = data_1d(n)
+     enddo
+  enddo
+  if (maxval(abs(values_1d-data_1d)) .gt. 1.e-7) then
+     print *,'*** read_vardata not working properly for grid_xt...'
      stop 99
   end if
   print *,'*** Test read of 2d variable data...'
@@ -74,18 +81,22 @@ program tst_ncio
      print *,'*** 2nd dimension length for 2d var not correct..'
      stop 99
   endif
-  if (values_2d(nlons,nlats) .ne. 358.59375) then
-     print *,'*** read_vardata not working properly...'
-     print *, 'lons(nlons,nlats) != 358.59375'
+  if (maxval(abs(values_2d-data_2d)) .gt. 1.e-7) then
+     print *,'*** read_vardata for lons not working properly...'
      stop 99
   end if
   print *,'*** Test read of variable data...'
   call read_vardata(dsetin, 'pressfc', values_3d)
   call read_vardata(dsetin, 'vgrd', values_4d)
   call read_vardata(dsetin, 'tmp_spread', values_5d)
-  if (maxval(values_3d) .ne. 102345.6) then
-     print *,'*** read_vardata not working properly...'
-     print *, 'maxvalue(pressfc) != 102345.6'
+  allocate(data_3d,mold=values_3d)
+  data_3d=101325.
+  data_3d(128,64,1) = 102345.6
+  allocate(data_4d,mold=values_4d)
+  data_4d=99.
+  data_4d(:,:,10,:) = -99
+  if (maxval(abs(values_3d-data_3d)) .gt. 1.e-7) then
+     print *,'*** read_vardata not working properly for pressfc...'
      stop 99
   end if
   if (minval(values_4d) .ne. -5.5) then
@@ -104,8 +115,7 @@ program tst_ncio
      print *,'***shape of 5d slice incorrect...'
   endif
   call close_dataset(dsetin)
-  values_3d=1.013e5
-  values_4d=99.
+  values_4d=99
 
   ! populate lons
   call write_vardata(dset,'grid_xt',values_1d)
@@ -237,7 +247,7 @@ program tst_ncio
   print *,'*** Test reading of data just written...'
 
   call read_vardata(dset, 'grid_xt', values_1d)
-  if (maxval(values_1d) .ne. 358.59375) then
+  if (maxval(abs(values_1d-data_1d)) .gt. 1.e-7) then
      print *,'***grid_xt variable data read as 1d not correct...'
      stop 99
   end if
@@ -249,26 +259,26 @@ program tst_ncio
   end if
 
   call read_vardata(dset, 'vgrd', values_4d)
-  if (minval(values_4d) .ne. -99. .or. maxval(values_4d) .ne. 99.) then
+  if (maxval((values_4d-data_4d)) .gt. 1.e-7) then
      print *,'***vgrd variable data read as 4d not correct...'
      stop 99
   endif
 
   ! this should work also, since time dim is singleton
   call read_vardata(dset, 'vgrd', values_3d)
-  if (minval(values_3d) .ne. -99. .or. maxval(values_3d) .ne. 99.) then
+  if (maxval((values_3d-data_4d(:,:,:,1))) .gt. 1.e-7) then
      print *,'***vgrd variable data read as 3d not correct...'
      stop 99
   endif
   call read_vardata(dset, 'pressfc', values_3d)
-  if (minval(values_3d) .ne. 1.013e5 .or. maxval(values_3d) .ne. 1.013e5) then
+  if (maxval((values_3d-data_3d)) .gt. 1.e-7) then
      print *,'***pressfc variable data read as 3d not correct...'
      stop 99
   endif
 
   ! this should work also, since time dim is singleton
   call read_vardata(dset, 'pressfc', values_2d)
-  if (minval(values_2d) .ne. 1.013e5 .or. maxval(values_2d) .ne. 1.013e5) then
+  if (maxval(abs(values_2d-data_3d(:,:,1))) .gt. 1.e-7) then
      print *,'***presssfc variable data read as 2d not correct...'
      stop 99
   endif
