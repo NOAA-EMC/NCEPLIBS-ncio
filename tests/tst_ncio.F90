@@ -242,6 +242,12 @@ program tst_ncio
      stop 99
   end if
 
+  call read_vardata(dset, 'time', values_1d)
+  if (size(values_1d) .ne. 1 .or. values_1d(1) .ne. 0.) then
+     print *,'***time variable data read as 1d not correct...'
+     stop 99
+  end if
+
   call read_vardata(dset, 'vgrd', values_4d)
   if (minval(values_4d) .ne. -99. .or. maxval(values_4d) .ne. 99.) then
      print *,'***vgrd variable data read as 4d not correct...'
