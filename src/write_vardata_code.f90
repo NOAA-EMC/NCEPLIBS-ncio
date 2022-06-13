@@ -8,7 +8,7 @@
   integer, intent(in), optional :: slicedim
   integer, intent(out), optional :: errcode
   integer ncerr, nvar, ncount, nd, n, ndim
-  integer, allocatable, dimension(:) :: start, count
+  integer, allocatable, dimension(:) :: start, count, varshape
   logical is_slice
   logical return_errcode
   ! check if use the errcode
@@ -29,6 +29,7 @@
   ! define variable name and allocate variable
   nvar = get_nvar(dset,varname)
   allocate(start(dset%variables(nvar)%ndims),count(dset%variables(nvar)%ndims))
+  allocate(varshape(dset%variables(nvar)%ndims))
   start(:) = 1
   count(:) = 1
   if (is_slice) then
@@ -43,7 +44,8 @@
         count(n) = 1
      else if (n == nd .and. dset%dimensions(ndim)%isunlimited) then
         start(n) = ncount
-        count(n) = 1
+        varshape = shape(values)
+        count(n) = varshape(n)
      else
         start(n) = 1
         count(n) = dset%variables(nvar)%dimlens(n)
