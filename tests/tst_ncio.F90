@@ -235,6 +235,13 @@ program tst_ncio
   endif
 
   print *,'*** Test reading of data just written...'
+
+  call read_vardata(dset, 'grid_xt', values_1d)
+  if (maxval(values_1d) .ne. 358.59375) then
+     print *,'***grid_xt variable data read as 1d not correct...'
+     stop 99
+  end if
+
   call read_vardata(dset, 'vgrd', values_4d)
   if (minval(values_4d) .ne. -99. .or. maxval(values_4d) .ne. 99.) then
      print *,'***vgrd variable data read as 4d not correct...'
