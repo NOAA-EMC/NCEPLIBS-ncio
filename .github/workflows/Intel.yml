@@ -45,7 +45,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/netcdf
-        key: Linux-netcdf-c-${{ matrix.netcdf-c-version }}-${{ runner.os }}1
+        key: Linux-netcdf-c-4.7.4-${{ runner.os }}1
 
     - name: build-hdf5
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
@@ -64,9 +64,9 @@ jobs:
         export CC=mpicc
         export CPPFLAGS=-I${HOME}/netcdf/include
         export LDFLAGS=-L${HOME}/netcdf/lib
-        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v${{ matrix.netcdf-c-version }}.tar.gz
-        tar -xzf v${{ matrix.netcdf-c-version }}.tar.gz
-        cd netcdf-c-${{ matrix.netcdf-c-version }}
+        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.7.4.tar.gz
+        tar -xzf v4.7.4.tar.gz
+        cd netcdf-c-4.7.4
         ./configure --prefix=${HOME}/netcdf --disable-dap --disable-utilities
         make -j2 VERBOSE=1
         make install
