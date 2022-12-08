@@ -20,14 +20,13 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v3
-
     - name: install-dependencies
       run: |
         brew update
-        brew install doxygen
         brew install mpich
         sudo ln -sf /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
+
+    - uses: actions/checkout@v3
 
     - name: cache-netcdf
       id: cache-netcdf
