@@ -19,7 +19,7 @@ jobs:
       CC: gcc-10
     strategy:
       matrix:
-        netcdf-c-version: [4.7.4]
+        netcdf-c-version: [4.7.4, 4.9.0]
 
     steps:
 
@@ -35,15 +35,21 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/netcdf
-        key: Linux-netcdf-c-${{ matrix.netcdf-c-version }}-${{ runner.os }}1
+        key: Linux-netcdf-c-${{ matrix.netcdf-c-version }}
 
     - name: build-hdf5
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
       run: |
         export CC=mpicc
-        wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.gz &> /dev/null
-        tar -xzf hdf5-1.10.7.tar.gz
-        pushd hdf5-1.10.7
+        if [[ ${{ matrix.netcdf-c-version }} == "4.7.4" ]]; then
+          wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.gz &> /dev/null
+          tar -xzf hdf5-1.10.7.tar.gz
+          pushd hdf5-1.10.7
+        elif [[ ${{ matrix.netcdf-c-version }} == "4.9.0" ]]; then
+          wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.gz &> /dev/null
+          tar -xzf hdf5-1.10.7.tar.gz
+          pushd hdf5-1.10.7
+        fi
         ./configure --prefix=${HOME}/netcdf --enable-parallel --disable-tools --disable-fortran --disable-cxx --enable-parallel-tests
         make -j2 VERBOSE=1
         make install
@@ -69,9 +75,14 @@ jobs:
         export FC=mpifort
         export CPPFLAGS=-I${HOME}/netcdf/include
         export LDFLAGS=-L${HOME}/netcdf/lib
-        wget https://github.com/Unidata/netcdf-fortran/archive/v4.5.3.tar.gz &> /dev/null
-        tar -xzf v4.5.3.tar.gz
-        pushd netcdf-fortran-4.5.3
+        if [[ ${{ matrix.netcdf-c-version }} == "4.7.4" ]]; then
+          export NETCDF_FORTRAN_VERSION="4.5.3"
+        elif [[ ${{ matrix.netcdf-c-version }} == "4.9.0" ]]; then
+          export NETCDF_FORTRAN_VERSION="4.5.3"
+        fi
+        wget https://github.com/Unidata/netcdf-fortran/archive/v${NETCDF_FORTRAN_VERSION}.tar.gz &> /dev/null
+        tar -xzf v${NETCDF_FORTRAN_VERSION}.tar.gz
+        pushd netcdf-fortran-${NETCDF_FORTRAN_VERSION}
         ./configure --prefix=${HOME}/netcdf
         make -j2 VERBOSE=1
         make install   
