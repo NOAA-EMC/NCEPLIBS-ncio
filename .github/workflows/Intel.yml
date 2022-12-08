@@ -1,4 +1,4 @@
-name: Linux
+name: Intel
 on:
   push:
     branches:
@@ -11,24 +11,34 @@ on:
     paths-ignore:
     - README.md
 
+# Use custom shell with -l so .bash_profile is sourced which loads intel/oneapi/setvars.sh
+# without having to do it in manually every step
+defaults:
+  run:
+    shell: bash -leo pipefail {0}
+
 jobs:
-  Linux:
-    runs-on: ununtu-latest
+  Intel:
+    runs-on: ubuntu-latest
     env:
-      FC: gfortran-10
-      CC: gcc-10
-    strategy:
-      matrix:
-        netcdf-c-version: [4.7.4]
+      CC: icc
+      CXX: icpc
 
     steps:
 
-    - uses: actions/checkout@v2
-
+      # See https://software.intel.com/content/www/us/en/develop/articles/oneapi-repo-instructions.html
     - name: install-dependencies
       run: |
         sudo apt-get update
         sudo apt-get install libmpich-dev
+        cd /tmp
+        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+        sudo apt-get update
+        sudo apt-get install intel-oneapi-dev-utilities intel-oneapi-openmp intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
+        echo "source /opt/intel/oneapi/setvars.sh" >> ~/.bash_profile
 
     - name: cache-netcdf
       id: cache-netcdf
@@ -85,3 +95,5 @@ jobs:
         make -j2 VERBOSE=1
         ctest --verbose --output-on-failure --rerun-failed
 
+
+      
