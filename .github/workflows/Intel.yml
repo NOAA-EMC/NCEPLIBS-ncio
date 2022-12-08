@@ -26,6 +26,8 @@ jobs:
 
     steps:
 
+    - uses: actions/checkout@v2
+
       # See https://software.intel.com/content/www/us/en/develop/articles/oneapi-repo-instructions.html
     - name: install-dependencies
       run: |
