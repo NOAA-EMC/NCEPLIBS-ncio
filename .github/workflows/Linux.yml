@@ -46,9 +46,9 @@ jobs:
           tar -xzf hdf5-1.10.7.tar.gz
           pushd hdf5-1.10.7
         elif [[ ${{ matrix.netcdf-c-version }} == "4.9.0" ]]; then
-          wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.gz &> /dev/null
-          tar -xzf hdf5-1.10.7.tar.gz
-          pushd hdf5-1.10.7
+          wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.2/src/hdf5-1.12.2.tar.gz &> /dev/null
+          tar -xzf hdf5-1.12.2.tar.gz
+          pushd hdf5-1.12.2
         fi
         ./configure --prefix=${HOME}/netcdf --enable-parallel --disable-tools --disable-fortran --disable-cxx --enable-parallel-tests
         make -j2 VERBOSE=1
@@ -78,7 +78,7 @@ jobs:
         if [[ ${{ matrix.netcdf-c-version }} == "4.7.4" ]]; then
           export NETCDF_FORTRAN_VERSION="4.5.3"
         elif [[ ${{ matrix.netcdf-c-version }} == "4.9.0" ]]; then
-          export NETCDF_FORTRAN_VERSION="4.5.3"
+          export NETCDF_FORTRAN_VERSION="4.6.0"
         fi
         wget https://github.com/Unidata/netcdf-fortran/archive/v${NETCDF_FORTRAN_VERSION}.tar.gz &> /dev/null
         tar -xzf v${NETCDF_FORTRAN_VERSION}.tar.gz
