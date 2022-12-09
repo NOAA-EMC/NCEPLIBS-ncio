@@ -1,15 +1,25 @@
-name: Build and Test
-on: [push, pull_request]
+name: developer
+on:
+  push:
+    branches:
+    - develop
+    paths-ignore:
+    - README.md
+  pull_request:
+    branches:
+    - develop
+    paths-ignore:
+    - README.md
 
 jobs:
-  build:
+  developer:
     runs-on: ${{ matrix.os }}
     env:
       FC: gfortran-9
       CC: gcc-9
     strategy:
       matrix:
-        os: [macos-10.15, ubuntu-latest]
+        os: [ubuntu-latest]
         netcdf_version: [4.7.4]
         compiler: [gcc-9]      
 
