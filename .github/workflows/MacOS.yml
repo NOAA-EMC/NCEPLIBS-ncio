@@ -26,7 +26,7 @@ jobs:
         brew install mpich
         sudo ln -sf /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
 
     - name: cache-netcdf
       id: cache-netcdf
