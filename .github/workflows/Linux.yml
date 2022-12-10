@@ -15,31 +15,29 @@ jobs:
   Linux:
     runs-on: ubuntu-latest
     env:
-      FC: mpifort
-      CC: mpicc
-      CPPFLAGS: "-I${HOME}/netcdf/include"
-      LDFLAGS: "-L${HOME}/netcdf/lib"
-      PATH: "${HOME}/netcdf/bin:$PATH"
+      FC: gfortran-9
+      CC: gcc-9
 
     steps:
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
 
     - name: install-dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install libmpich-dev tar
+        sudo apt-get install libmpich-dev
 
     - name: cache-netcdf
       id: cache-netcdf
       uses: actions/cache@v2
       with:
         path: ~/netcdf
-        key: netcdf-c-4.7.4-${{ runner.os }}2
+        key: netcdf-c-4.7.4-${{ runner.os }}1
 
     - name: build-hdf5
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
       run: |
+        export CC=mpicc
         wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.gz &> /dev/null
         tar -xzf hdf5-1.10.7.tar.gz
         pushd hdf5-1.10.7
@@ -50,6 +48,9 @@ jobs:
     - name: build-netcdf-c
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
       run: |
+        export CC=mpicc
+        export CPPFLAGS=-I${HOME}/netcdf/include
+        export LDFLAGS=-L${HOME}/netcdf/lib
         wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.7.4.tar.gz
         tar -xzf v4.7.4.tar.gz
         cd netcdf-c-4.7.4
@@ -60,6 +61,11 @@ jobs:
     - name: build-netcdf-fortran
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
       run: |
+        export PATH="${HOME}/netcdf/bin:$PATH"
+        export CC=mpicc
+        export FC=mpifort
+        export CPPFLAGS=-I${HOME}/netcdf/include
+        export LDFLAGS=-L${HOME}/netcdf/lib
         wget https://github.com/Unidata/netcdf-fortran/archive/v4.5.3.tar.gz &> /dev/null
         tar -xzf v4.5.3.tar.gz
         pushd netcdf-fortran-4.5.3
@@ -69,6 +75,8 @@ jobs:
        
     - name: build and test
       run: |
+        export FC=mpifort
+        export CC=mpicc
         mkdir build && cd build
         cmake -DCMAKE_PREFIX_PATH='~;~/netcdf' ..
         make -j2 VERBOSE=1
