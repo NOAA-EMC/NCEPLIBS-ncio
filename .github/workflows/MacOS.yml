@@ -33,7 +33,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/netcdf
-        key: netcdf-c-4.7.4-${{ runner.os }}1
+        key: MacOS-netcdf-c-4.7.4-${{ runner.os }}
 
     - name: build-hdf5
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
