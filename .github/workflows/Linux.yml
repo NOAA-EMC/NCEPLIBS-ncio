@@ -15,8 +15,8 @@ jobs:
   Linux:
     runs-on: ubuntu-latest
     env:
-      FC: gfortran-9
-      CC: gcc-9
+      FC: mpifort
+      CC: mpicc
 
     steps:
 
@@ -37,18 +37,16 @@ jobs:
     - name: build-hdf5
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
       run: |
-        export CC=mpicc
         wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.gz &> /dev/null
         tar -xzf hdf5-1.10.7.tar.gz
         pushd hdf5-1.10.7
-        ./configure --prefix=${HOME}/netcdf --enable-parallel --disable-tools --disable-fortran --disable-cxx --enable-parallel-tests
+        ./configure --prefix=${HOME}/netcdf --enable-parallel --disable-tools --disable-fortran --disable-cxx
         make -j2
         make install
            
     - name: build-netcdf-c
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
       run: |
-        export CC=mpicc
         export CPPFLAGS=-I${HOME}/netcdf/include
         export LDFLAGS=-L${HOME}/netcdf/lib
         wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.7.4.tar.gz
@@ -62,8 +60,6 @@ jobs:
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
       run: |
         export PATH="${HOME}/netcdf/bin:$PATH"
-        export CC=mpicc
-        export FC=mpifort
         export CPPFLAGS=-I${HOME}/netcdf/include
         export LDFLAGS=-L${HOME}/netcdf/lib
         wget https://github.com/Unidata/netcdf-fortran/archive/v4.5.3.tar.gz &> /dev/null
@@ -75,8 +71,6 @@ jobs:
        
     - name: build and test
       run: |
-        export FC=mpifort
-        export CC=mpicc
         mkdir build && cd build
         cmake -DCMAKE_PREFIX_PATH='~;~/netcdf' ..
         make -j2 VERBOSE=1
