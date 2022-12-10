@@ -1,0 +1,98 @@
+name: Linux
+on:
+  push:
+    branches:
+    - develop
+    paths-ignore:
+    - README.md
+  pull_request:
+    branches:
+    - develop
+    paths-ignore:
+    - README.md
+
+jobs:
+  Linux:
+    runs-on: ununtu-latest
+    env:
+      FC: gfortran-10
+      CC: gcc-10
+    strategy:
+      matrix:
+        netcdf-c-version: [4.7.4, 4.9.0]
+
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: install-dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install libmpich-dev
+
+    - name: cache-netcdf
+      id: cache-netcdf
+      uses: actions/cache@v2
+      with:
+        path: ~/netcdf
+        key: Linux-netcdf-c-${{ matrix.netcdf-c-version }}
+
+    - name: build-hdf5
+      if: steps.cache-netcdf.outputs.cache-hit != 'true'
+      run: |
+        export CC=mpicc
+        if [[ ${{ matrix.netcdf-c-version }} == "4.7.4" ]]; then
+          wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.gz &> /dev/null
+          tar -xzf hdf5-1.10.7.tar.gz
+          pushd hdf5-1.10.7
+        elif [[ ${{ matrix.netcdf-c-version }} == "4.9.0" ]]; then
+          wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.2/src/hdf5-1.12.2.tar.gz &> /dev/null
+          tar -xzf hdf5-1.12.2.tar.gz
+          pushd hdf5-1.12.2
+        fi
+        ./configure --prefix=${HOME}/netcdf --enable-parallel --disable-tools --disable-fortran --disable-cxx --enable-parallel-tests
+        make -j2 VERBOSE=1
+        make install
+           
+    - name: build-netcdf-c
+      if: steps.cache-netcdf.outputs.cache-hit != 'true'
+      run: |
+        export CC=mpicc
+        export CPPFLAGS=-I${HOME}/netcdf/include
+        export LDFLAGS=-L${HOME}/netcdf/lib
+        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v${{ matrix.netcdf-c-version }}.tar.gz
+        tar -xzf v${{ matrix.netcdf-c-version }}.tar.gz
+        cd netcdf-c-${{ matrix.netcdf-c-version }}
+        ./configure --prefix=${HOME}/netcdf --disable-dap --disable-utilities
+        make -j2 VERBOSE=1
+        make install
+
+    - name: build-netcdf-fortran
+      if: steps.cache-netcdf.outputs.cache-hit != 'true'
+      run: |
+        export PATH="${HOME}/netcdf/bin:$PATH"
+        export CC=mpicc
+        export FC=mpifort
+        export CPPFLAGS=-I${HOME}/netcdf/include
+        export LDFLAGS=-L${HOME}/netcdf/lib
+        if [[ ${{ matrix.netcdf-c-version }} == "4.7.4" ]]; then
+          export NETCDF_FORTRAN_VERSION="4.5.3"
+        elif [[ ${{ matrix.netcdf-c-version }} == "4.9.0" ]]; then
+          export NETCDF_FORTRAN_VERSION="4.6.0"
+        fi
+        wget https://github.com/Unidata/netcdf-fortran/archive/v${NETCDF_FORTRAN_VERSION}.tar.gz &> /dev/null
+        tar -xzf v${NETCDF_FORTRAN_VERSION}.tar.gz
+        pushd netcdf-fortran-${NETCDF_FORTRAN_VERSION}
+        ./configure --prefix=${HOME}/netcdf
+        make -j2 VERBOSE=1
+        make install   
+       
+    - name: build and test
+      run: |
+        export FC=mpifort
+        export CC=mpicc
+        mkdir build && cd build
+        cmake -DCMAKE_PREFIX_PATH='~;~/netcdf' ..
+        make -j2 VERBOSE=1
+        ctest --verbose --output-on-failure --rerun-failed
+
