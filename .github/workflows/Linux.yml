@@ -28,7 +28,7 @@ jobs:
     - name: install-dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install libmpich-dev
+        sudo apt-get install libmpich-dev tar
 
     - name: cache-netcdf
       id: cache-netcdf
