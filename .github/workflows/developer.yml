@@ -1,0 +1,84 @@
+name: developer
+on: [push, pull_request]
+
+jobs:
+  developer:
+    runs-on: ubuntu-latest
+    env:
+      FC: gfortran-9
+      CC: gcc-9
+    strategy:
+      matrix:
+        netcdf_version: [4.7.4]
+
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: install-dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install libmpich-dev
+        sudo apt-get install doxygen
+        python3 -m pip install gcovr
+
+    - name: cache-netcdf
+      id: cache-netcdf
+      uses: actions/cache@v2
+      with:
+        path: ~/netcdf
+        key: netcdf-c-${{ matrix.netcdf_version }}-${{ runner.os }}1
+
+    - name: build-hdf5
+      if: steps.cache-netcdf.outputs.cache-hit != 'true'
+      run: |
+        export CC=mpicc
+        wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.gz &> /dev/null
+        tar -xzf hdf5-1.10.7.tar.gz
+        pushd hdf5-1.10.7
+        ./configure --prefix=${HOME}/netcdf --enable-parallel --disable-tools --disable-fortran --disable-cxx --enable-parallel-tests
+        make -j2
+        make install
+           
+    - name: build-netcdf-c
+      if: steps.cache-netcdf.outputs.cache-hit != 'true'
+      run: |
+        export CC=mpicc
+        export CPPFLAGS=-I${HOME}/netcdf/include
+        export LDFLAGS=-L${HOME}/netcdf/lib
+        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v${{ matrix.netcdf_version }}.tar.gz
+        tar -xzf v${{ matrix.netcdf_version }}.tar.gz
+        cd netcdf-c-${{ matrix.netcdf_version }}
+        ./configure --prefix=${HOME}/netcdf --disable-dap --disable-utilities
+        make -j2
+        make install
+
+    - name: build-netcdf-fortran
+      if: steps.cache-netcdf.outputs.cache-hit != 'true'
+      run: |
+        export PATH="${HOME}/netcdf/bin:$PATH"
+        export CC=mpicc
+        export FC=mpifort
+        export CPPFLAGS=-I${HOME}/netcdf/include
+        export LDFLAGS=-L${HOME}/netcdf/lib
+        wget https://github.com/Unidata/netcdf-fortran/archive/v4.5.3.tar.gz &> /dev/null
+        tar -xzf v4.5.3.tar.gz
+        pushd netcdf-fortran-4.5.3
+        ./configure --prefix=${HOME}/netcdf
+        make -j2
+        make install   
+       
+    - name: build and test
+      run: |
+        export FC=mpifort
+        export CC=mpicc
+        mkdir build && cd build
+        cmake .. -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -fprofile-abs-path -O0"
+        make -j2
+        ctest --output-on-failure
+        gcovr -v --html-details -o test-coverage.html
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: test-coverage
+        path: NCEPLIBS-ncio/build/*.html
