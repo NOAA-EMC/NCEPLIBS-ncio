@@ -17,6 +17,9 @@ jobs:
     env:
       FC: mpifort
       CC: mpicc
+      CPPFLAGS: "-I${HOME}/netcdf/include"
+      LDFLAGS: "-L${HOME}/netcdf/lib"
+      PATH: "${HOME}/netcdf/bin:$PATH"
 
     steps:
 
@@ -32,7 +35,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/netcdf
-        key: netcdf-c-4.7.4-${{ runner.os }}1
+        key: netcdf-c-4.7.4-${{ runner.os }}2
 
     - name: build-hdf5
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
@@ -47,8 +50,6 @@ jobs:
     - name: build-netcdf-c
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
       run: |
-        export CPPFLAGS=-I${HOME}/netcdf/include
-        export LDFLAGS=-L${HOME}/netcdf/lib
         wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.7.4.tar.gz
         tar -xzf v4.7.4.tar.gz
         cd netcdf-c-4.7.4
@@ -59,9 +60,6 @@ jobs:
     - name: build-netcdf-fortran
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
       run: |
-        export PATH="${HOME}/netcdf/bin:$PATH"
-        export CPPFLAGS=-I${HOME}/netcdf/include
-        export LDFLAGS=-L${HOME}/netcdf/lib
         wget https://github.com/Unidata/netcdf-fortran/archive/v4.5.3.tar.gz &> /dev/null
         tar -xzf v4.5.3.tar.gz
         pushd netcdf-fortran-4.5.3
