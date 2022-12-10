@@ -1,4 +1,4 @@
-name: Linux1
+name: Linux
 on:
   push:
     branches:
@@ -12,7 +12,7 @@ on:
     - README.md
 
 jobs:
-  Linux1:
+  Linux:
     runs-on: ubuntu-latest
     env:
       FC: gfortran-9
@@ -26,8 +26,6 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install libmpich-dev
-        sudo apt-get install doxygen
-        python3 -m pip install gcovr
 
     - name: cache-netcdf
       id: cache-netcdf
@@ -80,12 +78,6 @@ jobs:
         export FC=mpifort
         export CC=mpicc
         mkdir build && cd build
-        cmake .. -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -fprofile-abs-path -O0"
-        make -j2
+        cmake -DCMAKE_PREFIX_PATH='~;~/netcdf' ..
+        make -j2 VERBOSE=1
         ctest --output-on-failure
-        gcovr -v --html-details -o test-coverage.html
-    
-    - uses: actions/upload-artifact@v2
-      with:
-        name: test-coverage
-        path: NCEPLIBS-ncio/build/*.html
