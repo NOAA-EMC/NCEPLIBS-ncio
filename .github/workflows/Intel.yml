@@ -1,4 +1,4 @@
-name: MacOS
+name: Intel
 on:
   push:
     branches:
@@ -11,32 +11,43 @@ on:
     paths-ignore:
     - README.md
 
+# Use custom shell with -l so .bash_profile is sourced which loads intel/oneapi/setvars.sh
+# without having to do it in manually every step
+defaults:
+  run:
+    shell: bash -leo pipefail {0}
+
 jobs:
-  MacOS:
-    runs-on: macos-latest
+  Intel:
+    runs-on: ubuntu-latest
     env:
-      FC: gfortran-11
-      CC: gcc-11
-    strategy:
-      matrix:
-        netcdf_version: [4.7.4]
+      CC: icc
+      CXX: icpc
 
     steps:
 
     - uses: actions/checkout@v2
 
+      # See https://software.intel.com/content/www/us/en/develop/articles/oneapi-repo-instructions.html
     - name: install-dependencies
       run: |
-        brew update
-        brew install mpich
-        sudo ln -sf /usr/local/bin/gfortran-11 /usr/local/bin/gfortran
+        sudo apt-get update
+        sudo apt-get install libmpich-dev
+        cd /tmp
+        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+        sudo apt-get update
+        sudo apt-get install intel-oneapi-dev-utilities intel-oneapi-openmp intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
+        echo "source /opt/intel/oneapi/setvars.sh" >> ~/.bash_profile
 
     - name: cache-netcdf
       id: cache-netcdf
       uses: actions/cache@v2
       with:
         path: ~/netcdf
-        key: netcdf-c-${{ matrix.netcdf_version }}-${{ runner.os }}1
+        key: Linux-netcdf-c-4.7.4-${{ runner.os }}1
 
     - name: build-hdf5
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
@@ -46,7 +57,7 @@ jobs:
         tar -xzf hdf5-1.10.7.tar.gz
         pushd hdf5-1.10.7
         ./configure --prefix=${HOME}/netcdf --enable-parallel --disable-tools --disable-fortran --disable-cxx --enable-parallel-tests
-        make -j2
+        make -j2 VERBOSE=1
         make install
            
     - name: build-netcdf-c
@@ -55,11 +66,11 @@ jobs:
         export CC=mpicc
         export CPPFLAGS=-I${HOME}/netcdf/include
         export LDFLAGS=-L${HOME}/netcdf/lib
-        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v${{ matrix.netcdf_version }}.tar.gz
-        tar -xzf v${{ matrix.netcdf_version }}.tar.gz
-        cd netcdf-c-${{ matrix.netcdf_version }}
+        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.7.4.tar.gz
+        tar -xzf v4.7.4.tar.gz
+        cd netcdf-c-4.7.4
         ./configure --prefix=${HOME}/netcdf --disable-dap --disable-utilities
-        make -j2
+        make -j2 VERBOSE=1
         make install
 
     - name: build-netcdf-fortran
@@ -74,7 +85,7 @@ jobs:
         tar -xzf v4.5.3.tar.gz
         pushd netcdf-fortran-4.5.3
         ./configure --prefix=${HOME}/netcdf
-        make -j2
+        make -j2 VERBOSE=1
         make install   
        
     - name: build and test
@@ -82,8 +93,9 @@ jobs:
         export FC=mpifort
         export CC=mpicc
         mkdir build && cd build
-        cmake .. -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -fprofile-abs-path -O0"
-        make -j2
-        ctest --output-on-failure
-    
+        cmake -DCMAKE_PREFIX_PATH='~;~/netcdf' ..
+        make -j2 VERBOSE=1
+        ctest --verbose --output-on-failure --rerun-failed
 
+
+      
