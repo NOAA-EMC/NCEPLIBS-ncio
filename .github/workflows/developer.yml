@@ -1,17 +1,22 @@
-name: Build and Test
-on: [push, pull_request]
+name: developer
+on:
+  push:
+    branches:
+    - develop
+    paths-ignore:
+    - README.md
+  pull_request:
+    branches:
+    - develop
+    paths-ignore:
+    - README.md
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
+  developer:
+    runs-on: ubuntu-latest
     env:
       FC: gfortran-9
       CC: gcc-9
-    strategy:
-      matrix:
-        os: [macos-10.15, ubuntu-latest]
-        netcdf_version: [4.7.4]
-        compiler: [gcc-9]      
 
     steps:
 
@@ -19,20 +24,9 @@ jobs:
 
     - name: install-dependencies
       run: |
-        if [[ ${{ matrix.os }} == "ubuntu-latest" ]]; then
-          sudo apt-get update
-          sudo apt-get install libmpich-dev
-          sudo apt-get install doxygen
-        elif [[ ${{ matrix.os }} == "macos-10.15" ]]; then
-          brew update
-          brew install doxygen
-          brew install mpich
-          if [[ ${{ matrix.compiler }} == "gcc-9" ]]; then
-            sudo ln -sf /usr/local/bin/gfortran-9 /usr/local/bin/gfortran
-          elif  [[ ${{ matrix.compiler }} == "gcc-10" ]]; then
-            sudo ln -sf /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
-          fi
-        fi
+        sudo apt-get update
+        sudo apt-get install libmpich-dev
+        sudo apt-get install doxygen
         python3 -m pip install gcovr
 
     - name: cache-netcdf
@@ -40,7 +34,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/netcdf
-        key: netcdf-c-${{ matrix.netcdf_version }}-${{ runner.os }}1
+        key: netcdf-c-4.7.4-${{ runner.os }}1
 
     - name: build-hdf5
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
@@ -59,9 +53,9 @@ jobs:
         export CC=mpicc
         export CPPFLAGS=-I${HOME}/netcdf/include
         export LDFLAGS=-L${HOME}/netcdf/lib
-        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v${{ matrix.netcdf_version }}.tar.gz
-        tar -xzf v${{ matrix.netcdf_version }}.tar.gz
-        cd netcdf-c-${{ matrix.netcdf_version }}
+        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.7.4.tar.gz
+        tar -xzf v4.7.4.tar.gz
+        cd netcdf-c-4.7.4
         ./configure --prefix=${HOME}/netcdf --disable-dap --disable-utilities
         make -j2
         make install
@@ -86,12 +80,14 @@ jobs:
         export FC=mpifort
         export CC=mpicc
         mkdir build && cd build
-        cmake .. -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -fprofile-abs-path -O0"
-        make -j2
+        cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -fprofile-abs-path -O0" ..
+        make -j2 VERBOSE=1
         ctest --output-on-failure
-        gcovr -v --html-details -o test-coverage.html
+        gcovr --root .. -v  --html-details --exclude ../tests --exclude CMakeFiles --print-summary -o test-coverage.html
     
     - uses: actions/upload-artifact@v2
       with:
         name: test-coverage
-        path: NCEPLIBS-ncio/build/*.html
+        path: |
+          NCEPLIBS-ncio/build/*.html
+          NCEPLIBS-ncio/build/*.css
