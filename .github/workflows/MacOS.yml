@@ -27,7 +27,7 @@ jobs:
     - name: install-dependencies
       run: |
         brew update
-        brew install --verbose mpich
+        brew install --verbose sbtn mpich
         sudo ln -sf /usr/local/bin/gfortran-11 /usr/local/bin/gfortran
 
     - name: cache-netcdf
