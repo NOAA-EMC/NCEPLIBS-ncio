@@ -26,16 +26,8 @@ jobs:
 
     - name: install-dependencies
       run: |
-        set -x
-        echo $PATH
-        ls -l /bin
-        ls -l /usr/bin
-        ls -l /usr/local/bin
         brew install --verbose mpich
         sudo ln -sf /usr/local/bin/gfortran-11 /usr/local/bin/gfortran
-        ls -l /bin
-        ls -l /usr/bin
-        ls -l /usr/local/bin
 
     - name: cache-netcdf
       id: cache-netcdf
