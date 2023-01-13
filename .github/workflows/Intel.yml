@@ -32,6 +32,7 @@ jobs:
       # See https://software.intel.com/content/www/us/en/develop/articles/oneapi-repo-instructions.html
     - name: install-dependencies
       run: |
+        sudo apt-get update
         sudo apt-get install libmpich-dev
         cd /tmp
         wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
