@@ -31,7 +31,6 @@ jobs:
         ls -l /bin
         ls -l /usr/bin
         ls -l /usr/local/bin
-        brew update
         brew install --verbose mpich
         sudo ln -sf /usr/local/bin/gfortran-11 /usr/local/bin/gfortran
         ls -l /bin
