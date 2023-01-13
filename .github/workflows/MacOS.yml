@@ -28,7 +28,6 @@ jobs:
       run: |
         set -x
         brew update
-        brew install --verbose sbtn
         brew install --verbose mpich
         sudo ln -sf /usr/local/bin/gfortran-11 /usr/local/bin/gfortran
         echo $PATH
