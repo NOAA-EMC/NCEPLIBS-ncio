@@ -14,11 +14,13 @@ https://noaa-emc.github.io/NCEPLIBS-ncio/.
 NCEPLIBS-ncio is part of the
 [NCEPLIBS](https://github.com/NOAA-EMC/NCEPLIBS) project.
 
+To submit bug reports, feature requests, or other code-related issues including installation and usage questions, please create a [GitHub issue](https://github.com/NOAA-EMC/NCEPLIBS-ncio/issues). For general NCEPLIBS inquiries, contact [Ed Hartnett](mailto:edward.hartnett@noaa.gov) (secondary point of contact [Alex Richert](mailto:alexander.richert@noaa.gov)).
+
 ## Authors
 
 Jeff Whitaker, Cory Martin
 
-Code manager: Edward Hartnett, Hang Lei
+Code manager: [Ed Hartnett](mailto:edward.hartnett@noaa.gov), [Hang Lei](mailto:hang.lei@noaa.gov)
 
 ## Prerequisites
 
