@@ -82,9 +82,10 @@ jobs:
         export FC=mpifort
         export CC=mpicc
         mkdir build && cd build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -fprofile-abs-path -O0" ..
+        cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -O0" ..
         make -j2 VERBOSE=1
         ctest --output-on-failure
+        cp ../src/*f90 src/CMakeFiles/ncio.dir/.
         gcovr --root .. -v  --html-details --exclude ../tests --exclude CMakeFiles --print-summary -o test-coverage.html
     
     - uses: actions/upload-artifact@v2
