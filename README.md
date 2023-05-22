@@ -20,7 +20,7 @@ To submit bug reports, feature requests, or other code-related issues including 
 
 Jeff Whitaker, Cory Martin
 
-Code manager: [Ed Hartnett](mailto:edward.hartnett@noaa.gov), [Hang Lei](mailto:hang.lei@noaa.gov)
+Code manager: [Edward Hartnett](mailto:edward.hartnett@noaa.gov), [Hang Lei](mailto:hang.lei@noaa.gov)
 
 ## Prerequisites
 
