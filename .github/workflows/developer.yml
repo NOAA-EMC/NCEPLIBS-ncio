@@ -17,8 +17,8 @@ jobs:
   developer:
     runs-on: ubuntu-latest
     env:
-      FC: gfortran-11
-      CC: gcc-11
+      FC: gfortran-9
+      CC: gcc-9
 
     steps:
 
@@ -84,8 +84,6 @@ jobs:
         mkdir build && cd build
         cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -fprofile-abs-path -O0" ..
         make -j2 VERBOSE=1
-        pwd
-        find .
         ctest --output-on-failure
         gcovr --root .. -v  --html-details --exclude ../tests --exclude CMakeFiles --print-summary -o test-coverage.html
     
