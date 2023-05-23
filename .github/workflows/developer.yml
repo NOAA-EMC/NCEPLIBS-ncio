@@ -22,8 +22,6 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v2
-
     - name: install-dependencies
       run: |
         sudo apt-get update
@@ -76,10 +74,17 @@ jobs:
         make -j2
         make install   
        
+    - name: checkout
+      uses: actions/checkout@v2
+      with:
+        path: ncio
+
     - name: build
       run: |
         export FC=mpifort
         export CC=mpicc
+        set -x
+        cd ncio
         mkdir build && cd build
         cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-abs-path -fprofile-arcs -ftest-coverage -O0 -Wall" -DCMAKE_C_FLAGS="-g -fprofile-abs-path -fprofile-arcs -ftest-coverage -O0 -Wall" ..
         make -j2 VERBOSE=1
@@ -88,7 +93,7 @@ jobs:
       run: |
         pwd
         ls -l 
-        cd $GITHUB_WORKSPACE/build
+        cd $GITHUB_WORKSPACE/ncio/build
         ctest --verbose --output-on-failure --rerun-failed
         gcovr --root .. -v  --html-details --exclude ../tests --exclude CMakeFiles --print-summary -o test-coverage.html
 
