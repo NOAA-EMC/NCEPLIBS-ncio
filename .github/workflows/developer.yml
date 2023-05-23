@@ -90,7 +90,7 @@ jobs:
         ls -l 
         cd $GITHUB_WORKSPACE/build
         ctest --verbose --output-on-failure --rerun-failed
-        gcovr --root .. -v  --html-details --exclude ../tests --exclude CMakeFiles --print-summary -o test-coverage.html &> /dev/null
+        gcovr --root .. -v  --html-details --exclude ../tests --exclude CMakeFiles --print-summary -o test-coverage.html
 
     - uses: actions/upload-artifact@v2
       with:
