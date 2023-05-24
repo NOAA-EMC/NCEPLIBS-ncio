@@ -5,7 +5,13 @@
 #
 # Ed Hartnett 1/12/23
 name: developer
-on: [push, pull_request]
+on:
+  push:
+    branches:
+    - develop
+  pull_request:
+    branches:
+    - develop
 
 jobs:
   developer:
