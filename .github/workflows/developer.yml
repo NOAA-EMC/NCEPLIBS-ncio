@@ -91,7 +91,8 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/ncio/build
         pwd
-        ls -l 
+        ls -l
+        gcovr --version
         ctest --verbose --output-on-failure --rerun-failed
         gcovr --root .. -v  --html-details --exclude ../tests --exclude CMakeFiles --print-summary -o test-coverage.html
 
