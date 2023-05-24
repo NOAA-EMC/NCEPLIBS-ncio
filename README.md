@@ -14,11 +14,18 @@ https://noaa-emc.github.io/NCEPLIBS-ncio/.
 NCEPLIBS-ncio is part of the
 [NCEPLIBS](https://github.com/NOAA-EMC/NCEPLIBS) project.
 
+To submit bug reports, feature requests, or other code-related issues
+including installation and usage questions, please create a [GitHub
+issue](https://github.com/NOAA-EMC/NCEPLIBS-ncio/issues). For general
+NCEPLIBS inquiries, contact [Edward
+Hartnett](mailto:edward.hartnett@noaa.gov) (secondary point of contact
+[Alex Richert](mailto:alexander.richert@noaa.gov)).
+
 ## Authors
 
 Jeff Whitaker, Cory Martin
 
-Code manager: Edward Hartnett, Hang Lei
+Code manager: [Edward Hartnett](mailto:edward.hartnett@noaa.gov), [Hang Lei](mailto:hang.lei@noaa.gov)
 
 ## Prerequisites
 
@@ -29,9 +36,21 @@ This package requires:
 
 ## Installing
 
-module for reading/writing netcdf gridded data.
-API docs [here](https://github.com/NOAA-EMC/NCEPLIBS-ncio/blob/develop/docs/user_guide.md).
-Example usage:
+```
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=/path/to/install ..
+make -j2
+make install
+```
+
+## Using
+
+This library contains a module for reading/writing netcdf gridded
+data.  API docs
+[here](https://github.com/NOAA-EMC/NCEPLIBS-ncio/blob/develop/docs/user_guide.md).
+
+### Examples
 
 * open a Dataset.
 ```fortran
