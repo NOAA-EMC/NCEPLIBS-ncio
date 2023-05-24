@@ -89,7 +89,7 @@ jobs:
         cd ncio
         mkdir build
         cd build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-abs-path -fprofile-arcs -ftest-coverage -O0 -Wall" ..
+        cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -O0 -Wall" ..
         make -j2 VERBOSE=1
     
     - name: test
@@ -98,6 +98,7 @@ jobs:
         pwd
         ls -l
         gcovr --version
+        cp ../src/*.f90 src/CMakeFiles/ncio.dir/.
         ctest --verbose --output-on-failure --rerun-failed
         gcovr --root .. -v  --html-details --exclude ../tests --exclude CMakeFiles --print-summary -o test-coverage.html
 
