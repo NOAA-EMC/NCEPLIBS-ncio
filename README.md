@@ -1,3 +1,4 @@
+![Status](https://github.com/NOAA-EMC/NCEPLIBS-ncio/workflows/developer/badge.svg)
 
 # NCEPLIBS-ncio
 
