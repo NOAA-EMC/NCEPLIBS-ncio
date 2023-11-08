@@ -11,7 +11,7 @@ elseif(UNIX)
   add_compile_definitions(LINUX)
 endif()
 
-if(CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel)$")
+if(CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel|IntelLLVM)$")
   set(CMAKE_Fortran_FLAGS "-g -traceback -convert big_endian -assume byterecl ${CMAKE_Fortran_FLAGS}")
   set(CMAKE_Fortran_FLAGS_RELEASE "-O2")
   set(CMAKE_Fortran_FLAGS_DEBUG "-ftrapuv")
