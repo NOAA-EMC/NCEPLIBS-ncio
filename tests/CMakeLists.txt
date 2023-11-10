@@ -18,5 +18,6 @@ target_link_libraries(tst_ncio_mpi PRIVATE ncio::ncio)
 add_mpi_test(tst_ncio_mpi
   EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/tst_ncio_mpi
   NUMPROCS 4
-  TIMEOUT 60)
+  TIMEOUT 60
+)
 

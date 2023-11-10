@@ -25,6 +25,12 @@ function (add_mpi_test TESTNAME)
                   DOC "Executable for running MPI programs." )
   endif()
 
+# Check whether OpenMPI, in which case we need --oversubscribe in GitHub CI
+  execute_process(COMMAND ${MPIEXEC} --version OUTPUT_VARIABLE VERSIONOUTPUT)
+  if(VERSIONOUTPUT MATCHES ".*OpenRTE.*")
+    set(MPIEXEC_PREFLAGS "--oversubscribe" ${MPIEXEC_PREFLAGS})
+  endif()
+
   # Run tests directly from the command line
   set(EXE_CMD ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${num_procs}
       ${MPIEXEC_PREFLAGS}  ${exec_file}
