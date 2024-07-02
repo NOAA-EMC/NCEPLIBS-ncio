@@ -22,7 +22,7 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: install-dependencies
       run: |
@@ -31,7 +31,7 @@ jobs:
 
     - name: cache-netcdf
       id: cache-netcdf
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/netcdf
         key: netcdf-c-4.7.4-${{ runner.os }}1

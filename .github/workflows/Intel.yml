@@ -12,12 +12,6 @@ on:
     branches:
     - develop
 
-# Use custom shell with -l so .bash_profile is sourced which loads intel/oneapi/setvars.sh
-# without having to do it in manually every step
-defaults:
-  run:
-    shell: bash -leo pipefail {0}
-
 jobs:
   Intel:
     runs-on: ubuntu-latest
@@ -27,28 +21,15 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v2
-
-      # See https://software.intel.com/content/www/us/en/develop/articles/oneapi-repo-instructions.html
-    - name: install-dependencies
-      run: |
-        cd /tmp
-        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
-        sudo apt-get update
-        sudo apt-get install intel-oneapi-dev-utilities intel-oneapi-openmp intel-oneapi-mpi intel-oneapi-mpi-devel intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic intel-oneapi-compiler-fortran
-        echo "source /opt/intel/oneapi/setvars.sh" >> ~/.bash_profile
-        if [ ${{ matrix.compilers }} == "oneapi" ]; then
-          echo "export CC=mpiicx FC=mpiifx" >> ~/.bash_profile
-        elif [ ${{ matrix.compilers }} == "intel" ]; then
-          echo "export CC=mpiicc FC=mpiifort" >> ~/.bash_profile
-        fi
+    - name: "Install Intel"
+      uses: NOAA-EMC/ci-install-intel-toolkit@develop
+      with:
+        install-mpi: true
+        mpi-wrapper-setup: ${{ matrix.compilers }}
 
     - name: cache-netcdf
       id: cache-netcdf
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/netcdf
         key: Linux-netcdf-c-4.9.2-${{ runner.os }}-${{ matrix.compilers }}
@@ -92,7 +73,10 @@ jobs:
         ./configure --prefix=${HOME}/netcdf
         make -j2 VERBOSE=1
         make install   
-       
+
+    - name: "Checkout ncio"
+      uses: actions/checkout@v4
+
     - name: build and test
       run: |
         mkdir build && cd build
