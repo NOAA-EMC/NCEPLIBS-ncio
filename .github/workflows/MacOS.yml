@@ -16,7 +16,7 @@ jobs:
   MacOS:
     runs-on: macos-latest
     env:
-      FC: mpifort
+      FC: mpif90
       CC: mpicc
       HOMEBREW_NO_INSTALL_CLEANUP: 1
 
@@ -26,8 +26,10 @@ jobs:
 
     - name: install-dependencies
       run: |
-        brew install --verbose mpich
-        sudo ln -sf /usr/local/bin/gfortran-11 /usr/local/bin/gfortran
+        gcc_ver=12
+        brew install --verbose mpich gcc@${gcc_ver}
+        sudo ln -sf /opt/homebrew/Cellar/gcc@${gcc_ver}/${gcc_ver}*/bin/gfortran-${gcc_ver} /usr/local/bin/gfortran
+        which gfortran || ( echo "gfortran not found" && exit 1 )
 
     - name: cache-netcdf
       id: cache-netcdf
@@ -77,5 +79,3 @@ jobs:
         cmake .. -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -fprofile-abs-path -O0"
         make -j2 VERBOSE=1
         ctest --output-on-failure
-    
-
