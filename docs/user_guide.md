@@ -1,12 +1,30 @@
 @mainpage
 
-## NCEPLIBS-ncio
+# NCEPLIBS-ncio
 
 NetCDF read/write modules for the NCEP models. This is part of the
 [NCEPLIBS](https://github.com/NOAA-EMC/NCEPLIBS) project. The NCIO module 
 is mainly used by GSI as netcdf I/O interface.  
 
 The NCEPLIBS-ncio code here: https://github.com/NOAA-EMC/NCEPLIBS-ncio.
+
+## Installation
+
+```
+git clone https://github.com/NOAA-EMC/NCEPLIBS-ncio # or download a release from https://github.com/NOAA-EMC/NCEPLIBS-ncio/releases
+cmake -DCMAKE_INSTALL_PREFIX=/path/to/install -S NCEPLIBS-ncio -B NCEPLIBS-ncio/build # <add'l CMake options>
+cmake --build NCEPLIBS-ncio/build --parallel 2
+ctest --test-dir NCEPLIBS-ncio/build --parallel 2 # <add'l CTest options>
+cmake --install NCEPLIBS-ncio/build
+```
+
+The following CMake build options can be used to configure the build by setting them with `-D<OPTION>=<VALUE>`.
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| CMAKE_INSTALL_PREFIX | Installation path | /usr/local |
+| CMAKE_POSITION_INDEPENDENT_CODE | Enable position-independent code (PIC) for static build | OFF |
+| ENABLE_DOCS | Enable generation of doxygen-based documentation. | OFF |
 
 # API
 
