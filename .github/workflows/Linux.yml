@@ -16,7 +16,7 @@ jobs:
   Linux:
     runs-on: ubuntu-latest
     env:
-      FC: mpifort
+      FC: mpif90
       CC: mpicc
 
     steps:
@@ -25,7 +25,7 @@ jobs:
 
     - name: install-dependencies
       run: |
-        sudo apt-get install libmpich-dev
+        sudo apt-get install libopenmpi-dev
 
     - name: cache-netcdf
       id: cache-netcdf
@@ -72,6 +72,6 @@ jobs:
     - name: build and test
       run: |
         mkdir build && cd build
-        cmake -DCMAKE_PREFIX_PATH='~;~/netcdf' ..
+        cmake -DCMAKE_PREFIX_PATH='~;~/netcdf' -DMPIEXEC_PREFLAGS="--host;localhost:4" ..
         make -j2 VERBOSE=1
         ctest --output-on-failure

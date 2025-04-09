@@ -37,12 +37,12 @@ This package requires:
 
 ## Installing
 
-```
-mkdir build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=/path/to/install ..
-make -j2
-make install
+```console
+git clone https://github.com/NOAA-EMC/NCEPLIBS-ncio # or download a release from https://github.com/NOAA-EMC/NCEPLIBS-ncio/releases
+cmake -DCMAKE_INSTALL_PREFIX=/path/to/install -S NCEPLIBS-ncio -B NCEPLIBS-ncio/build # <add'l CMake options>
+cmake --build NCEPLIBS-ncio/build --parallel 2
+ctest --test-dir NCEPLIBS-ncio/build --parallel 2 # <add'l CTest options>
+cmake --install NCEPLIBS-ncio/build
 ```
 
 ## Using

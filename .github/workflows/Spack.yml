@@ -24,21 +24,16 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-
-    - name: "Install OpenMPI"
-      run: sudo apt install openmpi-bin libopenmpi-dev   
  
     - name: "Build Spack package"
       uses: NOAA-EMC/ci-test-spack-package@develop
       with:
         package-name: ncio
-        package-variants: ^netcdf-c ~blosc ~szip ^openmpi
+        package-variants: ^[virtuals=mpi] mpich
         custom-recipe: spack/package.py
         use-repo-cache: true
-        spack-compiler: gcc
-        repo-cache-key-suffix: ${{ matrix.os }}-1
-        spack-externals: cmake gmake perl openmpi
-
+        spack-compiler: gcc@14
+        repo-cache-key-suffix: ${{ matrix.os }}-2
 
   # This job validates the Spack recipe by making sure each cmake build option is represented
   recipe-check:

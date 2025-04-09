@@ -34,5 +34,5 @@ class Ncio(CMakePackage):
         env.set("NCIO_LIBDIR", lib[0])
 
     def check(self):
-        with working_dir(self.builder.build_directory):
+        with working_dir(self.build_directory):
             make("test")
