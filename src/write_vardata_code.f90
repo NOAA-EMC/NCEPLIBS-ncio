@@ -37,15 +37,15 @@
   else
      nd = dset%variables(nvar)%ndims
   end if
+  if (dset%dimensions(ndim)%isunlimited .and. .not. present(ncstart) .or. .not. present(nccount)) then
+     print *,'must specify start count via ncstart,nccount when there is an unlim dimension'
+     stop 99
+  endif
   do n=1,dset%variables(nvar)%ndims
      ndim = dset%variables(nvar)%dimids(n)
      if (is_slice .and. n == nd) then
         start(n) = ncount
         count(n) = 1
-     else if (n == nd .and. dset%dimensions(ndim)%isunlimited) then
-        start(n) = ncount
-        varshape = shape(values)
-        count(n) = varshape(n)
      else
         start(n) = 1
         count(n) = dset%variables(nvar)%dimlens(n)
