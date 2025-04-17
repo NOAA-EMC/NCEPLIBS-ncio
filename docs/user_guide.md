@@ -160,9 +160,11 @@ The following CMake build options can be used to configure the build by setting 
     ! slicedim: optional, if nslice is set, index of which dimension to slice with
     !          nslice, default is ndims
     ! ncstart: optional, if ncstart and nccount are set, manually specify the
-    !          start and count of netCDF write
+    !          start and count of netCDF write. Required if variable has an
+    !          unlimited dimension.
     ! nccount: optional, if ncstart and nccount are set, manually specify the
-    !          start and count of netCDF write
+    !          start and count of netCDF write. Required if variable has an
+    !          unlimited dimension.
     ! errcode: optional error return code.  If not specified,
     !          program will stop if a nonzero error code returned
     !          from netcdf library.

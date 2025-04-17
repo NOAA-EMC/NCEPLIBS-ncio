@@ -37,7 +37,7 @@
   else
      nd = dset%variables(nvar)%ndims
   end if
-  if (dset%dimensions(ndim)%isunlimited .and. .not. present(ncstart) .or. .not. present(nccount)) then
+  if (dset%dimensions(ndim)%isunlimited .and. (.not. present(ncstart) .or. .not. present(nccount))) then
      print *,'must specify start count via ncstart,nccount when there is an unlim dimension'
      stop 99
   endif
