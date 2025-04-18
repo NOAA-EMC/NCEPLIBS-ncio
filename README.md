@@ -45,6 +45,8 @@ ctest --test-dir NCEPLIBS-ncio/build --parallel 2 # <add'l CTest options>
 cmake --install NCEPLIBS-ncio/build
 ```
 
+NCEPLIBS-ncio is also available through [Spack](https://spack.io) as '[ncio](https://github.com/spack/spack/tree/develop/var/spack/repos/builtin/packages/ncio)'.
+
 ## Using
 
 This library contains a module for reading/writing netcdf gridded
