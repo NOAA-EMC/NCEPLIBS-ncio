@@ -26,7 +26,7 @@ jobs:
     steps:
 
     - name: "Install Intel"
-      uses: NOAA-EMC/ci-install-intel-toolkit@env-setup-tweaks
+      uses: NOAA-EMC/ci-install-intel-toolkit@develop
       with:
         install-mpi: true
         mpi-wrapper-setup: ${{ matrix.compilers }}
