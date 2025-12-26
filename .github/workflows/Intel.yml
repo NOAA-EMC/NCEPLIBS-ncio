@@ -41,6 +41,9 @@ jobs:
     - name: build-hdf5
       if: steps.cache-netcdf.outputs.cache-hit != 'true'
       run: |
+        echo: CC:
+        $CC --version
+        echo 'int main(){printf("Hello\n");return 0;}' | $CC -x c - -o /tmp/test && /tmp/test
         wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.3/src/hdf5-1.14.3.tar.gz &> /dev/null
         tar -xzf hdf5-1.14.3.tar.gz
         pushd hdf5-1.14.3
