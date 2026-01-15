@@ -1,7 +1,8 @@
-# Copyright 2013-2023 Lawrence Livermore National Security, LLC and other
-# Spack Project Developers. See the top-level COPYRIGHT file for details.
+# Copyright Spack Project Developers. See COPYRIGHT file for details.
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
+
+from spack_repo.builtin.build_systems.cmake import CMakePackage
 
 from spack.package import *
 
@@ -24,10 +25,12 @@ class Ncio(CMakePackage):
     version("1.1.0", sha256="9de05cf3b8b1291010197737666cede3d621605806379b528d2146c4f02d08f6")
     version("1.0.0", sha256="2e2630b26513bf7b0665619c6c3475fe171a9d8b930e9242f5546ddf54749bd4")
 
+    depends_on("fortran", type="build")
+
     depends_on("mpi")
     depends_on("netcdf-fortran")
 
-    def setup_run_environment(self, env):
+    def setup_run_environment(self, env: EnvironmentModifications) -> None:
         lib = find_libraries("libncio", root=self.prefix, shared=False, recursive=True)
         env.set("NCIO_LIB", lib[0])
         env.set("NCIO_INC", join_path(self.prefix, "include"))
