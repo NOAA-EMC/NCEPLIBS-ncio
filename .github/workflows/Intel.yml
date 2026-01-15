@@ -11,6 +11,10 @@ on:
   pull_request:
     branches:
     - develop
+  schedule:
+    # Run monthly
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
 
 jobs:
   Intel:
@@ -26,6 +30,7 @@ jobs:
       with:
         install-mpi: true
         mpi-wrapper-setup: ${{ matrix.compilers }}
+        compiler-setup: ${{ matrix.compilers }}
 
     - name: cache-netcdf
       id: cache-netcdf
