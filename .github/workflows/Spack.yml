@@ -33,11 +33,7 @@ jobs:
       uses: NOAA-EMC/ci-test-spack-package@develop
       with:
         package-name: ncio
-        package-variants: ^[virtuals=mpi] mpich
         custom-recipe: spack/package.py
-        use-repo-cache: true
-        spack-compiler: gcc@14
-        repo-cache-key-suffix: ${{ matrix.os }}-2
 
   # This job validates the Spack recipe by making sure each cmake build option is represented
   recipe-check:
