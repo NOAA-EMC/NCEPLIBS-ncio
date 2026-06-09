@@ -90,7 +90,7 @@ jobs:
         cd ncio
         mkdir build
         cd build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -O0 -Wall" ..
+        cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_DOCS=Yes -DCMAKE_PREFIX_PATH='~;~/netcdf' -DCMAKE_Fortran_FLAGS="-g -fprofile-arcs -ftest-coverage -O0 -Werror -Wall" ..
         make -j2 VERBOSE=1
     
     - name: test
