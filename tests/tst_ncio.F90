@@ -5,7 +5,7 @@ program tst_ncio
   use module_ncio
   implicit none
 
-  character(len=72) charatt, time_units
+  character(len=256) charatt, time_units
   type(Dataset) :: dset, dsetin
   type(Variable) :: var
   type(Dimension) :: dim
@@ -16,9 +16,9 @@ program tst_ncio
   real(4), allocatable, dimension(:,:,:,:) :: values_4d, data_4d
   real(4), allocatable, dimension(:,:,:,:,:) :: values_5d
   real(4), dimension(10,10) :: quantize1, quantize2
-  real(4) mval,r4val,qerr
+  real(4) mval,qerr
   character(len=20) time_iso
-  integer nlons,nlats,ndim,nvar,ndims,ival,idate(6),icheck(6),ierr,n,nn,nbits
+  integer nlons,nlats,nvar,idate(6),icheck(6),ierr,n,nn,nbits
   integer, parameter :: n_vars=25 ! number of variables in file
   integer, parameter :: n_dims=7  ! number of dimensionsin file
   integer, parameter :: n_atts=8  ! number of dimensionsin file
