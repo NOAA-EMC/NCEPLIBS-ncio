@@ -45,7 +45,7 @@ ctest --test-dir NCEPLIBS-ncio/build --parallel 2 # <add'l CTest options>
 cmake --install NCEPLIBS-ncio/build
 ```
 
-NCEPLIBS-ncio is also available through [Spack](https://spack.io) as '[ncio](https://github.com/spack/spack/tree/develop/var/spack/repos/builtin/packages/ncio)'.
+NCEPLIBS-ncio is also available through [Spack](https://spack.io) as '[ncio](https://github.com/spack/spack-packages/blob/develop/repos/spack_repo/builtin/packages/ncio)'.
 
 ## Using
 
@@ -136,3 +136,5 @@ dim = get_dim(ds, 'time')
 ```fortran
 call close_dataset(ds)
 call close_dataset(dso)
+
+_Generative AI tools are used to assist with developing this code. The code has been reviewed, edited, and validated by NWS staff._
